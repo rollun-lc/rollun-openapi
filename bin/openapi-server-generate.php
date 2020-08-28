@@ -105,7 +105,7 @@ exec("rm -R tmp-openapi", $output2);
 exec("rm openapi_config.json", $output3);
 
 // create api docs
-$docsDir = "public/api/docs/$title/v$version";
+$docsDir = "public/openapi/docs/$title/v$version";
 if (!file_exists($docsDir)) {
     mkdir($docsDir, 0777, true);
 }

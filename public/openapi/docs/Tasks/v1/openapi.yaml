@@ -3,7 +3,7 @@ info:
   version: "1"
   title: Tasks
 servers:
-  - url: http://localhost/openapi/Tasks/v1/FileSummary
+  - url: http://rollun-openapi/openapi/Tasks/v1/FileSummary
 tags:
   - name: FileSummary
     description: 'Task that calculate file summary'
