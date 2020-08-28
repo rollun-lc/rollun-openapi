@@ -37,7 +37,7 @@ file_put_contents('openapi_client_config.json', json_encode(['invokerPackage' =>
 sleep(1);
 
 // prepare template path
-$templatePath = dirname(__DIR__) . '/template';
+$templatePath = dirname(__DIR__) . '/template/client';
 
 // generate
 exec(

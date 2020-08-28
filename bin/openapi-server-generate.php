@@ -33,7 +33,7 @@ $title = preg_replace("/[^a-zA-Z0-9]/", '', $manifestData['info']['title']);
 $version = preg_replace("/[^0-9]/", '', $manifestData['info']['version']);
 
 // prepare template path
-$templatePath = dirname(__DIR__) . '/template';
+$templatePath = dirname(__DIR__) . '/template/server';
 
 // create generator config
 file_put_contents('openapi_config.json', json_encode(['invokerPackage' => "$title\\OpenAPI\\Server\\V$version", 'srcBasePath' => "src/$title/src/OpenAPI/Server/V$version"]));
@@ -111,7 +111,7 @@ if (!file_exists($docsDir)) {
 }
 
 // create docs index.html
-$html = file_get_contents('template/docs/index.html');
+$html = file_get_contents('template/server/docs/index.html');
 $html = str_replace('{{title}}', $manifestData['info']['title'], $html);
 $manifestParts = explode("/", $manifest);
 $html = str_replace('{{manifest}}', array_pop($manifestParts), $html);
