@@ -1,0 +1,46 @@
+{
+  "name": "rollun-com/rollun-openapi",
+  "description": "Bridge between rollun skeleton and openapi generated code",
+  "type": "library",
+  "license": "MIT",
+  "config": {
+    "sort-packages": true
+  },
+  "require": {
+    "php": "^7.2",
+    "ext-curl": "*",
+    "ext-json": "*",
+    "ext-mbstring": "*",
+    "articus/data-transfer": "^0.2",
+    "articus/path-handler": "^0.4",
+    "doctrine/annotations": "^1.6",
+    "guzzlehttp/guzzle": "^6.2",
+    "nikic/fast-route": "^1.3",
+    "rollun-com/rollun-dic": "^3.3",
+    "rollun-com/rollun-logger": "^4.5",
+    "zendframework/zend-cache": "^2.8",
+    "zendframework/zend-config": "^3.2",
+    "zendframework/zend-diactoros": "^2.1",
+    "zendframework/zend-expressive": "^3.2",
+    "zendframework/zend-serializer": "^2.9",
+    "zendframework/zend-servicemanager": "^3.4"
+  },
+  "require-dev": {
+    "ext-yaml": "^2.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "OpenAPI\\": "src/OpenAPI/"
+    }
+  },
+  "bin": [
+    "bin/openapi-server-generate",
+    "bin/openapi-client-generate"
+  ],
+  "extra": {
+    "zf": {
+      "component": "OpenAPI\\",
+      "config-provider": "OpenAPI\\ConfigProvider"
+    }
+  }
+}

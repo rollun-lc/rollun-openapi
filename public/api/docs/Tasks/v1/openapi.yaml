@@ -1,0 +1,189 @@
+openapi: 3.0.0
+info:
+  version: "1"
+  title: Tasks
+servers:
+  - url: https://test-1
+  - url: https://test-2
+tags:
+  - name: taskTag
+    description: ''
+  - name: taskResultTag
+    description: ''
+paths:
+  /task:
+    post:
+      tags:
+        - taskTag
+      summary: Create task
+      operationId: runTask
+      responses:
+        '201':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskInfoResult'
+        '400':
+          description: Bad Request
+      requestBody:
+        $ref: '#/components/requestBodies/Task'
+  /task/{taskId}:
+    get:
+      tags:
+        - taskTag
+      summary: Return concreted task info by id
+      operationId: getTaskInfoById
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'qwerty123'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        '202':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskInfoResult'
+        '404':
+          description: Not Found
+    delete:
+      tags:
+        - taskTag
+      summary: Delete task
+      operationId: deleteById
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'qwerty123'
+      responses:
+        '204':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        '404':
+          description: Not Found
+  /result/taskName/{taskId}:
+    get:
+      tags:
+        - taskResultTag
+      summary: Return concreted task result by id
+      operationId: getTaskResultById
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'qwerty123'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        '404':
+          description: Not Found
+components:
+  schemas:
+    Message:
+      type: object
+      required:
+        - level
+        - message
+      properties:
+        level:
+          type: string
+          description: 'Message level  (like in a logger)'
+          example: 'error'
+        message:
+          type: string
+          description: 'Message text'
+          example: 'Something wrong.'
+        context:
+          type: object
+          description: 'Message context (like in a logger)'
+    Result:
+      type: object
+      properties:
+        data:
+          type: object
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'          
+    TaskInfoResult:
+      allOf:
+        - $ref: '#/components/schemas/Result'
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/TaskInfo'
+    TaskInfo:
+      type: object
+      required:
+        - id
+        - type
+        - stage
+        - taskTypeInfo
+      properties:
+        id:
+          type: string
+          example: 'qwerty123'
+        stage:
+          type: string
+          example: '50%'
+        startTime:
+          type: integer
+          example: '1597926400'  
+        taskTypeInfo:
+          $ref: '#/components/schemas/TaskTypeInfo'
+    TaskTypeInfo:
+      type: object
+      required:
+        - type
+        - timeout
+        - allStatuses
+        - allStages
+      properties:
+        type:
+          type: string
+          example: 'import'
+        timeout:
+          type: integer
+          example: '360'
+        allStatuses:
+          type: array
+          description: 'All possible task type statuses'
+          items:
+            type: string
+          example: ['new','run','done']  
+        allStages:
+          type: array
+          description: 'All possible task type stages'
+          items:
+            type: string
+          example: ['0%','25%','50%','75%','100%']
+  requestBodies:
+    Task:
+      content:
+        application/json:
+          schema:
+            type: object
+      description: Data that needs for task creating
+      required: true
