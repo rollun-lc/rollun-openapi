@@ -21,13 +21,6 @@ interface TaskInfoInterface extends ToArrayForDtoInterface
     public function getId(): string;
 
     /**
-     * Get task type
-     *
-     * @return string
-     */
-    public function getType(): string;
-
-    /**
      * Get task timeout
      *
      * @return int

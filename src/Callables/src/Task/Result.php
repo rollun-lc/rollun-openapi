@@ -3,26 +3,19 @@ declare(strict_types=1);
 
 namespace rollun\Callables\Task;
 
-use Psr\Log\LogLevel;
 use rollun\Callables\Task\Async\Result\Data\TaskInfoInterface;
-use rollun\Callables\Task\Result\MessageInterface;
 
 /**
  * Class Result
  *
  * @author r.ratsun <r.ratsun.rollun@gmail.com>
  */
-class Result implements ResultInterface
+class Result extends ErrorResult implements ResultInterface
 {
     /**
      * @var TaskInfoInterface
      */
     protected $data;
-
-    /**
-     * @var MessageInterface[]
-     */
-    protected $messages;
 
     /**
      * Result constructor.
@@ -32,8 +25,9 @@ class Result implements ResultInterface
      */
     public function __construct($data, array $messages = [])
     {
+        parent::__construct($messages);
+
         $this->data = $data;
-        $this->messages = $messages;
     }
 
     /**
@@ -47,47 +41,11 @@ class Result implements ResultInterface
     /**
      * @inheritDoc
      */
-    public function getMessages(): ?array
-    {
-        return $this->messages;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function addMessage(MessageInterface $message): void
-    {
-        $this->messages[] = $message;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isSuccess(): bool
-    {
-        foreach ($this->getMessages() as $message) {
-            if ($message->getLevel() == LogLevel::ERROR) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function toArrayForDto(): array
     {
-        $data = $this->getData();
-        $messages = [];
-        foreach ($this->getMessages() as $message) {
-            $messages[] = $message->toArrayForDto();
-        }
+        $result = parent::toArrayForDto();
+        $result['data'] = !empty($data = $this->getData()) ? $data->toArrayForDto() : null;
 
-        return [
-            'data'     => !empty($data) ? $data->toArrayForDto() : null,
-            'messages' => $messages,
-        ];
+        return $result;
     }
 }

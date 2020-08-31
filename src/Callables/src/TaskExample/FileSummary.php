@@ -48,7 +48,7 @@ class FileSummary implements TaskInterface
 
         if (!empty($data['summary'])) {
             // prepare task info
-            $taskInfo = new TaskInfo($taskId, 'FileSummary', 3, new Stage($stages, 'done'), new Status(), new Result(new FileSummaryResult((int)$data['summary'])));
+            $taskInfo = new TaskInfo($taskId, 3, new Stage($stages, 'done'), new Status(), new Result(new FileSummaryResult((int)$data['summary'])));
             $taskInfo->getStatus()->toFulfilled();
 
             return new Result($taskInfo);
@@ -62,7 +62,7 @@ class FileSummary implements TaskInterface
         }
 
         // prepare task info
-        $taskInfo = new TaskInfo($taskId, 'FileSummary', 3, new Stage($stages, $stage), new Status(), new Result(new FileSummaryResult(array_sum($data['numbers']))));
+        $taskInfo = new TaskInfo($taskId, 3, new Stage($stages, $stage), new Status(), new Result(new FileSummaryResult(array_sum($data['numbers']))));
 
         return new Result($taskInfo);
     }

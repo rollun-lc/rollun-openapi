@@ -31,7 +31,7 @@ class TaskId extends AbstractHandler
     /**
      * Task constructor.
      *
-     * @param DTService $dt
+     * @param FileSummary $fileSummary
      */
     public function __construct(FileSummary $fileSummary = null)
     {

@@ -18,11 +18,6 @@ class TaskInfo implements TaskInfoInterface
     protected $id;
 
     /**
-     * @var string
-     */
-    protected $type;
-
-    /**
      * @var int
      */
     protected $timeout;
@@ -51,17 +46,15 @@ class TaskInfo implements TaskInfoInterface
      * TaskInfo constructor.
      *
      * @param string          $id
-     * @param string          $type
      * @param int             $timeout
      * @param StageInterface  $stage
      * @param StatusInterface $status
      * @param ResultInterface $result
      * @param \DateTime|null  $startTime
      */
-    public function __construct(string $id, string $type, int $timeout, StageInterface $stage, StatusInterface $status, ResultInterface $result, \DateTime $startTime = null)
+    public function __construct(string $id, int $timeout, StageInterface $stage, StatusInterface $status, ResultInterface $result, \DateTime $startTime = null)
     {
         $this->id = $id;
-        $this->type = $type;
         $this->timeout = $timeout;
         $this->stage = $stage;
         $this->status = $status;
@@ -75,14 +68,6 @@ class TaskInfo implements TaskInfoInterface
     public function getId(): string
     {
         return $this->id;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getType(): string
-    {
-        return $this->type;
     }
 
     /**
@@ -140,7 +125,6 @@ class TaskInfo implements TaskInfoInterface
     {
         return [
             'id'        => $this->getId(),
-            'type'      => $this->getType(),
             'timeout'   => $this->getTimeout(),
             'stage'     => $this->getStage()->toArrayForDto(),
             'status'    => $this->getStatus()->toArrayForDto(),
