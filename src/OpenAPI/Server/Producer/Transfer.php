@@ -8,6 +8,7 @@ use Articus\PathHandler\Exception\HttpCode;
 use Articus\PathHandler\Producer\Transfer as Base;
 use OpenAPI\Server\Writer\Messages;
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 
 /**
  * Class Transfer
@@ -20,7 +21,7 @@ class Transfer extends Base
     const KEY_LEVEL = Messages::KEY_LEVEL;
     const KEY_MESSAGE = Messages::KEY_MESSAGE;
 
-    const TYPE_ERROR = 'error';
+    const TYPE_ERROR = LogLevel::ERROR;
 
     /**
      * @var string|null

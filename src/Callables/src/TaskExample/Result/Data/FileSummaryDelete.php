@@ -3,12 +3,14 @@ declare(strict_types=1);
 
 namespace rollun\Callables\TaskExample\Result\Data;
 
+use rollun\Callables\Task\ToArrayForDtoInterface;
+
 /**
  * Class FileSummaryDelete
  *
  * @author r.ratsun <r.ratsun@gmail.com>
  */
-class FileSummaryDelete
+class FileSummaryDelete implements ToArrayForDtoInterface
 {
     /**
      * @var bool
@@ -31,5 +33,15 @@ class FileSummaryDelete
     public function getIsDeleted(): bool
     {
         return $this->isDeleted;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function toArrayForDto(): array
+    {
+        return [
+            'isDeleted' => $this->getIsDeleted()
+        ];
     }
 }

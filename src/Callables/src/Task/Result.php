@@ -72,4 +72,20 @@ class Result implements ResultInterface
 
         return true;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function toArrayForDto(): array
+    {
+        $messages = [];
+        foreach ($this->getMessages() as $message) {
+            $messages[] = $message->toArrayForDto();
+        }
+
+        return [
+            'data'     => $this->getData()->toArrayForDto(),
+            'messages' => $messages,
+        ];
+    }
 }

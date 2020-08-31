@@ -13,6 +13,7 @@ use OpenAPI\Server\Handler\AbstractHandler;
 use OpenAPI\Server\Producer\Transfer;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
+use rollun\Callables\Task\ToArrayForDtoInterface;
 use rollun\Callables\TaskExample\FileSummary;
 use rollun\Callables\TaskExample\Model\CreateTaskParameters;
 use Articus\DataTransfer\Service as DTService;
@@ -63,57 +64,19 @@ class Task extends AbstractHandler
      *
      * @param ServerRequestInterface $request
      *
-     * @return array|\Tasks\OpenAPI\Server\V1\DTO\TaskInfoResult
-     * @throws PHException\HttpCode 501 if the method is not implemented
-     *
+     * @return array
+     * @throws \Exception
      */
     public function runTask(ServerRequestInterface $request)
     {
         /** @var \Tasks\OpenAPI\Server\V1\DTO\CreateTaskParameters $bodyData */
         $bodyData = $request->getAttribute("bodyData");
 
-//        $result = (new FileSummary())->runTask(new CreateTaskParameters($bodyData->n));
+        $result = $this->fileSummary->runTask(new CreateTaskParameters($bodyData->n));
+        if (!$result instanceof ToArrayForDtoInterface) {
+            throw new \Exception('Instance of ' . ToArrayForDtoInterface::class . ' expected');
+        }
 
-        $result = [
-            'data'     => [
-                'id'         => '2',
-                'type'       => 'FileSummary',
-                'type3'      => 'FileSummary',
-                'timeout'    => 3,
-                'stage'      => [
-                    'stage' => 'done',
-                    'all'   => ['writing 1', 'writing 2', 'summary calculating', 'done'],
-                ],
-                'status'     => [
-                    'state' => 'fulfilled',
-                    'all'   => ['pending', 'rejected', 'fulfilled']
-                ],
-                'result'     => [
-                    'data'     => [
-                        'summary' => 3
-                    ],
-                    'messages' => []
-                ],
-                'startTime2' => null
-            ],
-            'messages' => []
-        ];
-
-//
-//        echo '<pre>';
-//        print_r($errors);
-//        die();
-//
-//        echo '<pre>';
-//        print_r(new FileSummary());
-//        die();
-
-//        return (new FileSummary())->runTask(new CreateTaskParameters($bodyData->n));
-////
-////        echo '<pre>';
-////        print_r($result);
-////        die();
-//
-        return $result;
+        return $result->toArrayForDto();
     }
 }

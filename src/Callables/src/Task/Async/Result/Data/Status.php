@@ -88,6 +88,17 @@ class Status implements StatusInterface
     /**
      * @inheritDoc
      */
+    public function toArrayForDto(): array
+    {
+        return [
+            'state' => $this->getState(),
+            'all'   => $this->getAllStates(),
+        ];
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function __toString(): string
     {
         return $this->getState();

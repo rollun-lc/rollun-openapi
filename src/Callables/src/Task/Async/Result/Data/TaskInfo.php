@@ -90,7 +90,7 @@ class TaskInfo implements TaskInfoInterface
      */
     public function getTimeout(): int
     {
-        $this->timeout;
+        return $this->timeout;
     }
 
     /**
@@ -131,5 +131,21 @@ class TaskInfo implements TaskInfoInterface
     public function getResult(): ResultInterface
     {
         return $this->result;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function toArrayForDto(): array
+    {
+        return [
+            'id'        => $this->getId(),
+            'type'      => $this->getType(),
+            'timeout'   => $this->getTimeout(),
+            'stage'     => $this->getStage()->toArrayForDto(),
+            'status'    => $this->getStatus()->toArrayForDto(),
+            'result'    => $this->getResult()->toArrayForDto(),
+            'startTime' => $this->getStartTime(),
+        ];
     }
 }

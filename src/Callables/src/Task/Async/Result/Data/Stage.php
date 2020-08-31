@@ -66,6 +66,17 @@ class Stage implements StageInterface
     /**
      * @inheritDoc
      */
+    public function toArrayForDto(): array
+    {
+        return [
+            'stage' => $this->getStage(),
+            'all'   => $this->getAllStages(),
+        ];
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function __toString(): string
     {
         return $this->getStage();

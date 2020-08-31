@@ -87,6 +87,26 @@ class FileSummary implements TaskInterface
             }
         }
 
+        // prepare exec file path
+        $execFilePath = 'bin/task-example/create.php';
+        if (!file_exists($execFilePath)) {
+            $execFilePath = 'vendor/rollun-com/rollun-openapi/bin/task-example/create.php';
+        }
+
+        // create process
+        exec("php $execFilePath $n >/dev/null 2>&1 &");
+        sleep(1);
+
+        return $this->getTaskInfoById((string)$n);
+    }
+
+    /**
+     * Run task process
+     *
+     * @param int $n
+     */
+    public function runTaskProcess(int $n): void
+    {
         $data = $this->getBaseData();
 
         // set numbers
@@ -100,8 +120,6 @@ class FileSummary implements TaskInterface
         // calc summary
         $data['summary'] = array_sum($data['numbers']);
         $this->saveFile($n, $data);
-
-        return $this->getTaskInfoById((string)$n);
     }
 
     /**

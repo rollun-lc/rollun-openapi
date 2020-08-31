@@ -3,12 +3,14 @@ declare(strict_types=1);
 
 namespace rollun\Callables\TaskExample\Result\Data;
 
+use rollun\Callables\Task\ToArrayForDtoInterface;
+
 /**
  * Class FileSummaryResult
  *
  * @author r.ratsun <r.ratsun.rollun@gmail.com>
  */
-class FileSummaryResult
+class FileSummaryResult implements ToArrayForDtoInterface
 {
     /**
      * @var int
@@ -31,5 +33,15 @@ class FileSummaryResult
     public function getSummary(): int
     {
         return $this->summary;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function toArrayForDto(): array
+    {
+        return [
+            'summary' => $this->getSummary()
+        ];
     }
 }

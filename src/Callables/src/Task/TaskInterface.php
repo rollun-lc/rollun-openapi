@@ -8,7 +8,7 @@ namespace rollun\Callables\Task;
  *
  * @author r.ratsun <r.ratsun.rollun@gmail.com>
  */
-interface TaskInterface extends ToArrayForDtoInterface
+interface TaskInterface
 {
     /**
      * Run task

@@ -62,4 +62,16 @@ class Message implements MessageInterface
     {
         return $this->context;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function toArrayForDto(): array
+    {
+        return [
+            'level'   => $this->getLevel(),
+            'text'    => $this->getText(),
+            'context' => $this->getContext()
+        ];
+    }
 }
