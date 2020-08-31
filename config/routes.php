@@ -50,11 +50,6 @@ use Zend\Expressive\Router\Route;
  * @return void
  */
 return function (Application $app, MiddlewareFactory $factory, ContainerInterface $container): void {
-    $app->get(
-        '/',
-        App\Handler\HomePageHandler::class,
-        'home-page'
-    );
 
     $app->get(
         '/oauth/redirect',

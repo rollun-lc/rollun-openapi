@@ -18,12 +18,12 @@ class Status
     public $state;
     /**
      * All possible states
-     * @DTA\Data(field="allStates")
+     * @DTA\Data(field="all")
      * TODO check validator and strategy are correct and can handle container item type
      * @DTA\Validator(name="Collection", options={"validators":{
-     *     {"name":"Type", "options":{"type":"mixed"}}
+     *     {"name":"Type", "options":{"type":"string"}}
      * }})
      * @var mixed[]
      */
-    public $all_states;
+    public $all;
 }

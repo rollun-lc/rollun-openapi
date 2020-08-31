@@ -76,13 +76,6 @@ foreach ($pathHandlerData['Articus\PathHandler\RouteInjection\Factory']['paths']
     $content .= "],\n";
 }
 $content .= "],\n";
-$content .= "'handlers' => [\n'invokables' => [\n";
-foreach ($pathHandlerData['Articus\PathHandler\RouteInjection\Factory']['paths'] as $path => $handlers) {
-    foreach ($handlers as $handler) {
-        $content .= "\\$handler::class => \\$handler::class,\n";
-    }
-}
-$content .= "]\n]\n";
 $content .= "]\n];";
 file_put_contents($file, $content);
 

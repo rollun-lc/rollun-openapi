@@ -53,8 +53,7 @@ $aggregator = new ConfigAggregator([
     \rollun\callback\ConfigProvider::class,
 
     // OpenAPI config
-    \OpenAPI\Server\ConfigProvider::class,
-    \OpenAPI\Client\ConfigProvider::class,
+    \OpenAPI\ConfigProvider::class,
 
     // Default App module config
     // Load application config in a pre-defined order in such a way that local settings

@@ -104,6 +104,12 @@ require 'vendor/autoload.php';
         return $tracer->start('index', $tags, $spanContext);
     })();
 
+    // Init lifecycle token
+    $lifeCycleToken = LifeCycleToken::generateToken();
+    if (LifeCycleToken::getAllHeaders() && array_key_exists("LifeCycleToken", LifeCycleToken::getAllHeaders())) {
+        $lifeCycleToken->unserialize(LifeCycleToken::getAllHeaders()["LifeCycleToken"]);
+    }
+    $container->setService(LifeCycleToken::class, $lifeCycleToken);
 
     /** @var Application $app */
     $app = $container->get(Application::class);
@@ -113,15 +119,6 @@ require 'vendor/autoload.php';
     // configuration statements
     (require 'config/pipeline.php')($app, $factory, $container);
     (require 'config/routes.php')($app, $factory, $container);
-
-    // Init lifecycle token
-    $lifeCycleToken = LifeCycleToken::generateToken();
-
-    if (LifeCycleToken::getAllHeaders() && array_key_exists("LifeCycleToken", LifeCycleToken::getAllHeaders())) {
-        $lifeCycleToken->unserialize(LifeCycleToken::getAllHeaders()["LifeCycleToken"]);
-    }
-
-    $container->setService(LifeCycleToken::class, $lifeCycleToken);
 
     $app->run();
     $tracer->finish($span);

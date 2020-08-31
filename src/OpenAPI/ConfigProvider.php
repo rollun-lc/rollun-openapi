@@ -22,6 +22,7 @@ use OpenAPI\Server\Validator;
 use OpenAPI\Server\Writer\Messages;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
+use rollun\Callables\TaskExample\FileSummary;
 use Zend\Expressive\Router\RouterInterface;
 use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
 
@@ -64,6 +65,7 @@ class ConfigProvider
                 ],
                 'invokables'         => [
                     ArticusPluginManager::class => ArticusPluginManager::class,
+                    FileSummary::class          => FileSummary::class,
                 ],
                 'factories'          => [
                     FastRoute::class           => RouteInjectionFactory::class,

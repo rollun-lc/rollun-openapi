@@ -18,12 +18,12 @@ class Stage
     public $stage;
     /**
      * All possible stages
-     * @DTA\Data(field="allStages")
+     * @DTA\Data(field="all")
      * TODO check validator and strategy are correct and can handle container item type
      * @DTA\Validator(name="Collection", options={"validators":{
-     *     {"name":"Type", "options":{"type":"mixed"}}
+     *     {"name":"Type", "options":{"type":"string"}}
      * }})
      * @var mixed[]
      */
-    public $all_stages;
+    public $all;
 }

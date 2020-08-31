@@ -34,7 +34,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResult'
       requestBody:
-        $ref: '#/components/requestBodies/Task'
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                n:
+                  type: integer
+                  description: 'N parameter'
+                  example: 5
+        description: Data that needs for task creating
+        required: true
   /task/{id}:
     get:
       tags:
@@ -166,31 +176,33 @@ components:
       type: object
       required:
         - stage
-        - allStages
+        - all
       properties:
         stage:
           type: string
           description: 'Current stage'
           example: 'writing 2'
-        allStages:
+        all:
           type: array
           description: 'All possible stages'
-          items: { }
+          items:
+            type: string
           example: [ 'writing 1','writing 2','writing 3','calc summary','done' ]
     Status:
       type: object
       required:
         - state
-        - allStates
+        - all
       properties:
         state:
           type: string
           description: 'Current state'
           example: 'pending'
-        allStates:
+        all:
           type: array
           description: 'All possible states'
-          items: { }
+          items:
+            type: string
           example: [ 'pending','fulfilled','rejected' ]
     SummaryResult:
       allOf:
