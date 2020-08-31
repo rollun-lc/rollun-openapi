@@ -120,13 +120,15 @@ components:
           type: string
           description: 'Message level  (like in a logger)'
           example: 'error'
-        message:
+        text:
           type: string
           description: 'Message text'
           example: 'Something wrong.'
         context:
-          type: object
+          type: array
           description: 'Message context (like in a logger)'
+          items:
+            type: string
     ErrorResult:
       type: object
       properties:

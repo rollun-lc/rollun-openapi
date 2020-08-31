@@ -18,16 +18,19 @@ class Message
     public $level;
     /**
      * Message text
-     * @DTA\Data(field="message")
+     * @DTA\Data(field="text")
      * @DTA\Validator(name="Type", options={"type":"string"})
      * @var string
      */
-    public $message;
+    public $text;
+
     /**
      * Message context (like in a logger)
      * @DTA\Data(field="context", nullable=true)
-     * @DTA\Validator(name="Type", options={"type":"object"})
-     * @var object
+     * @DTA\Validator(name="Collection", options={"validators":{
+     *     {"name":"Type", "options":{"type":"string"}}
+     * }})
+     * @var string[]
      */
     public $context;
 }

@@ -1,18 +1,14 @@
 <?php
 declare(strict_types=1);
 
-
 namespace Tasks\OpenAPI\Server\V1\Handler\FileSummary;
 
 use Articus\PathHandler\Annotation as PHA;
 use Articus\PathHandler\Consumer as PHConsumer;
-use Articus\PathHandler\Producer as PHProducer;
 use Articus\PathHandler\Attribute as PHAttribute;
-use Articus\PathHandler\Exception as PHException;
 use OpenAPI\Server\Handler\AbstractHandler;
 use OpenAPI\Server\Producer\Transfer;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Log\LoggerInterface;
 use rollun\Callables\Task\ToArrayForDtoInterface;
 use rollun\Callables\TaskExample\FileSummary;
 use rollun\Callables\TaskExample\Model\CreateTaskParameters;

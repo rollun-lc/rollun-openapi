@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace rollun\Callables\TaskExample;
 
+use Psr\Log\LogLevel;
 use rollun\Callables\Task\Async\Result\Data\Stage;
 use rollun\Callables\Task\Async\Result\Data\Status;
 use rollun\Callables\Task\Result\TaskInfoInterface;
@@ -30,7 +31,7 @@ class FileSummary implements TaskInterface
     public function getTaskInfoById(string $taskId): TaskInfoInterface
     {
         if (!file_exists($this->getFilePath((int)$taskId))) {
-            return new Result(null, [new Message('Error', 'No such task')]);
+            return new Result(null, [new Message(LogLevel::ERROR, 'No such task')]);
         }
 
         $data = $this->getFileData((int)$taskId);
@@ -70,6 +71,8 @@ class FileSummary implements TaskInterface
      * @inheritDoc
      *
      * @param CreateTaskParameters $taskParam
+     *
+     * @throws \Exception
      */
     public function runTask(object $taskParam): ResultInterface
     {
@@ -77,13 +80,13 @@ class FileSummary implements TaskInterface
         $n = $taskParam->getN();
 
         if ($n < 1) {
-            return new Result(null, [new Message('Error', 'n param should be more than 1')]);
+            return new Result(null, [new Message(LogLevel::ERROR, 'n param should be more than 1')]);
         }
 
         if (file_exists($this->getFilePath($n))) {
             $data = $this->getFileData($n);
             if (empty($data['summary'])) {
-                return new Result(null, [new Message('Error', 'Such task is already exists')]);
+                return new Result(null, [new Message(LogLevel::ERROR, 'Such task is already exists')]);
             }
         }
 
@@ -91,6 +94,10 @@ class FileSummary implements TaskInterface
         $execFilePath = 'bin/task-example/create.php';
         if (!file_exists($execFilePath)) {
             $execFilePath = 'vendor/rollun-com/rollun-openapi/bin/task-example/create.php';
+        }
+
+        if (!file_exists($execFilePath)) {
+            throw new \Exception("No execute file found");
         }
 
         // create process
@@ -128,12 +135,12 @@ class FileSummary implements TaskInterface
     public function deleteById(string $id): ResultInterface
     {
         if (!file_exists($this->getFilePath((int)$id))) {
-            return new Result(new FileSummaryDelete(false), [new Message('Error', 'No such task')]);
+            return new Result(new FileSummaryDelete(false), [new Message(LogLevel::ERROR, 'No such task')]);
         }
 
         $data = $this->getFileData((int)$id);
         if (empty($data['summary'])) {
-            return new Result(new FileSummaryDelete(false), [new Message('Error', 'Task is running and can not be deleted')]);
+            return new Result(new FileSummaryDelete(false), [new Message(LogLevel::ERROR, 'Task is running and can not be deleted')]);
         }
 
         unlink($this->getFilePath((int)$id));

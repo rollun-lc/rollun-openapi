@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace rollun\Callables\Task;
 
+use Psr\Log\LogLevel;
 use rollun\Callables\Task\Async\Result\Data\TaskInfoInterface;
 use rollun\Callables\Task\Result\MessageInterface;
 
@@ -65,7 +66,7 @@ class Result implements ResultInterface
     public function isSuccess(): bool
     {
         foreach ($this->getMessages() as $message) {
-            if ($message->getLevel() == 'Error') {
+            if ($message->getLevel() == LogLevel::ERROR) {
                 return false;
             }
         }
@@ -78,13 +79,14 @@ class Result implements ResultInterface
      */
     public function toArrayForDto(): array
     {
+        $data = $this->getData();
         $messages = [];
         foreach ($this->getMessages() as $message) {
             $messages[] = $message->toArrayForDto();
         }
 
         return [
-            'data'     => $this->getData()->toArrayForDto(),
+            'data'     => !empty($data) ? $data->toArrayForDto() : null,
             'messages' => $messages,
         ];
     }
