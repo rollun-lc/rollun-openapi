@@ -10,7 +10,6 @@ use Articus\PathHandler\Attribute as PHAttribute;
 use Articus\PathHandler\Exception as PHException;
 use OpenAPI\Server\Producer\Transfer;
 use Psr\Http\Message\ServerRequestInterface;
-use rollun\Callables\TaskExample\FileSummary;
 use rollun\dic\InsideConstruct;
 
 /**
@@ -19,18 +18,28 @@ use rollun\dic\InsideConstruct;
 class TaskId
 {
     /**
-     * @var FileSummary
+     * @var object
      */
-    protected $fileSummary;
+    protected $taskObject;
 
     /**
-     * Task constructor.
+     * TaskId constructor.
      *
-     * @param FileSummary $fileSummary
+     * @param object|null $taskObject
+     *
+     * @throws \ReflectionException
      */
-    public function __construct(FileSummary $fileSummary = null)
+    public function __construct($taskObject = null)
     {
-        InsideConstruct::init(['fileSummary' => FileSummary::class]);
+        InsideConstruct::init(['taskObject' => 'FileSummary']);
+    }
+
+    /**
+     * @throws \ReflectionException
+     */
+    public function __wakeup()
+    {
+        InsideConstruct::initWakeup(['taskObject' => 'FileSummary']);
     }
 
     /**
@@ -39,14 +48,6 @@ class TaskId
     public function __sleep()
     {
         return [];
-    }
-
-    /**
-     * @throws \ReflectionException
-     */
-    public function __wakeup()
-    {
-        InsideConstruct::initWakeup(['fileSummary' => FileSummary::class]);
     }
 
     /**
@@ -61,7 +62,7 @@ class TaskId
      */
     public function deleteById(ServerRequestInterface $request)
     {
-        return $this->fileSummary->deleteById((string)$request->getAttribute('id'))->toArrayForDto();
+        return $this->taskObject->deleteById((string)$request->getAttribute('id'))->toArrayForDto();
     }
 
     /**
@@ -76,6 +77,6 @@ class TaskId
      */
     public function getTaskInfoById(ServerRequestInterface $request)
     {
-        return $this->fileSummary->getTaskInfoById((string)$request->getAttribute('id'))->toArrayForDto();
+        return $this->taskObject->getTaskInfoById((string)$request->getAttribute('id'))->toArrayForDto();
     }
 }

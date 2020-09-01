@@ -62,6 +62,7 @@ class ConfigProvider
             'dependencies'               => [
                 'aliases'            => [
                     RouterInterface::class => FastRoute::class,
+                    'FileSummary'          => FileSummary::class,
                 ],
                 'invokables'         => [
                     ArticusPluginManager::class => ArticusPluginManager::class,

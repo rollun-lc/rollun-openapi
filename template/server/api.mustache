@@ -21,6 +21,40 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class {{classname}}
 {
+
+    /**
+     * @var object
+     */
+    protected $taskObject;
+
+    /**
+     * {{classname}} constructor.
+     *
+     * @param object|null $taskObject
+     *
+     * @throws \ReflectionException
+     */
+    public function __construct($taskObject = null)
+    {
+        InsideConstruct::init(['taskObject' => '{{operation.0.baseName}}']);
+    }
+
+    /**
+     * @throws \ReflectionException
+     */
+     public function __wakeup()
+     {
+        InsideConstruct::initWakeup(['taskObject' => '{{operation.0.baseName}}']);
+     }
+
+     /**
+      * @return array
+      */
+      public function __sleep()
+      {
+         return [];
+      }
+
 {{#operation}}
     /**
 {{#summary}}
