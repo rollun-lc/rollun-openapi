@@ -9,10 +9,8 @@ use Articus\PathHandler\Attribute as PHAttribute;
 use OpenAPI\Server\Handler\AbstractHandler;
 use OpenAPI\Server\Producer\Transfer;
 use Psr\Http\Message\ServerRequestInterface;
-use rollun\Callables\Task\ToArrayForDtoInterface;
 use rollun\Callables\TaskExample\FileSummary;
 use rollun\Callables\TaskExample\Model\CreateTaskParameters;
-use Articus\DataTransfer\Service as DTService;
 use rollun\dic\InsideConstruct;
 
 /**
@@ -68,11 +66,6 @@ class Task extends AbstractHandler
         /** @var \Tasks\OpenAPI\Server\V1\DTO\CreateTaskParameters $bodyData */
         $bodyData = $request->getAttribute("bodyData");
 
-        $result = $this->fileSummary->runTask(new CreateTaskParameters($bodyData->n));
-        if (!$result instanceof ToArrayForDtoInterface) {
-            throw new \Exception('Instance of ' . ToArrayForDtoInterface::class . ' expected');
-        }
-
-        return $result->toArrayForDto();
+        return $this->fileSummary->runTask(new CreateTaskParameters($bodyData->n))->toArrayForDto();
     }
 }
