@@ -70,14 +70,18 @@ class FileSummary implements TaskInterface
     /**
      * @inheritDoc
      *
-     * @param CreateTaskParameters $taskParam
+     * @param object $taskParam
      *
      * @throws \Exception
      */
     public function runTask(object $taskParam): ResultInterface
     {
         // prepare n
-        $n = $taskParam->getN();
+        $n = (int)$taskParam->n;
+
+        if (empty($n)) {
+            throw new \InvalidArgumentException("Parameter 'n' is required");
+        }
 
         if ($n < 1) {
             return new Result(null, [new Message(LogLevel::ERROR, 'n param should be more than 1')]);

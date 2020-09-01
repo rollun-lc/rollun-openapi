@@ -8,7 +8,6 @@ use Articus\PathHandler\Consumer as PHConsumer;
 use Articus\PathHandler\Producer as PHProducer;
 use Articus\PathHandler\Attribute as PHAttribute;
 use Articus\PathHandler\Exception as PHException;
-use OpenAPI\Server\Handler\AbstractHandler;
 use OpenAPI\Server\Producer\Transfer;
 use Psr\Http\Message\ServerRequestInterface;
 use rollun\Callables\TaskExample\FileSummary;
@@ -17,7 +16,7 @@ use rollun\dic\InsideConstruct;
 /**
  * @PHA\Route(pattern="/task/{id}")
  */
-class TaskId extends AbstractHandler
+class TaskId
 {
     /**
      * @var FileSummary

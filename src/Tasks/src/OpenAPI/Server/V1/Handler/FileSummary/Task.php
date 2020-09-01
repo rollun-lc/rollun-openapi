@@ -6,17 +6,15 @@ namespace Tasks\OpenAPI\Server\V1\Handler\FileSummary;
 use Articus\PathHandler\Annotation as PHA;
 use Articus\PathHandler\Consumer as PHConsumer;
 use Articus\PathHandler\Attribute as PHAttribute;
-use OpenAPI\Server\Handler\AbstractHandler;
 use OpenAPI\Server\Producer\Transfer;
 use Psr\Http\Message\ServerRequestInterface;
 use rollun\Callables\TaskExample\FileSummary;
-use rollun\Callables\TaskExample\Model\CreateTaskParameters;
 use rollun\dic\InsideConstruct;
 
 /**
  * @PHA\Route(pattern="/task")
  */
-class Task extends AbstractHandler
+class Task
 {
     /**
      * @var FileSummary
@@ -66,6 +64,8 @@ class Task extends AbstractHandler
         /** @var \Tasks\OpenAPI\Server\V1\DTO\InlineObject $bodyData */
         $bodyData = $request->getAttribute("bodyData");
 
-        return $this->fileSummary->runTask(new CreateTaskParameters($bodyData->n))->toArrayForDto();
+        // @todo catch exceptions, logger, service, params
+
+        return $this->fileSummary->runTask($bodyData)->toArrayForDto();
     }
 }
