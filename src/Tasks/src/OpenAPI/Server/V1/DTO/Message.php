@@ -23,10 +23,10 @@ class Message
      * @var string
      */
     public $text;
-
     /**
      * Message context (like in a logger)
      * @DTA\Data(field="context", nullable=true)
+     * TODO check validator and strategy are correct and can handle container item type
      * @DTA\Validator(name="Collection", options={"validators":{
      *     {"name":"Type", "options":{"type":"string"}}
      * }})

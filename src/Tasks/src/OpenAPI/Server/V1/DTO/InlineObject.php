@@ -7,7 +7,7 @@ use Articus\DataTransfer\Annotation as DTA;
 
 /**
  */
-class CreateTaskParameters
+class InlineObject
 {
     /**
      * N parameter

@@ -23,7 +23,7 @@ class Stage
      * @DTA\Validator(name="Collection", options={"validators":{
      *     {"name":"Type", "options":{"type":"string"}}
      * }})
-     * @var mixed[]
+     * @var string[]
      */
     public $all;
 }

@@ -53,7 +53,7 @@ class Task extends AbstractHandler
      * Create task
      * @PHA\Post()
      * @PHA\Consumer(name=PHConsumer\Json::class, mediaType="application/json")
-     * @PHA\Attribute(name=PHAttribute\Transfer::class, options={"type":\Tasks\OpenAPI\Server\V1\DTO\CreateTaskParameters::class,"objectAttr":"bodyData"})
+     * @PHA\Attribute(name=PHAttribute\Transfer::class, options={"type":\Tasks\OpenAPI\Server\V1\DTO\InlineObject::class,"objectAttr":"bodyData"})
      * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\Tasks\OpenAPI\Server\V1\DTO\TaskInfoResult::class})
      *
      * @param ServerRequestInterface $request
@@ -63,7 +63,7 @@ class Task extends AbstractHandler
      */
     public function runTask(ServerRequestInterface $request)
     {
-        /** @var \Tasks\OpenAPI\Server\V1\DTO\CreateTaskParameters $bodyData */
+        /** @var \Tasks\OpenAPI\Server\V1\DTO\InlineObject $bodyData */
         $bodyData = $request->getAttribute("bodyData");
 
         return $this->fileSummary->runTask(new CreateTaskParameters($bodyData->n))->toArrayForDto();

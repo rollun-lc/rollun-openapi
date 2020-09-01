@@ -7,6 +7,6 @@ return [
                 \Tasks\OpenAPI\Server\V1\Handler\FileSummary\Task::class,
                 \Tasks\OpenAPI\Server\V1\Handler\FileSummary\TaskId::class,
             ],
-        ]
+        ],
     ]
 ];
