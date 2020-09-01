@@ -6,9 +6,9 @@ namespace Tasks\OpenAPI\Server\V1\Handler\FileSummary;
 use Articus\PathHandler\Annotation as PHA;
 use Articus\PathHandler\Consumer as PHConsumer;
 use Articus\PathHandler\Attribute as PHAttribute;
+use Articus\PathHandler\Exception as PHException;
 use OpenAPI\Server\Producer\Transfer;
 use Psr\Http\Message\ServerRequestInterface;
-use rollun\Callables\TaskExample\FileSummary;
 use rollun\dic\InsideConstruct;
 
 /**
@@ -17,18 +17,28 @@ use rollun\dic\InsideConstruct;
 class Task
 {
     /**
-     * @var FileSummary
+     * @var object
      */
-    protected $fileSummary;
+    protected $taskObject;
 
     /**
      * Task constructor.
      *
-     * @param FileSummary $fileSummary
+     * @param object|null $taskObject
+     *
+     * @throws \ReflectionException
      */
-    public function __construct(FileSummary $fileSummary = null)
+    public function __construct($taskObject = null)
     {
-        InsideConstruct::init(['fileSummary' => FileSummary::class]);
+        InsideConstruct::init(['taskObject' => 'FileSummary']);
+    }
+
+    /**
+     * @throws \ReflectionException
+     */
+    public function __wakeup()
+    {
+        InsideConstruct::initWakeup(['taskObject' => 'FileSummary']);
     }
 
     /**
@@ -37,14 +47,6 @@ class Task
     public function __sleep()
     {
         return [];
-    }
-
-    /**
-     * @throws \ReflectionException
-     */
-    public function __wakeup()
-    {
-        InsideConstruct::initWakeup(['fileSummary' => FileSummary::class]);
     }
 
     /**
@@ -64,8 +66,6 @@ class Task
         /** @var \Tasks\OpenAPI\Server\V1\DTO\InlineObject $bodyData */
         $bodyData = $request->getAttribute("bodyData");
 
-        // @todo catch exceptions, logger, service, params
-
-        return $this->fileSummary->runTask($bodyData)->toArrayForDto();
+        return $this->taskObject->runTask($bodyData)->toArrayForDto();
     }
 }

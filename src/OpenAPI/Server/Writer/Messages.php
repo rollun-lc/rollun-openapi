@@ -13,7 +13,7 @@ use Zend\Log\Writer\AbstractWriter;
 class Messages extends AbstractWriter
 {
     const KEY_LEVEL = 'level';
-    const KEY_MESSAGE = 'message';
+    const KEY_MESSAGE = 'text';
 
     /**
      * @var array
