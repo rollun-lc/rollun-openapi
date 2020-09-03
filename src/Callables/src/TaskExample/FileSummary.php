@@ -11,7 +11,6 @@ use rollun\Callables\Task\Async\TaskInterface;
 use rollun\Callables\Task\Result\TaskInfo as Result;
 use rollun\Callables\Task\Result\Message;
 use rollun\Callables\Task\ResultInterface;
-use rollun\Callables\TaskExample\Model\CreateTaskParameters;
 use rollun\Callables\TaskExample\Result\Data\FileSummaryDelete;
 use rollun\Callables\TaskExample\Result\Data\FileSummaryResult;
 use rollun\Callables\Task\Async\Result\Data\TaskInfo;
