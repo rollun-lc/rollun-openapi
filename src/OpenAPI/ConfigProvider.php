@@ -63,12 +63,11 @@ class ConfigProvider
             'dependencies'               => [
                 'aliases'            => [
                     RouterInterface::class => FastRoute::class,
-                    'FileSummary'          => FileSummaryRest::class,
+                    'FileSummary'          => FileSummary::class,
                 ],
                 'invokables'         => [
                     ArticusPluginManager::class => ArticusPluginManager::class,
                     FileSummary::class          => FileSummary::class,
-                    FileSummaryRest::class      => FileSummaryRest::class,
                 ],
                 'factories'          => [
                     FastRoute::class           => RouteInjectionFactory::class,
