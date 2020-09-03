@@ -20,6 +20,9 @@ use rollun\dic\InsideConstruct;
  */
 class FileSummary extends AbstractHandler
 {
+    /**
+     * ATTENTION! REST_OBJECT should be declared in service manager
+     */
     const REST_OBJECT = 'FileSummary';
 
     /**
@@ -35,30 +38,13 @@ class FileSummary extends AbstractHandler
     }
 
     /**
-     * @throws \ReflectionException
-     */
-    public function __wakeup()
-    {
-       InsideConstruct::initWakeup(['restObject' => self::REST_OBJECT]);
-    }
-
-     /**
-      * @return array
-      */
-     public function __sleep()
-     {
-        return [];
-     }
-
-    /**
      * @PHA\Post()
      * TODO check if consumer is valid, if it has correct priority and if it can be moved to class annotation
      * @PHA\Consumer(name=PHConsumer\Json::class, mediaType="application/json")
      * @PHA\Attribute(name=PHAttribute\Transfer::class, options={"type":\Task\OpenAPI\Server\V1\DTO\InlineObject::class,"objectAttr":"bodyData"})
      * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\Task\OpenAPI\Server\V1\DTO\TaskInfoResult::class})
-     * @param ServerRequestInterface $request
      *
-     * @throws PHException\HttpCode 501 if the method is not implemented
+     * @param ServerRequestInterface $request
      *
      * @return array
      */

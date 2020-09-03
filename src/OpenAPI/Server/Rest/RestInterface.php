@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace OpenAPI\Server\Rest;
 
+use rollun\Callables\Task\ResultInterface;
+
 /**
  * Interface RestInterface
  *
@@ -13,59 +15,59 @@ interface RestInterface
     /**
      * @param mixed $bodyData
      *
-     * @return array
+     * @return ResultInterface
      */
-    public function post($bodyData): array;
+    public function post($bodyData): ResultInterface;
 
     /**
      * @param mixed $queryData
      * @param mixed $bodyData
      *
-     * @return array
+     * @return ResultInterface
      */
-    public function patch($queryData, $bodyData): array;
+    public function patch($queryData, $bodyData): ResultInterface;
 
     /**
      * @param mixed $queryData
      *
-     * @return array
+     * @return ResultInterface
      */
-    public function delete($queryData): array;
+    public function delete($queryData = null): ResultInterface;
 
     /**
      * @param mixed $queryData
      *
-     * @return array
+     * @return ResultInterface
      */
-    public function get($queryData): array;
+    public function get($queryData = null): ResultInterface;
 
     /**
      * @param mixed $id
      * @param mixed $bodyData
      *
-     * @return array
+     * @return ResultInterface
      */
-    public function putById($id, $bodyData): array;
+    public function putById($id, $bodyData): ResultInterface;
 
     /**
      * @param mixed $id
      * @param mixed $bodyData
      *
-     * @return array
+     * @return ResultInterface
      */
-    public function patchById($id, $bodyData): array;
+    public function patchById($id, $bodyData): ResultInterface;
 
     /**
      * @param mixed $id
      *
-     * @return array
+     * @return ResultInterface
      */
-    public function deleteById($id): array;
+    public function deleteById($id): ResultInterface;
 
     /**
      * @param mixed $id
      *
-     * @return array
+     * @return ResultInterface
      */
-    public function getById($id): array;
+    public function getById($id): ResultInterface;
 }

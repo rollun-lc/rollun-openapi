@@ -3,18 +3,20 @@ declare(strict_types=1);
 
 namespace OpenAPI\Server\Rest;
 
+use rollun\Callables\Task\ResultInterface;
+
 /**
- * Class Base
+ * Abstract class BaseAbstract
  *
  * @author r.ratsun <r.ratsun.rollun@gmail.com>
  */
-class Base implements RestInterface
+abstract class BaseAbstract implements RestInterface
 {
     /**
      * @inheritDoc
      * @throws \Exception
      */
-    public function post($bodyData): array
+    public function post($bodyData): ResultInterface
     {
         throw new \Exception('Not implemented method');
     }
@@ -23,7 +25,7 @@ class Base implements RestInterface
      * @inheritDoc
      * @throws \Exception
      */
-    public function patch($queryData, $bodyData): array
+    public function patch($queryData, $bodyData): ResultInterface
     {
         throw new \Exception('Not implemented method');
     }
@@ -32,7 +34,7 @@ class Base implements RestInterface
      * @inheritDoc
      * @throws \Exception
      */
-    public function delete($queryData): array
+    public function delete($queryData = null): ResultInterface
     {
         throw new \Exception('Not implemented method');
     }
@@ -41,7 +43,7 @@ class Base implements RestInterface
      * @inheritDoc
      * @throws \Exception
      */
-    public function get($queryData): array
+    public function get($queryData = null): ResultInterface
     {
         throw new \Exception('Not implemented method');
     }
@@ -50,7 +52,7 @@ class Base implements RestInterface
      * @inheritDoc
      * @throws \Exception
      */
-    public function putById($id, $bodyData): array
+    public function putById($id, $bodyData): ResultInterface
     {
         throw new \Exception('Not implemented method');
     }
@@ -59,7 +61,7 @@ class Base implements RestInterface
      * @inheritDoc
      * @throws \Exception
      */
-    public function patchById($id, $bodyData): array
+    public function patchById($id, $bodyData): ResultInterface
     {
         throw new \Exception('Not implemented method');
     }
@@ -68,7 +70,7 @@ class Base implements RestInterface
      * @inheritDoc
      * @throws \Exception
      */
-    public function deleteById($id): array
+    public function deleteById($id): ResultInterface
     {
         throw new \Exception('Not implemented method');
     }
@@ -77,7 +79,7 @@ class Base implements RestInterface
      * @inheritDoc
      * @throws \Exception
      */
-    public function getById($id): array
+    public function getById($id): ResultInterface
     {
         throw new \Exception('Not implemented method');
     }

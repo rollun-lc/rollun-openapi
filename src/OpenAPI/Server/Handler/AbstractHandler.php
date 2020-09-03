@@ -19,14 +19,6 @@ abstract class AbstractHandler
     protected $restObject;
 
     /**
-     * @return array
-     */
-    public function __sleep()
-    {
-        return [];
-    }
-
-    /**
      * @param ServerRequestInterface $request
      * @param string                 $method
      *
@@ -34,38 +26,43 @@ abstract class AbstractHandler
      */
     protected function runAction(ServerRequestInterface $request, string $method): array
     {
+        // prepare input data
+        $id = empty($request->getAttribute('id')) ? null : $request->getAttribute('id');
+        $queryData = empty($request->getAttribute('queryData')) ? null : $request->getAttribute('queryData');
+        $bodyData = empty($request->getAttribute('bodyData')) ? null : $request->getAttribute('bodyData');
+
         switch ($method) {
             case 'Post()':
-                $result = $this->restObject->post($request->getAttribute('bodyData'));
+                $result = $this->restObject->post($bodyData);
                 break;
             case 'Put()':
-                $result = $this->restObject->putById($request->getAttribute('id'), $request->getAttribute('bodyData'));
+                $result = $this->restObject->putById($id, $bodyData);
                 break;
             case 'Patch()':
-                if (!empty($request->getAttribute('id'))) {
-                    $result = $this->restObject->patchById($request->getAttribute('id'), $request->getAttribute('bodyData'));
+                if (!empty($id)) {
+                    $result = $this->restObject->patchById($id, $bodyData);
                 } else {
-                    $result = $this->restObject->patch($request->getAttribute('queryData'), $request->getAttribute('bodyData'));
+                    $result = $this->restObject->patch($queryData, $bodyData);
                 }
                 break;
             case 'Delete()':
-                if (!empty($request->getAttribute('id'))) {
-                    $result = $this->restObject->deleteById($request->getAttribute('id'));
+                if (!empty($id)) {
+                    $result = $this->restObject->deleteById($id);
                 } else {
-                    $result = $this->restObject->delete($request->getAttribute('queryData'));
+                    $result = empty($queryData) ? $this->restObject->delete() : $this->restObject->delete($queryData);
                 }
                 break;
             case 'Get()':
-                if (!empty($request->getAttribute('id'))) {
-                    $result = $this->restObject->getById($request->getAttribute('id'));
+                if (!empty($id)) {
+                    $result = $this->restObject->getById($id);
                 } else {
-                    $result = $this->restObject->get($request->getAttribute('queryData'));
+                    $result = empty($queryData) ? $this->restObject->get() : $this->restObject->get($queryData);
                 }
                 break;
             default:
                 throw new \InvalidArgumentException('Unknown http method');
         }
 
-        return $result;
+        return $result->toArrayForDto();
     }
 }

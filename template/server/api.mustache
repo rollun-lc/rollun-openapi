@@ -24,6 +24,9 @@ use rollun\dic\InsideConstruct;
  */
 class {{classname}} extends AbstractHandler
 {
+    /**
+     * ATTENTION! REST_OBJECT should be declared in service manager
+     */
     const REST_OBJECT = '{{operation.0.baseName}}';
 
     /**
@@ -37,22 +40,6 @@ class {{classname}} extends AbstractHandler
     {
         InsideConstruct::init(['restObject' => self::REST_OBJECT]);
     }
-
-    /**
-     * @throws \ReflectionException
-     */
-    public function __wakeup()
-    {
-       InsideConstruct::initWakeup(['restObject' => self::REST_OBJECT]);
-    }
-
-     /**
-      * @return array
-      */
-     public function __sleep()
-     {
-        return [];
-     }
 
 {{#operation}}
     /**
@@ -91,8 +78,6 @@ class {{classname}} extends AbstractHandler
      * @PHA\Producer(name=Transfer::class, mediaType="{{{mediaType}}}", options={"responseType":{{returnType}}::class})
 {{/produces}}
      * @param ServerRequestInterface $request
-     *
-     * @throws PHException\HttpCode 501 if the method is not implemented
 {{#returnType}}
      *
      * @return array

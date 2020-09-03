@@ -35,22 +35,6 @@ class FileSummaryId extends AbstractHandler
     }
 
     /**
-     * @throws \ReflectionException
-     */
-    public function __wakeup()
-    {
-       InsideConstruct::initWakeup(['restObject' => self::REST_OBJECT]);
-    }
-
-     /**
-      * @return array
-      */
-     public function __sleep()
-     {
-        return [];
-     }
-
-    /**
      * @PHA\Delete()
      * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\Task\OpenAPI\Server\V1\DTO\DeleteResult::class})
      * @param ServerRequestInterface $request
