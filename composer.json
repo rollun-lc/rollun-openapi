@@ -45,7 +45,7 @@
   "autoload": {
     "psr-4": {
       "OpenAPI\\": "src/OpenAPI/",
-      "Tasks\\": "src/Tasks/src/",
+      "Task\\": "src/Task/src/",
       "rollun\\Callables\\": "src/Callables/src/"
     }
   },

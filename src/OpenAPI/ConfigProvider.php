@@ -23,6 +23,7 @@ use OpenAPI\Server\Writer\Messages;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use rollun\Callables\TaskExample\FileSummary;
+use rollun\Callables\TaskExample\FileSummaryRest;
 use Zend\Expressive\Router\RouterInterface;
 use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
 
@@ -62,11 +63,12 @@ class ConfigProvider
             'dependencies'               => [
                 'aliases'            => [
                     RouterInterface::class => FastRoute::class,
-                    'FileSummary'          => FileSummary::class,
+                    'FileSummary'          => FileSummaryRest::class,
                 ],
                 'invokables'         => [
                     ArticusPluginManager::class => ArticusPluginManager::class,
                     FileSummary::class          => FileSummary::class,
+                    FileSummaryRest::class      => FileSummaryRest::class,
                 ],
                 'factories'          => [
                     FastRoute::class           => RouteInjectionFactory::class,

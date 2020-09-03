@@ -1,16 +1,14 @@
 Articus\PathHandler\RouteInjection\Factory:
   paths:
 {{#apiInfo}}
-{{#apis}}
-{{#operations}}
-    '/openapi/{{{appName}}}/v{{{version}}}/{{#operation}}{{baseName}}-{{/operation}}':
-    - {{package}}\{{classname}}
-{{/operations}}
-{{/apis}}
+    '/openapi/{{{appName}}}/v{{{version}}}':
+    {{#apis}}{{#operations}}
+      - {{package}}\{{classname}}
+    {{/operations}}{{/apis}}
 {{/apiInfo}}
   handlers:
     abstract_factories:
-    - Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory
+      - Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory
 #  consumers:
 #    factories:
 #    invokables:

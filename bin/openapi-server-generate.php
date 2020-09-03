@@ -44,28 +44,6 @@ exec("openapi-generator generate -i $manifest -o tmp-openapi -g php-ze-ph -c ope
 // generate config to autoload
 $pathHandlerData = yaml_parse(file_get_contents('tmp-openapi/application/config/path_handler.yml'));
 
-// prepare path
-foreach ($pathHandlerData['Articus\PathHandler\RouteInjection\Factory']['paths'] as $path => $handlers) {
-    $pathParts = explode('-', $path);
-    $newPath = array_shift($pathParts);
-    if (empty($pathHandlerData['Articus\PathHandler\RouteInjection\Factory']['paths'][$newPath])) {
-        $pathHandlerData['Articus\PathHandler\RouteInjection\Factory']['paths'][$newPath] = [];
-    }
-    $pathHandlerData['Articus\PathHandler\RouteInjection\Factory']['paths'][$newPath] = array_merge(
-        $pathHandlerData['Articus\PathHandler\RouteInjection\Factory']['paths'][$newPath], $handlers
-    );
-    unset($pathHandlerData['Articus\PathHandler\RouteInjection\Factory']['paths'][$path]);
-}
-
-// prepare namespaces
-foreach ($pathHandlerData['Articus\PathHandler\RouteInjection\Factory']['paths'] as $path => $handlers) {
-    $pathParts = explode('/', $path);
-    $tag = array_pop($pathParts);
-    foreach ($handlers as $k => $class) {
-        $pathHandlerData['Articus\PathHandler\RouteInjection\Factory']['paths'][$path][$k] = str_replace('Handler', 'Handler\\' . $tag, $class);
-    }
-}
-
 $file = 'config/autoload/' . lcfirst($title) . '_v' . $version . '_path_handler.global.php';
 $content = "<?php\n\nreturn [\n\Articus\PathHandler\RouteInjection\Factory::class => [\n'paths'=>[\n";
 foreach ($pathHandlerData['Articus\PathHandler\RouteInjection\Factory']['paths'] as $path => $handlers) {
@@ -81,17 +59,6 @@ file_put_contents($file, $content);
 
 // copy
 exec("cp -R tmp-openapi/src/$title/. src/$title/", $output1);
-
-foreach ($pathHandlerData['Articus\PathHandler\RouteInjection\Factory']['paths'] as $path => $handlers) {
-    foreach ($handlers as $class) {
-        $parts = explode('\\', $class);
-        $dir = "src/{$parts[0]}/src/OpenAPI/Server/{$parts[3]}/Handler/{$parts[5]}";
-        if (!file_exists($dir)) {
-            mkdir($dir, 0777, true);
-        }
-        exec("mv src/{$parts[0]}/src/OpenAPI/Server/{$parts[3]}/Handler/{$parts[6]}.php src/{$parts[0]}/src/OpenAPI/Server/{$parts[3]}/Handler/{$parts[5]}/");
-    }
-}
 
 // clearing
 exec("rm -R tmp-openapi", $output2);

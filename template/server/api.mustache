@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 {{#operations}}
 
-namespace {{package}}\{{operation.0.baseName}};
+namespace {{package}};
 
 use Articus\PathHandler\Annotation as PHA;
 use Articus\PathHandler\Consumer as PHConsumer;
@@ -11,6 +11,8 @@ use Articus\PathHandler\Producer as PHProducer;
 use Articus\PathHandler\Attribute as PHAttribute;
 use Articus\PathHandler\Exception as PHException;
 use OpenAPI\Server\Producer\Transfer;
+use OpenAPI\Server\Handler\AbstractHandler;
+use OpenAPI\Server\Rest\RestInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use rollun\dic\InsideConstruct;
 
@@ -20,23 +22,18 @@ use rollun\dic\InsideConstruct;
 {{/description}}
  * @PHA\Route(pattern="{{pathPattern}}")
  */
-class {{classname}}
+class {{classname}} extends AbstractHandler
 {
-    /**
-     * @var object
-     */
-    protected $taskObject;
-
     /**
      * {{classname}} constructor.
      *
-     * @param object|null $taskObject
+     * @param RestInterface|null $restObject
      *
      * @throws \ReflectionException
      */
-    public function __construct($taskObject = null)
+    public function __construct(RestInterface $restObject = null)
     {
-        InsideConstruct::init(['taskObject' => '{{operation.0.baseName}}']);
+        InsideConstruct::init(['restObject' => '{{operation.0.baseName}}']);
     }
 
     /**
@@ -44,7 +41,7 @@ class {{classname}}
      */
     public function __wakeup()
     {
-       InsideConstruct::initWakeup(['taskObject' => '{{operation.0.baseName}}']);
+       InsideConstruct::initWakeup(['restObject' => '{{operation.0.baseName}}']);
     }
 
      /**
@@ -96,25 +93,12 @@ class {{classname}}
      * @throws PHException\HttpCode 501 if the method is not implemented
 {{#returnType}}
      *
-     * @return array|{{returnType}}
+     * @return array
 {{/returnType}}
      */
-    public function {{operationId}}(ServerRequestInterface $request)
+    public function {{operationId}}(ServerRequestInterface $request): array
     {
-        //TODO implement method
-{{#vendorExtensions}}
-{{#internal.ze-ph.hasQueryData}}
-        /** @var {{internal.ze-ph.queryDataType}} $queryData */
-        $queryData = $request->getAttribute("queryData");
-{{/internal.ze-ph.hasQueryData}}
-{{/vendorExtensions}}
-{{#bodyParam}}
-{{^isPrimitiveType}}
-        /** @var {{dataType}} $bodyData */
-        $bodyData = $request->getAttribute("bodyData");
-{{/isPrimitiveType}}
-{{/bodyParam}}
-        throw new PHException\HttpCode(501, "Not implemented");
+        return $this->runAction($request, '{{httpMethod}}');
     }
 {{/operation}}
 }
