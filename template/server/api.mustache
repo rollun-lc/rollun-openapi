@@ -24,6 +24,8 @@ use rollun\dic\InsideConstruct;
  */
 class {{classname}} extends AbstractHandler
 {
+    const REST_OBJECT = '{{operation.0.baseName}}';
+
     /**
      * {{classname}} constructor.
      *
@@ -33,7 +35,7 @@ class {{classname}} extends AbstractHandler
      */
     public function __construct(RestInterface $restObject = null)
     {
-        InsideConstruct::init(['restObject' => '{{operation.0.baseName}}']);
+        InsideConstruct::init(['restObject' => self::REST_OBJECT]);
     }
 
     /**
@@ -41,7 +43,7 @@ class {{classname}} extends AbstractHandler
      */
     public function __wakeup()
     {
-       InsideConstruct::initWakeup(['restObject' => '{{operation.0.baseName}}']);
+       InsideConstruct::initWakeup(['restObject' => self::REST_OBJECT]);
     }
 
      /**

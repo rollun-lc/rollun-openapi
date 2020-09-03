@@ -20,6 +20,8 @@ use rollun\dic\InsideConstruct;
  */
 class FileSummaryId extends AbstractHandler
 {
+    const REST_OBJECT = 'FileSummary';
+
     /**
      * FileSummaryId constructor.
      *
@@ -29,7 +31,7 @@ class FileSummaryId extends AbstractHandler
      */
     public function __construct(RestInterface $restObject = null)
     {
-        InsideConstruct::init(['restObject' => 'FileSummary']);
+        InsideConstruct::init(['restObject' => self::REST_OBJECT]);
     }
 
     /**
@@ -37,7 +39,7 @@ class FileSummaryId extends AbstractHandler
      */
     public function __wakeup()
     {
-       InsideConstruct::initWakeup(['restObject' => 'FileSummary']);
+       InsideConstruct::initWakeup(['restObject' => self::REST_OBJECT]);
     }
 
      /**

@@ -19,6 +19,14 @@ abstract class AbstractHandler
     protected $restObject;
 
     /**
+     * @return array
+     */
+    public function __sleep()
+    {
+        return [];
+    }
+
+    /**
      * @param ServerRequestInterface $request
      * @param string                 $method
      *
