@@ -22,7 +22,7 @@ use OpenAPI\Server\Validator;
 use OpenAPI\Server\Writer\Messages;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
-use Task\OpenAPI\Server\V1\Adapter\FileSummaryAdapter;
+use Task\OpenAPI\Server\V1\Adapter\FileSummaryRestAdapter;
 use Zend\Expressive\Router\RouterInterface;
 use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
 
@@ -62,11 +62,9 @@ class ConfigProvider
             'dependencies'               => [
                 'aliases'            => [
                     RouterInterface::class => FastRoute::class,
-                    'FileSummary'          => FileSummaryAdapter::class,
                 ],
                 'invokables'         => [
                     ArticusPluginManager::class => ArticusPluginManager::class,
-                    FileSummaryAdapter::class   => FileSummaryAdapter::class,
                 ],
                 'factories'          => [
                     FastRoute::class           => RouteInjectionFactory::class,

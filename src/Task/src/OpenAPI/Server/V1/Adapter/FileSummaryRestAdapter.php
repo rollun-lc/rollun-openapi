@@ -9,11 +9,11 @@ use rollun\Callables\Task\ResultInterface;
 use rollun\Callables\TaskExample\FileSummary;
 
 /**
- * Class FileSummaryAdapter
+ * Class FileSummaryRestAdapter
  *
  * @author r.ratsun <r.ratsun.rollun@gmail.com>
  */
-class FileSummaryAdapter extends FileSummary implements RestInterface
+class FileSummaryRestAdapter extends FileSummary implements RestInterface
 {
     use Traits\NoPatch;
     use Traits\NoDelete;

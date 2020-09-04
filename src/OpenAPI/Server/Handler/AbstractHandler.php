@@ -31,32 +31,34 @@ abstract class AbstractHandler
         $queryData = empty($request->getAttribute('queryData')) ? null : $request->getAttribute('queryData');
         $bodyData = empty($request->getAttribute('bodyData')) ? null : $request->getAttribute('bodyData');
 
+        $restObject = $this->restObject;
+
         switch ($method) {
             case 'Post()':
-                $result = $this->restObject->post($bodyData);
+                $result = $restObject->post($bodyData);
                 break;
             case 'Put()':
-                $result = $this->restObject->putById($id, $bodyData);
+                $result = $restObject->putById($id, $bodyData);
                 break;
             case 'Patch()':
                 if (!empty($id)) {
-                    $result = $this->restObject->patchById($id, $bodyData);
+                    $result = $restObject->patchById($id, $bodyData);
                 } else {
-                    $result = $this->restObject->patch($queryData, $bodyData);
+                    $result = $restObject->patch($queryData, $bodyData);
                 }
                 break;
             case 'Delete()':
                 if (!empty($id)) {
-                    $result = $this->restObject->deleteById($id);
+                    $result = $restObject->deleteById($id);
                 } else {
-                    $result = empty($queryData) ? $this->restObject->delete() : $this->restObject->delete($queryData);
+                    $result = empty($queryData) ? $restObject->delete() : $restObject->delete($queryData);
                 }
                 break;
             case 'Get()':
                 if (!empty($id)) {
-                    $result = $this->restObject->getById($id);
+                    $result = $restObject->getById($id);
                 } else {
-                    $result = empty($queryData) ? $this->restObject->get() : $this->restObject->get($queryData);
+                    $result = empty($queryData) ? $restObject->get() : $restObject->get($queryData);
                 }
                 break;
             default:
