@@ -13,9 +13,6 @@ return [
         ],
     ],
     'dependencies'                                     => [
-        'aliases'    => [
-            'FileSummary' => FileSummary::class,
-        ],
         'invokables' => [
             FileSummary::class => FileSummary::class,
         ],

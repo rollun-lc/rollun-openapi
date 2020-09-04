@@ -20,10 +20,7 @@ use rollun\dic\InsideConstruct;
  */
 class FileSummary extends AbstractHandler
 {
-    /**
-     * ATTENTION! REST_OBJECT should be declared in service manager
-     */
-    const REST_OBJECT = 'FileSummary';
+    const REST_OBJECT = \Task\OpenAPI\Server\V1\Rest\FileSummary::class;
 
     /**
      * FileSummary constructor.
