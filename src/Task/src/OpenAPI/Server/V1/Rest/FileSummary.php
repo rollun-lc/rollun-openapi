@@ -6,14 +6,14 @@ namespace Task\OpenAPI\Server\V1\Rest;
 use OpenAPI\Server\Rest\RestInterface;
 use OpenAPI\Server\Rest\Traits;
 use rollun\Callables\Task\ResultInterface;
-use rollun\Callables\TaskExample\FileSummary as Base;
+use rollun\Callables\TaskExample;
 
 /**
- * Class FileSummaryRestAdapter
+ * Class FileSummary
  *
  * @author r.ratsun <r.ratsun.rollun@gmail.com>
  */
-class FileSummary extends Base implements RestInterface
+class FileSummary extends TaskExample\FileSummary implements RestInterface
 {
     use Traits\NoPatch;
     use Traits\NoDelete;

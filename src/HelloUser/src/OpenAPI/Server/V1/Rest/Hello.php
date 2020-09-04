@@ -20,6 +20,13 @@ class Hello extends BaseAbstract
      */
     protected $userObject;
 
+    /**
+     * Hello constructor.
+     *
+     * @param User|null $userObject
+     *
+     * @throws \ReflectionException
+     */
     public function __construct(User $userObject = null)
     {
         InsideConstruct::init(['userObject' => User::class]);
