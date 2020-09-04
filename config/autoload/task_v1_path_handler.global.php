@@ -1,7 +1,7 @@
 <?php
 
 use rollun\datastore\DataStore\CsvBase;
-use Task\OpenAPI\Server\V1\Adapter\FileSummaryRestAdapter;
+use Task\OpenAPI\Server\V1\Rest\FileSummary;
 
 return [
     \Articus\PathHandler\RouteInjection\Factory::class => [
@@ -14,10 +14,10 @@ return [
     ],
     'dependencies'                                     => [
         'aliases'    => [
-            'FileSummary' => FileSummaryRestAdapter::class,
+            'FileSummary' => FileSummary::class,
         ],
         'invokables' => [
-            FileSummaryRestAdapter::class => FileSummaryRestAdapter::class,
+            FileSummary::class => FileSummary::class,
         ],
     ],
     'dataStore'                                        => [

@@ -1,0 +1,265 @@
+openapi: 3.0.0
+info:
+  version: "1"
+  title: OpenApiExamples
+servers:
+  - url: http://rollun-openapi/openapi/Module1/v1
+tags:
+  - name: ExampleDataStore
+paths:
+  /ExampleDataStore:
+    post:
+      tags:
+        - ExampleDataStore
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExampleDataStoreResult'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  example: 'some name 55'
+                active:
+                  type: boolean
+                  example: true
+        required: true
+    get:
+      tags:
+        - ExampleDataStore
+      parameters:
+        # ключи filter, limit, ofset, select, sort
+        - name: id
+          in: query
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+            example: '5f51f78ccaa4c'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExampleDataStoreCollectionResult'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+  /ExampleDataStore/{id}:
+    get:
+      tags:
+        - ExampleDataStore
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: '5f51f78ccaa4c'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExampleDataStoreResult'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+    put:
+      tags:
+        - ExampleDataStore
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: '5f51f78ccaa4c'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExampleDataStoreResult'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  example: 'some name 55'
+                active:
+                  type: boolean
+                  example: true
+        required: true
+    delete:
+      tags:
+        - ExampleDataStore
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'qwerty123'
+      responses:
+        '204':
+          description: No Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteResult'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+components:
+  schemas:
+    Message:
+      type: object
+      required:
+        - level
+        - text
+      properties:
+        level:
+          type: string
+          description: 'Message level  (like in a logger)'
+          example: 'error'
+        text:
+          type: string
+          description: 'Message text'
+          example: 'Something wrong.'
+        context:
+          type: array
+          description: 'Message context (like in a logger)'
+          items:
+            type: string
+    ErrorResult:
+      type: object
+      properties:
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+    Result:
+      allOf:
+        - $ref: '#/components/schemas/ErrorResult'
+      type: object
+      properties:
+        data:
+          type: object
+    ExampleDataStoreCollectionResult:
+      allOf:
+        - $ref: '#/components/schemas/Result'
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExampleDataStore'
+    ExampleDataStoreResult:
+      allOf:
+        - $ref: '#/components/schemas/Result'
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ExampleDataStore'
+    ExampleDataStore:
+      type: object
+      required:
+        - id
+        - name
+        - active
+      properties:
+        id:
+          type: string
+          example: '5f51f78ccaa4c'
+        name:
+          type: string
+          example: 'some-name'
+        active:
+          type: boolean
+          example: true
+    DeleteResult:
+      allOf:
+        - $ref: '#/components/schemas/Result'
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Delete'
+    Delete:
+      type: object
+      required:
+        - isDeleted
+      properties:
+        isDeleted:
+          type: boolean
+          example: true

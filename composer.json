@@ -45,7 +45,8 @@
   "autoload": {
     "psr-4": {
       "OpenAPI\\": "src/OpenAPI/",
-      "Task\\": "src/Task/src/"
+      "Task\\": "src/Task/src/",
+      "HelloUser\\": "src/HelloUser/src/"
     }
   },
   "bin": [

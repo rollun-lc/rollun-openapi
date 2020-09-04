@@ -1,19 +1,19 @@
 <?php
 declare(strict_types=1);
 
-namespace Task\OpenAPI\Server\V1\Adapter;
+namespace Task\OpenAPI\Server\V1\Rest;
 
 use OpenAPI\Server\Rest\RestInterface;
 use OpenAPI\Server\Rest\Traits;
 use rollun\Callables\Task\ResultInterface;
-use rollun\Callables\TaskExample\FileSummary;
+use rollun\Callables\TaskExample\FileSummary as Base;
 
 /**
  * Class FileSummaryRestAdapter
  *
  * @author r.ratsun <r.ratsun.rollun@gmail.com>
  */
-class FileSummaryRestAdapter extends FileSummary implements RestInterface
+class FileSummary extends Base implements RestInterface
 {
     use Traits\NoPatch;
     use Traits\NoDelete;
