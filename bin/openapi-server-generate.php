@@ -32,6 +32,14 @@ $title = preg_replace("/[^a-zA-Z0-9]/", '', $manifestData['info']['title']);
 // prepare version
 $version = preg_replace("/[^0-9]/", '', $manifestData['info']['version']);
 
+// prepare tags
+$tags = [];
+if (!empty($manifestData['tags'])) {
+    foreach ($manifestData['tags'] as $tag) {
+        $tags[] = $tag['name'];
+    }
+}
+
 // prepare template path
 $templatePath = dirname(__DIR__) . '/template/server';
 
@@ -54,7 +62,15 @@ foreach ($pathHandlerData['Articus\PathHandler\RouteInjection\Factory']['paths']
     $content .= "],\n";
 }
 $content .= "],\n";
-$content .= "]\n];";
+$content .= "],\n";
+
+$content .= "'dependencies'=>[\n'invokables'=>[\n";
+foreach ($tags as $tag) {
+    $content .= "\\$title\\OpenAPI\\Server\\V$version\\Rest\\$tag::class=>\\$title\\OpenAPI\\Server\\V$version\\Rest\\$tag::class,\n";
+}
+$content .= "],\n],";
+$content .= "];";
+
 file_put_contents($file, $content);
 
 // copy
