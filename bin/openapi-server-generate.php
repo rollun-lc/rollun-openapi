@@ -160,19 +160,19 @@ foreach ($tags as $tag) {
                 case 'Patch':
                     $method = $class
                         ->addMethod('patch')
-                        ->setBody('if (method_exists($this->controllerObject, \'patch\')) {' . "\n" . '    $bodyDataArray = (array) $bodyData;' . "\n\n" . '    return $this->controllerObject->patch($queryData, $bodyDataArray);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
+                        ->setBody('if (method_exists($this->controllerObject, \'patch\')) {' . "\n" . '    $bodyDataArray = (array) $bodyData;' . "\n" . '    $queryDataArray = (array) $queryData;' . "\n\n" . '    return $this->controllerObject->patch($queryDataArray, $bodyDataArray);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
                         ->setReturnType($defaultMethodReturn)
                         ->addComment('@inheritDoc')
                         ->addComment('')
-                        ->addComment('@param ' . $row['bodyData'] . ' $bodyData')
-                        ->addComment('@param ' . $row['queryData'] . ' $queryData');
+                        ->addComment('@param ' . $row['queryData'] . ' $queryData')
+                        ->addComment('@param ' . $row['bodyData'] . ' $bodyData');
                     $method->addParameter('queryData');
                     $method->addParameter('bodyData');
                     break;
                 case 'Get':
                     $method = $class
                         ->addMethod('get')
-                        ->setBody('if (method_exists($this->controllerObject, \'get\')) {' . "\n" . '    return $this->controllerObject->get($queryData);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
+                        ->setBody('if (method_exists($this->controllerObject, \'get\')) {' . "\n" . '    $queryDataArray = (array) $queryData;' . "\n\n" . '    return $this->controllerObject->get($queryDataArray);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
                         ->setReturnType($defaultMethodReturn)
                         ->addComment('@inheritDoc')
                         ->addComment('')
@@ -182,7 +182,7 @@ foreach ($tags as $tag) {
                 case 'Delete':
                     $method = $class
                         ->addMethod('delete')
-                        ->setBody('if (method_exists($this->controllerObject, \'delete\')) {' . "\n" . '    return $this->controllerObject->delete($queryData);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
+                        ->setBody('if (method_exists($this->controllerObject, \'delete\')) {' . "\n" . '    $queryDataArray = (array) $queryData;' . "\n\n" . '    return $this->controllerObject->delete($queryDataArray);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
                         ->setReturnType($defaultMethodReturn)
                         ->addComment('@inheritDoc')
                         ->addComment('')

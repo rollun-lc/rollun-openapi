@@ -1,17 +1,17 @@
 openapi: 3.0.0
 info:
   version: "1"
-  title: HelloUser
+  title: HelloUser1
 servers:
-  - url: http://rollun-openapi/openapi/HelloUser/v1
+  - url: http://rollun-openapi/openapi/HelloUser1/v1
 tags:
-  - name: User
-  - name: Hello
+  - name: User1
+  - name: Hello1
 paths:
-  /User:
+  /User1:
     post:
       tags:
-        - User
+        - User1
       responses:
         '201':
           description: Created
@@ -47,10 +47,83 @@ paths:
                   type: string
                   example: 'Roman'
         required: true
-  /User/{id}:
+    patch:
+      tags:
+        - User1
+      parameters:
+        - name: id
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResult'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  example: '1'
+                name:
+                  type: string
+                  example: 'Roman'
+        required: true
     get:
       tags:
-        - User
+        - User1
+      parameters:
+        - name: id
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResult'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResult'
+  /User1/{id}:
+    get:
+      tags:
+        - User1
       parameters:
         - name: id
           in: path
@@ -77,10 +150,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResult'
-  /Hello/{id}:
+  /Hello1/{id}:
     get:
       tags:
-        - Hello
+        - Hello1
       parameters:
         - name: id
           in: path

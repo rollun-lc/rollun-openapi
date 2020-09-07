@@ -36,7 +36,7 @@ httpMethods:
     {{operationId}}:
        className: {{baseName}}
        bodyData: {{#bodyParam}}{{^isPrimitiveType}}{{dataType}}{{/isPrimitiveType}}{{/bodyParam}}
-       queryData: {{#internal.ze-ph.hasQueryData}}{{internal.ze-ph.queryDataType}}{{/internal.ze-ph.hasQueryData}}
+       queryData: {{#vendorExtensions}}{{#internal.ze-ph.hasQueryData}}{{internal.ze-ph.queryDataType}}{{/internal.ze-ph.hasQueryData}}{{/vendorExtensions}}
 {{/operation}}
 {{/operations}}
 {{/apis}}
