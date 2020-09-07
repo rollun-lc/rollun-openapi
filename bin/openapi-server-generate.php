@@ -128,6 +128,7 @@ foreach ($tags as $tag) {
     $class->setExtends('OpenAPI\Server\Rest\BaseAbstract');
     $class->addConstant('CONTROLLER_OBJECT', 'Name of service which implements OpenApi logic');
     $class->addComment("Class $tag");
+    $class->addProperty('controllerObject')->setProtected()->addComment('@var object');
 
     // create constructor
     $constructor = $class

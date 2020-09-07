@@ -3,23 +3,37 @@ declare(strict_types=1);
 
 namespace Task\OpenAPI\Server\V1\Rest;
 
+use OpenAPI\Server\Rest\BaseAbstract;
 use OpenAPI\Server\Rest\RestInterface;
-use OpenAPI\Server\Rest\Traits;
 use rollun\Callables\Task\ResultInterface;
 use rollun\Callables\TaskExample;
+use rollun\dic\InsideConstruct;
 
 /**
  * Class FileSummary
  *
  * @author r.ratsun <r.ratsun.rollun@gmail.com>
  */
-class FileSummary extends TaskExample\FileSummary implements RestInterface
+class FileSummary extends BaseAbstract implements RestInterface
 {
-    use Traits\NoPatch;
-    use Traits\NoDelete;
-    use Traits\NoGet;
-    use Traits\NoPutById;
-    use Traits\NoPatchById;
+    const CONTROLLER_OBJECT = TaskExample\FileSummary::class;
+
+    /**
+     * @var TaskExample\FileSummary
+     */
+    protected $controllerObject;
+
+    /**
+     * FileSummary constructor.
+     *
+     * @param TaskExample\FileSummary|null $controllerObject
+     *
+     * @throws \ReflectionException
+     */
+    public function __construct(TaskExample\FileSummary $controllerObject = null)
+    {
+        InsideConstruct::init(['controllerObject' => self::CONTROLLER_OBJECT]);
+    }
 
     /**
      * @inheritDoc
@@ -28,7 +42,7 @@ class FileSummary extends TaskExample\FileSummary implements RestInterface
      */
     public function post($bodyData): ResultInterface
     {
-        return $this->runTask($bodyData);
+        return $this->controllerObject->runTask($bodyData);
     }
 
     /**
@@ -36,6 +50,6 @@ class FileSummary extends TaskExample\FileSummary implements RestInterface
      */
     public function getById($id): ResultInterface
     {
-        return $this->getTaskInfoById($id);
+        return $this->controllerObject->getTaskInfoById($id);
     }
 }

@@ -1,8 +1,5 @@
 <?php
 
-use rollun\datastore\DataStore\CsvBase;
-use Task\OpenAPI\Server\V1\Rest\FileSummary;
-
 return [
     \Articus\PathHandler\RouteInjection\Factory::class => [
         'paths' => [
@@ -14,12 +11,13 @@ return [
     ],
     'dependencies'                                     => [
         'invokables' => [
-            FileSummary::class => FileSummary::class,
+            \Task\OpenAPI\Server\V1\Rest\FileSummary::class  => \Task\OpenAPI\Server\V1\Rest\FileSummary::class,
+            \rollun\Callables\TaskExample\FileSummary::class => \rollun\Callables\TaskExample\FileSummary::class,
         ],
     ],
     'dataStore'                                        => [
         'exampleDataStore' => [
-            'class'     => CsvBase::class,
+            'class'     => \rollun\datastore\DataStore\CsvBase::class,
             'filename'  => 'data/example-datastore.csv',
             'delimiter' => ','
         ],
