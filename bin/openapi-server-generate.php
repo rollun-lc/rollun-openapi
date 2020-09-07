@@ -126,7 +126,7 @@ foreach ($tags as $tag) {
     // create class
     $class = $namespace->addClass($tag);
     $class->setExtends('OpenAPI\Server\Rest\BaseAbstract');
-    $class->addConstant('CONTROLLER_OBJECT', '');
+    $class->addConstant('CONTROLLER_OBJECT', 'Name of service which implements OpenApi logic');
     $class->addComment("Class $tag");
 
     // create constructor
@@ -149,7 +149,7 @@ foreach ($tags as $tag) {
                 case 'Post':
                     $method = $class
                         ->addMethod('post')
-                        ->setBody($defaultMethodBody . 'return $this->controllerObject->post($bodyData);')
+                        ->setBody('if (method_exists($this->controllerObject, \'post\')) {' . "\n" . '    return $this->controllerObject->post($bodyData);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
                         ->setReturnType($defaultMethodReturn)
                         ->addComment('@inheritDoc');
                     $method->addParameter('bodyData');
@@ -157,7 +157,7 @@ foreach ($tags as $tag) {
                 case 'Patch':
                     $method = $class
                         ->addMethod('patch')
-                        ->setBody($defaultMethodBody . 'return $this->controllerObject->patch($queryData, $bodyData);')
+                        ->setBody('if (method_exists($this->controllerObject, \'patch\')) {' . "\n" . '    return $this->controllerObject->patch($queryData, $bodyData);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
                         ->setReturnType($defaultMethodReturn)
                         ->addComment('@inheritDoc');
                     $method->addParameter('queryData');
@@ -166,7 +166,7 @@ foreach ($tags as $tag) {
                 case 'Get':
                     $method = $class
                         ->addMethod('get')
-                        ->setBody($defaultMethodBody . 'return $this->controllerObject->get($queryData);')
+                        ->setBody('if (method_exists($this->controllerObject, \'get\')) {' . "\n" . '    return $this->controllerObject->get($queryData);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
                         ->setReturnType($defaultMethodReturn)
                         ->addComment('@inheritDoc');
                     $method->addParameter('queryData', null);
@@ -174,7 +174,7 @@ foreach ($tags as $tag) {
                 case 'Delete':
                     $method = $class
                         ->addMethod('delete')
-                        ->setBody($defaultMethodBody . 'return $this->controllerObject->delete($queryData);')
+                        ->setBody('if (method_exists($this->controllerObject, \'delete\')) {' . "\n" . '    return $this->controllerObject->delete($queryData);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
                         ->setReturnType($defaultMethodReturn)
                         ->addComment('@inheritDoc');
                     $method->addParameter('queryData', null);
@@ -182,7 +182,7 @@ foreach ($tags as $tag) {
                 case 'IdGet':
                     $method = $class
                         ->addMethod('getById')
-                        ->setBody($defaultMethodBody . 'return $this->controllerObject->getById($id);')
+                        ->setBody('if (method_exists($this->controllerObject, \'getById\')) {' . "\n" . '    return $this->controllerObject->getById($id);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
                         ->setReturnType($defaultMethodReturn)
                         ->addComment('@inheritDoc');
                     $method->addParameter('id');
@@ -190,7 +190,7 @@ foreach ($tags as $tag) {
                 case 'IdPatch':
                     $method = $class
                         ->addMethod('patchById')
-                        ->setBody($defaultMethodBody . 'return $this->controllerObject->patchById($id, $bodyData);')
+                        ->setBody('if (method_exists($this->controllerObject, \'patchById\')) {' . "\n" . '    return $this->controllerObject->patchById($id, $bodyData);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
                         ->setReturnType($defaultMethodReturn)
                         ->addComment('@inheritDoc');
                     $method->addParameter('id');
@@ -199,7 +199,7 @@ foreach ($tags as $tag) {
                 case 'IdPut':
                     $method = $class
                         ->addMethod('putById')
-                        ->setBody($defaultMethodBody . 'return $this->controllerObject->putById($id, $bodyData);')
+                        ->setBody('if (method_exists($this->controllerObject, \'putById\')) {' . "\n" . '    return $this->controllerObject->putById($id, $bodyData);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
                         ->setReturnType($defaultMethodReturn)
                         ->addComment('@inheritDoc');
                     $method->addParameter('id');
@@ -208,7 +208,7 @@ foreach ($tags as $tag) {
                 case 'IdDelete':
                     $method = $class
                         ->addMethod('deleteById')
-                        ->setBody($defaultMethodBody . 'return $this->controllerObject->deleteById($id);')
+                        ->setBody('if (method_exists($this->controllerObject, \'deleteById\')) {' . "\n" . '    return $this->controllerObject->deleteById($id);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
                         ->setReturnType($defaultMethodReturn)
                         ->addComment('@inheritDoc');
                     $method->addParameter('id');
