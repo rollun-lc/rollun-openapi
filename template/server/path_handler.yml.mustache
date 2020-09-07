@@ -27,3 +27,12 @@ Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory:
 {{/operations}}
 {{/apis}}
 {{/apiInfo}}
+
+httpMethods:
+{{#apiInfo}}
+{{#apis}}
+{{#operations}}
+{{#operation}}  {{operationId}}: {{baseName}}{{/operation}}
+{{/operations}}
+{{/apis}}
+{{/apiInfo}}

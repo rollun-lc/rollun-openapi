@@ -1,5 +1,15 @@
 <?php
 
+if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
+    chdir(dirname(__DIR__));
+} elseif (file_exists(dirname(dirname(__DIR__)) . '/vendor/autoload.php')) {
+    chdir(dirname(dirname(__DIR__)));
+} else {
+    throw new \Exception("Can't find 'vendor/autoload.php' file");
+}
+
+require 'vendor/autoload.php';
+
 echo "Please set path to openapi manifest (openapi.yaml by default): ";
 $manifest = trim(fgets(fopen('php://stdin', 'rw+')));
 if (empty($manifest)) {
@@ -96,6 +106,119 @@ file_put_contents($docsDir . '/index.html', $html);
 
 // copy
 exec("cp $manifest $docsDir/", $output4);
+
+/**
+ * Generate REST classes
+ */
+$restDir = "src/$title/src/OpenAPI/Server/V$version/Rest";
+if (!file_exists($restDir)) {
+    mkdir($restDir, 0777, true);
+    sleep(1);
+}
+
+foreach ($tags as $tag) {
+    // create namespace
+    $namespace = (new \Nette\PhpGenerator\PhpNamespace("$title\OpenAPI\Server\V$version\Rest"))
+        ->addUse('OpenAPI\Server\Rest\BaseAbstract')
+        ->addUse('rollun\Callables\Task\ResultInterface')
+        ->addUse('rollun\dic\InsideConstruct');
+
+    // create class
+    $class = $namespace->addClass($tag);
+    $class->setExtends('OpenAPI\Server\Rest\BaseAbstract');
+    $class->addConstant('CONTROLLER_OBJECT', '');
+    $class->addComment("Class $tag");
+
+    // create constructor
+    $constructor = $class
+        ->addMethod('__construct')
+        ->addComment("$tag constructor.")
+        ->addComment("")
+        ->addComment('@param mixed $controllerObject')
+        ->addComment("")
+        ->addComment('@throws \ReflectionException')
+        ->setBody("InsideConstruct::init(['controllerObject' => self::CONTROLLER_OBJECT]);");
+    $constructor->addParameter('controllerObject', null);
+
+    $defaultMethodBody = "throw new \Exception('Not implemented method');\n\n";
+    $defaultMethodReturn = 'rollun\Callables\Task\ResultInterface';
+
+    foreach ($pathHandlerData['httpMethods'] as $action => $className) {
+        if ($className == $tag) {
+            switch (str_replace(lcfirst($className), '', $action)) {
+                case 'Post':
+                    $method = $class
+                        ->addMethod('post')
+                        ->setBody($defaultMethodBody . 'return $this->controllerObject->post($bodyData);')
+                        ->setReturnType($defaultMethodReturn)
+                        ->addComment('@inheritDoc');
+                    $method->addParameter('bodyData');
+                    break;
+                case 'Patch':
+                    $method = $class
+                        ->addMethod('patch')
+                        ->setBody($defaultMethodBody . 'return $this->controllerObject->patch($queryData, $bodyData);')
+                        ->setReturnType($defaultMethodReturn)
+                        ->addComment('@inheritDoc');
+                    $method->addParameter('queryData');
+                    $method->addParameter('bodyData');
+                    break;
+                case 'Get':
+                    $method = $class
+                        ->addMethod('get')
+                        ->setBody($defaultMethodBody . 'return $this->controllerObject->get($queryData);')
+                        ->setReturnType($defaultMethodReturn)
+                        ->addComment('@inheritDoc');
+                    $method->addParameter('queryData', null);
+                    break;
+                case 'Delete':
+                    $method = $class
+                        ->addMethod('delete')
+                        ->setBody($defaultMethodBody . 'return $this->controllerObject->delete($queryData);')
+                        ->setReturnType($defaultMethodReturn)
+                        ->addComment('@inheritDoc');
+                    $method->addParameter('queryData', null);
+                    break;
+                case 'IdGet':
+                    $method = $class
+                        ->addMethod('getById')
+                        ->setBody($defaultMethodBody . 'return $this->controllerObject->getById($id);')
+                        ->setReturnType($defaultMethodReturn)
+                        ->addComment('@inheritDoc');
+                    $method->addParameter('id');
+                    break;
+                case 'IdPatch':
+                    $method = $class
+                        ->addMethod('patchById')
+                        ->setBody($defaultMethodBody . 'return $this->controllerObject->patchById($id, $bodyData);')
+                        ->setReturnType($defaultMethodReturn)
+                        ->addComment('@inheritDoc');
+                    $method->addParameter('id');
+                    $method->addParameter('bodyData');
+                    break;
+                case 'IdPut':
+                    $method = $class
+                        ->addMethod('putById')
+                        ->setBody($defaultMethodBody . 'return $this->controllerObject->putById($id, $bodyData);')
+                        ->setReturnType($defaultMethodReturn)
+                        ->addComment('@inheritDoc');
+                    $method->addParameter('id');
+                    $method->addParameter('bodyData');
+                    break;
+                case 'IdDelete':
+                    $method = $class
+                        ->addMethod('deleteById')
+                        ->setBody($defaultMethodBody . 'return $this->controllerObject->deleteById($id);')
+                        ->setReturnType($defaultMethodReturn)
+                        ->addComment('@inheritDoc');
+                    $method->addParameter('id');
+                    break;
+            }
+        }
+    }
+
+    file_put_contents("$restDir/$tag.php", "<?php\n\n" . (string)$namespace);
+}
 
 // show generator messages
 foreach (array_merge($output, $output1, $output2, $output3, $output4) as $v) {
