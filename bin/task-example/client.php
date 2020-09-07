@@ -14,14 +14,13 @@ InsideConstruct::setContainer($container);
 $lifeCycleToken = LifeCycleToken::generateToken();
 $container->setService(LifeCycleToken::class, $lifeCycleToken);
 
-/** @var FileSummaryApi $client */
-$client = $container->get(FileSummaryApi::class);
+$client = $container->get(\HelloUser\OpenAPI\Client\V1\Api\UserApi::class);
 
 // prepare inline object
-$inlineObject = new \Task\OpenAPI\Client\V1\Model\InlineObject(['n' => 5]);
+$inlineObject = new \HelloUser\OpenAPI\Client\V1\Model\InlineObject(['id1' => 'q11', 'name1' => 'Test 1']);
 
-$result = $client->fileSummaryPost($inlineObject);
-//$result = $client->fileSummaryIdGet($inlineObject->getN());
+$result = $client->userPost($inlineObject);
+//$result = $client->userIdGet(22);
 //$result = $client->fileSummaryIdDelete($inlineObject->getN());
 
 echo '<pre>';

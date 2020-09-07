@@ -1,17 +1,17 @@
 openapi: 3.0.0
 info:
   version: "1"
-  title: HelloUser1
+  title: HelloUser
 servers:
-  - url: http://rollun-openapi/openapi/HelloUser1/v1
+  - url: http://rollun-openapi/openapi/HelloUser/v1
 tags:
-  - name: User1
-  - name: Hello1
+  - name: User
+  - name: Hello
 paths:
-  /User1:
+  /User:
     post:
       tags:
-        - User1
+        - User
       responses:
         '201':
           description: Created
@@ -47,10 +47,10 @@ paths:
                   type: string
                   example: 'Roman'
         required: true
-  /User1/{id}:
+  /User/{id}:
     get:
       tags:
-        - User1
+        - User
       parameters:
         - name: id
           in: path
@@ -77,10 +77,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResult'
-  /Hello1/{id}:
+  /Hello/{id}:
     get:
       tags:
-        - Hello1
+        - Hello
       parameters:
         - name: id
           in: path

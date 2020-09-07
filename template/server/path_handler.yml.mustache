@@ -32,7 +32,12 @@ httpMethods:
 {{#apiInfo}}
 {{#apis}}
 {{#operations}}
-{{#operation}}  {{operationId}}: {{baseName}}{{/operation}}
+{{#operation}}
+    {{operationId}}:
+       className: {{baseName}}
+       bodyData: {{#bodyParam}}{{^isPrimitiveType}}{{dataType}}{{/isPrimitiveType}}{{/bodyParam}}
+       queryData: {{#internal.ze-ph.hasQueryData}}{{internal.ze-ph.queryDataType}}{{/internal.ze-ph.hasQueryData}}
+{{/operation}}
 {{/operations}}
 {{/apis}}
 {{/apiInfo}}

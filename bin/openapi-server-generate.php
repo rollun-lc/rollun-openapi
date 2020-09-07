@@ -144,23 +144,28 @@ foreach ($tags as $tag) {
     $defaultMethodBody = "throw new \Exception('Not implemented method');\n\n";
     $defaultMethodReturn = 'rollun\Callables\Task\ResultInterface';
 
-    foreach ($pathHandlerData['httpMethods'] as $action => $className) {
-        if ($className == $tag) {
-            switch (str_replace(lcfirst($className), '', $action)) {
+    foreach ($pathHandlerData['httpMethods'] as $action => $row) {
+        if ($row['className'] == $tag) {
+            switch (str_replace(lcfirst($row['className']), '', $action)) {
                 case 'Post':
                     $method = $class
                         ->addMethod('post')
-                        ->setBody('if (method_exists($this->controllerObject, \'post\')) {' . "\n" . '    return $this->controllerObject->post($bodyData);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
+                        ->setBody('if (method_exists($this->controllerObject, \'post\')) {' . "\n" . '    $bodyDataArray = (array) $bodyData;' . "\n\n" . '    return $this->controllerObject->post($bodyDataArray);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
                         ->setReturnType($defaultMethodReturn)
-                        ->addComment('@inheritDoc');
+                        ->addComment('@inheritDoc')
+                        ->addComment('')
+                        ->addComment('@param ' . $row['bodyData'] . ' $bodyData');
                     $method->addParameter('bodyData');
                     break;
                 case 'Patch':
                     $method = $class
                         ->addMethod('patch')
-                        ->setBody('if (method_exists($this->controllerObject, \'patch\')) {' . "\n" . '    return $this->controllerObject->patch($queryData, $bodyData);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
+                        ->setBody('if (method_exists($this->controllerObject, \'patch\')) {' . "\n" . '    $bodyDataArray = (array) $bodyData;' . "\n\n" . '    return $this->controllerObject->patch($queryData, $bodyDataArray);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
                         ->setReturnType($defaultMethodReturn)
-                        ->addComment('@inheritDoc');
+                        ->addComment('@inheritDoc')
+                        ->addComment('')
+                        ->addComment('@param ' . $row['bodyData'] . ' $bodyData')
+                        ->addComment('@param ' . $row['queryData'] . ' $queryData');
                     $method->addParameter('queryData');
                     $method->addParameter('bodyData');
                     break;
@@ -169,7 +174,9 @@ foreach ($tags as $tag) {
                         ->addMethod('get')
                         ->setBody('if (method_exists($this->controllerObject, \'get\')) {' . "\n" . '    return $this->controllerObject->get($queryData);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
                         ->setReturnType($defaultMethodReturn)
-                        ->addComment('@inheritDoc');
+                        ->addComment('@inheritDoc')
+                        ->addComment('')
+                        ->addComment('@param ' . $row['queryData'] . ' $queryData');
                     $method->addParameter('queryData', null);
                     break;
                 case 'Delete':
@@ -177,7 +184,9 @@ foreach ($tags as $tag) {
                         ->addMethod('delete')
                         ->setBody('if (method_exists($this->controllerObject, \'delete\')) {' . "\n" . '    return $this->controllerObject->delete($queryData);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
                         ->setReturnType($defaultMethodReturn)
-                        ->addComment('@inheritDoc');
+                        ->addComment('@inheritDoc')
+                        ->addComment('')
+                        ->addComment('@param ' . $row['queryData'] . ' $queryData');
                     $method->addParameter('queryData', null);
                     break;
                 case 'IdGet':
@@ -191,18 +200,22 @@ foreach ($tags as $tag) {
                 case 'IdPatch':
                     $method = $class
                         ->addMethod('patchById')
-                        ->setBody('if (method_exists($this->controllerObject, \'patchById\')) {' . "\n" . '    return $this->controllerObject->patchById($id, $bodyData);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
+                        ->setBody('if (method_exists($this->controllerObject, \'patchById\')) {' . "\n" . '    $bodyDataArray = (array) $bodyData;' . "\n\n" . '    return $this->controllerObject->patchById($id, $bodyDataArray);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
                         ->setReturnType($defaultMethodReturn)
-                        ->addComment('@inheritDoc');
+                        ->addComment('@inheritDoc')
+                        ->addComment('')
+                        ->addComment('@param ' . $row['bodyData'] . ' $bodyData');
                     $method->addParameter('id');
                     $method->addParameter('bodyData');
                     break;
                 case 'IdPut':
                     $method = $class
                         ->addMethod('putById')
-                        ->setBody('if (method_exists($this->controllerObject, \'putById\')) {' . "\n" . '    return $this->controllerObject->putById($id, $bodyData);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
+                        ->setBody('if (method_exists($this->controllerObject, \'putById\')) {' . "\n" . '    $bodyDataArray = (array) $bodyData;' . "\n\n" . '    return $this->controllerObject->putById($id, $bodyDataArray);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
                         ->setReturnType($defaultMethodReturn)
-                        ->addComment('@inheritDoc');
+                        ->addComment('@inheritDoc')
+                        ->addComment('')
+                        ->addComment('@param ' . $row['bodyData'] . ' $bodyData');
                     $method->addParameter('id');
                     $method->addParameter('bodyData');
                     break;
