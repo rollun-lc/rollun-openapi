@@ -9,14 +9,12 @@ $container = require 'config/container.php';
 
 \rollun\dic\InsideConstruct::setContainer($container);
 
-$client = $container->get(\HelloUser\OpenAPI\Client\V1\Api\UserApi::class);
+/** @var \OpenAPI\Server\Rest\RestInterface $rest */
+$rest = $container->get(\HelloUser\OpenAPI\Client\V1\Rest\User::class);
 
-// prepare inline object
-//$inlineObject = new \HelloUser\OpenAPI\Client\V1\Model\InlineObject(['id1' => 'q11', 'name1' => 'Test 1']);
-
-//$result = $client->userPost($inlineObject);
-$result = $client->userIdGet(22);
-//$result = $client->fileSummaryIdDelete($inlineObject->getN());
+//$result = $rest->post(['id' => 'q1', 'name' => 'Test 123']);
+$result = $rest->getById('q1');
+//$result = $rest->deleteById(22);
 
 echo '<pre>';
 print_r($result);

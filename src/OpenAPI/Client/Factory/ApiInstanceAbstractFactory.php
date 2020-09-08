@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace OpenAPI\Client\Factory;
 
-use GuzzleHttp\Client;
 use Interop\Container\ContainerInterface;
 use rollun\logger\LifeCycleToken;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
@@ -28,14 +27,14 @@ class ApiInstanceAbstractFactory implements AbstractFactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $headers = [];
+        $lifeCycleToken = null;
 
         // set life cycle token
         if ($container->has(LifeCycleToken::class)) {
-            $headers = ['LifeCycleToken' => (string)$container->get(LifeCycleToken::class)];
+            $lifeCycleToken =  (string)$container->get(LifeCycleToken::class);
         }
 
-        return new $requestedName(new Client(['headers' => $headers]));
+        return new $requestedName($lifeCycleToken);
     }
 }
 
