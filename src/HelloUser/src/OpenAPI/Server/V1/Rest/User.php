@@ -55,12 +55,7 @@ class User extends BaseAbstract
         // get data from file
         $data = json_decode(file_get_contents($fileName), true);
 
-        // create user object
-        $user = new \HelloUser\OpenAPI\Server\V1\DTO\User();
-        $user->id = $data['id'];
-        $user->name = $data['name'];
-
-        return new Result($user);
+        return new Result($data);
     }
 
     /**

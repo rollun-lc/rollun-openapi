@@ -235,6 +235,12 @@ class ObjectSerializer
      */
     public static function deserialize($data, $class, $httpHeaders = null)
     {
+        // we always return an array or null
+        return !empty($data) ? json_decode($data, true) : $data;
+
+        /**
+         * Original code bellow
+         */
         if (null === $data) {
             return null;
         } elseif (substr($class, 0, 4) === 'map[') { // for associative array e.g. map[string,int]

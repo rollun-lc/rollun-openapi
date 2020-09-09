@@ -40,10 +40,6 @@ class Hello extends BaseAbstract
         // get user
         $user = $this->userObject->getById($id)->toArrayForDto();
 
-        // create hello object
-        $data = new \HelloUser\OpenAPI\Server\V1\DTO\Hello();
-        $data->message = "Hello, {$user['data']['name']}!";
-
-        return new Result($data);
+        return new Result(['message' => "Hello, {$user['data']['name']}!"]);
     }
 }
