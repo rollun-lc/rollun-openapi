@@ -4,11 +4,10 @@ declare(strict_types=1);
 namespace HelloUser\OpenAPI\Server\V1\DTO;
 
 use Articus\DataTransfer\Annotation as DTA;
-use rollun\Callables\Task\ToArrayForDtoInterface;
 
 /**
  */
-class User implements ToArrayForDtoInterface
+class User
 {
     /**
      * @DTA\Data(field="id")
@@ -22,15 +21,4 @@ class User implements ToArrayForDtoInterface
      * @var string
      */
     public $name;
-
-    /**
-     * @return array
-     */
-    public function toArrayForDto(): array
-    {
-        return [
-            'id'   => $this->id,
-            'name' => $this->name
-        ];
-    }
 }

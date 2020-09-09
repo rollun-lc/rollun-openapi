@@ -4,11 +4,10 @@ declare(strict_types=1);
 namespace HelloUser\OpenAPI\Server\V1\DTO;
 
 use Articus\DataTransfer\Annotation as DTA;
-use rollun\Callables\Task\ToArrayForDtoInterface;
 
 /**
  */
-class Hello implements ToArrayForDtoInterface
+class Hello
 {
     /**
      * @DTA\Data(field="message")
@@ -16,12 +15,4 @@ class Hello implements ToArrayForDtoInterface
      * @var string
      */
     public $message;
-
-    /**
-     * @inheritDoc
-     */
-    public function toArrayForDto(): array
-    {
-        return ['message' => $this->message];
-    }
 }
