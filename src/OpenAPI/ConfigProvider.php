@@ -22,7 +22,6 @@ use OpenAPI\Server\Validator;
 use OpenAPI\Server\Writer\Messages;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
-use Task\OpenAPI\Server\V1\Adapter\FileSummaryRestAdapter;
 use Zend\Expressive\Router\RouterInterface;
 use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
 
@@ -124,6 +123,11 @@ class ConfigProvider
                 'producers' => [
                     'factories' => [
                         ProducerTransfer::class => ProducerTransferFactory::class
+                    ]
+                ],
+                'attributes' => [
+                    'factories' => [
+                        \Articus\PathHandler\Attribute\Transfer::class => \OpenAPI\Server\Attribute\Factory\Transfer::class
                     ]
                 ],
                 'metadata'  => Annotation::class,

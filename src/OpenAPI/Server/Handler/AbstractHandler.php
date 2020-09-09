@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace OpenAPI\Server\Handler;
 
+use Articus\PathHandler\Exception\HttpCode;
+use OpenAPI\Server\Producer\Transfer;
 use OpenAPI\Server\Rest\RestInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -26,6 +28,13 @@ abstract class AbstractHandler
      */
     protected function runAction(ServerRequestInterface $request, string $method): array
     {
+        // get errors
+        $errors = $request->getAttribute('errors');
+
+        if (!empty($errors)) {
+            throw new HttpCode(500, "Request validation failed. Details: " . Transfer::errorsToStr($errors));
+        }
+
         // prepare input data
         $id = empty($request->getAttribute('id')) ? null : $request->getAttribute('id');
         $queryData = empty($request->getAttribute('queryData')) ? null : $request->getAttribute('queryData');

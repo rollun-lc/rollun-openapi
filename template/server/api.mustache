@@ -67,10 +67,10 @@ class {{classname}} extends AbstractHandler
 {{^isPrimitiveType}}
 {{#isContainer}}
      * TODO check if attribute is valid and can handle your container type
-     * @PHA\Attribute(name=PHAttribute\Transfer::class, options={"type":"{{dataType}}","objectAttr":"bodyData"})
+     * @PHA\Attribute(name=PHAttribute\Transfer::class, options={"type":"{{dataType}}","objectAttr":"bodyData", "errorAttr":"errors"})
 {{/isContainer}}
 {{^isContainer}}
-     * @PHA\Attribute(name=PHAttribute\Transfer::class, options={"type":{{dataType}}::class,"objectAttr":"bodyData"})
+     * @PHA\Attribute(name=PHAttribute\Transfer::class, options={"type":{{dataType}}::class,"objectAttr":"bodyData", "errorAttr":"errors"})
 {{/isContainer}}
 {{/isPrimitiveType}}
 {{/bodyParam}}

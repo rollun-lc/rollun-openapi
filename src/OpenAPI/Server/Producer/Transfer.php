@@ -77,6 +77,24 @@ class Transfer extends Base
     }
 
     /**
+     * @param array $errors
+     *
+     * @return string
+     */
+    public static function errorsToStr(array $errors): string
+    {
+        $preparedErrors = [];
+        self::collectValidatorMessages($errors, $preparedErrors);
+
+        $rows = [];
+        foreach ($preparedErrors as $field => $error) {
+            $rows[] = "$field => $error";
+        }
+
+        return implode('; ', $rows);
+    }
+
+    /**
      * @inheritdoc
      */
     protected function stringify($objectOrArray): string

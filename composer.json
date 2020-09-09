@@ -47,6 +47,7 @@
   "autoload": {
     "psr-4": {
       "OpenAPI\\": "src/OpenAPI/",
+      "DataStoreExample\\": "src/DataStoreExample/src/",
       "Task\\": "src/Task/src/",
       "HelloUser\\": "src/HelloUser/src/"
     }
