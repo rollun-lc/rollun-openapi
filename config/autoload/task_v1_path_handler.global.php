@@ -15,11 +15,4 @@ return [
             \rollun\Callables\TaskExample\FileSummary::class => \rollun\Callables\TaskExample\FileSummary::class,
         ],
     ],
-    'dataStore'                                        => [
-        'exampleDataStore' => [
-            'class'     => \rollun\datastore\DataStore\CsvBase::class,
-            'filename'  => 'data/example-datastore.csv',
-            'delimiter' => ','
-        ],
-    ]
 ];

@@ -32,11 +32,17 @@ class Transfer extends \Articus\PathHandler\Attribute\Transfer
         $data = $this->getData($request);
 
         $error = [];
-        $objects = [];
-        foreach ($data as $item) {
-            $object = new $className();
-            $error = array_merge($error, $this->dtService->transfer($item, $object));
-            $objects[] = $object;
+        if (!isset($data[0])) {
+            $error[] = "Array of '$className' expected";
+        }
+
+        if (empty($error)) {
+            $objects = [];
+            foreach ($data as $item) {
+                $object = new $className();
+                $error = array_merge($error, $this->dtService->transfer($item, $object));
+                $objects[] = $object;
+            }
         }
 
         if (empty($error)) {

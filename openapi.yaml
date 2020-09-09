@@ -107,13 +107,11 @@ paths:
           in: query
           required: false
           schema:
-            type: array
-            items:
-              type: string
-              enum:
-                - "asc"
-                - "desc"
-              default: "asc"
+            type: string
+            enum:
+              - "asc"
+              - "desc"
+            default: "asc"
             example: 'asc'
       responses:
         '200':
