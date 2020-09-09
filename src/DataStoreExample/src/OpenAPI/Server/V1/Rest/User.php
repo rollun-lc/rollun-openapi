@@ -30,7 +30,7 @@ class User extends BaseAbstract
     /**
      * User constructor.
      *
-     * @param DataStoreInterface $dataStore
+     * @param DataStoreInterface|null $dataStore
      *
      * @throws \ReflectionException
      */
@@ -41,8 +41,6 @@ class User extends BaseAbstract
 
     /**
      * @inheritDoc
-     *
-     * @param \DataStoreExample\OpenAPI\Server\V1\DTO\UserDELETEQueryData $queryData
      */
     public function delete($queryData = null): ResultInterface
     {
@@ -58,20 +56,18 @@ class User extends BaseAbstract
 
     /**
      * @inheritDoc
-     *
-     * @param \DataStoreExample\OpenAPI\Server\V1\DTO\UserGETQueryData $queryData
      */
     public function get($queryData = null): ResultInterface
     {
         $limit = empty($queryData->limit) ? 1000 : $queryData->limit;
         $offset = empty($queryData->offset) ? 0 : $queryData->offset;
 
-        $sortBy = empty($queryData->sort_by) ? 'name' : $queryData->sort_by;
-        $sortOrder = $queryData->sort_order == 'asc' ? 1 : -1;
-
         $query = empty($queryData->rql) ? new RqlQuery() : RqlParser::rqlDecode($queryData->rql);
         $query->setLimit(new LimitNode($limit, $offset));
-        $query->setSort(new SortNode([$sortBy => $sortOrder]));
+
+        if (!empty($queryData->sort_by)) {
+            $query->setSort(new SortNode([$queryData->sort_by => $queryData->sort_order == 'asc' ? 1 : -1]));
+        }
 
         // get result from dataStore
         $result = $this->dataStore->query($query);
@@ -86,9 +82,6 @@ class User extends BaseAbstract
 
     /**
      * @inheritDoc
-     *
-     * @param \DataStoreExample\OpenAPI\Server\V1\DTO\UserPATCHQueryData $queryData
-     * @param \DataStoreExample\OpenAPI\Server\V1\DTO\User               $bodyData
      */
     public function patch($queryData, $bodyData): ResultInterface
     {
@@ -108,8 +101,6 @@ class User extends BaseAbstract
 
     /**
      * @inheritDoc
-     *
-     * @param \DataStoreExample\OpenAPI\Server\V1\DTO\PostUser[] $bodyData
      */
     public function post($bodyData): ResultInterface
     {
@@ -160,8 +151,6 @@ class User extends BaseAbstract
 
     /**
      * @inheritDoc
-     *
-     * @param \DataStoreExample\OpenAPI\Server\V1\DTO\User $bodyData
      */
     public function patchById($id, $bodyData): ResultInterface
     {
@@ -188,8 +177,6 @@ class User extends BaseAbstract
 
     /**
      * @inheritDoc
-     *
-     * @param \DataStoreExample\OpenAPI\Server\V1\DTO\PutUser $bodyData
      */
     public function putById($id, $bodyData): ResultInterface
     {
@@ -210,7 +197,7 @@ class User extends BaseAbstract
                 $ids[] = "eq(id,$id)";
             }
 
-            $queryData = new \DataStoreExample\OpenAPI\Server\V1\DTO\UserGETQueryData();
+            $queryData = new \stdClass();
             $queryData->rql = "or(eq(id,nosuchid)," . implode(",", $ids) . ")";
 
             return $this->get($queryData);
