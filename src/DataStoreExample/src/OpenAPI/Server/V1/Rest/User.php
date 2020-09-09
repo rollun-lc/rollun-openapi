@@ -3,10 +3,17 @@ declare(strict_types=1);
 
 namespace DataStoreExample\OpenAPI\Server\V1\Rest;
 
+use Articus\PathHandler\Exception\HttpCode;
+use Articus\PathHandler\Exception\NotFound;
 use OpenAPI\Server\Rest\BaseAbstract;
+use rollun\Callables\Task\Result;
 use rollun\Callables\Task\ResultInterface;
 use rollun\datastore\DataStore\Interfaces\DataStoreInterface;
+use rollun\datastore\Rql\RqlParser;
+use rollun\datastore\Rql\RqlQuery;
 use rollun\dic\InsideConstruct;
+use Xiag\Rql\Parser\Node\LimitNode;
+use Xiag\Rql\Parser\Node\SortNode;
 
 /**
  * Class User
@@ -39,13 +46,14 @@ class User extends BaseAbstract
      */
     public function delete($queryData = null): ResultInterface
     {
-        if (method_exists($this->controllerObject, 'delete')) {
-            $queryDataArray = (array)$queryData;
+        $query = empty($queryData->rql) ? new RqlQuery() : RqlParser::rqlDecode($queryData->rql);
 
-            return $this->controllerObject->delete($queryDataArray);
+        $result = $this->dataStore->queriedDelete($query);
+        if (empty($result)) {
+            throw new HttpCode(404, "No records exists for such query");
         }
 
-        throw new \Exception('Not implemented method');
+        return new Result(null);
     }
 
     /**
@@ -55,16 +63,25 @@ class User extends BaseAbstract
      */
     public function get($queryData = null): ResultInterface
     {
-        echo '<pre>';
-        print_r('123');
-        die();
-        if (method_exists($this->controllerObject, 'get')) {
-            $queryDataArray = (array)$queryData;
+        $limit = empty($queryData->limit) ? 1000 : $queryData->limit;
+        $offset = empty($queryData->offset) ? 0 : $queryData->offset;
 
-            return $this->controllerObject->get($queryDataArray);
+        $sortBy = empty($queryData->sort_by) ? 'name' : $queryData->sort_by;
+        $sortOrder = $queryData->sort_order == 'asc' ? 1 : -1;
+
+        $query = empty($queryData->rql) ? new RqlQuery() : RqlParser::rqlDecode($queryData->rql);
+        $query->setLimit(new LimitNode($limit, $offset));
+        $query->setSort(new SortNode([$sortBy => $sortOrder]));
+
+        // get result from dataStore
+        $result = $this->dataStore->query($query);
+
+        // prepare result fields types
+        foreach ($result as $k => $row) {
+            $result[$k] = $this->prepareResultFieldsTypes($row);
         }
 
-        throw new \Exception('Not implemented method');
+        return new Result($result);
     }
 
     /**
@@ -75,14 +92,18 @@ class User extends BaseAbstract
      */
     public function patch($queryData, $bodyData): ResultInterface
     {
-        if (method_exists($this->controllerObject, 'patch')) {
-            $bodyDataArray = (array)$bodyData;
-            $queryDataArray = (array)$queryData;
+        $query = empty($queryData->rql) ? new RqlQuery() : RqlParser::rqlDecode($queryData->rql);
 
-            return $this->controllerObject->patch($queryDataArray, $bodyDataArray);
+        $data = [];
+        foreach ((array)$bodyData as $name => $value) {
+            if ($value !== null) {
+                $data[$name] = $value;
+            }
         }
 
-        throw new \Exception('Not implemented method');
+        $result = $this->dataStore->queriedUpdate($data, $query);
+
+        return $this->getUpdateResult($result);
     }
 
     /**
@@ -100,16 +121,7 @@ class User extends BaseAbstract
 
         $result = $this->dataStore->multiCreate($inputData);
 
-        echo '<pre>';
-        print_r($result);
-        die();
-        if (method_exists($this->controllerObject, 'post')) {
-            $bodyDataArray = (array)$bodyData;
-
-            return $this->controllerObject->post($bodyDataArray);
-        }
-
-        throw new \Exception('Not implemented method');
+        return $this->getUpdateResult($result);
     }
 
 
@@ -118,11 +130,13 @@ class User extends BaseAbstract
      */
     public function deleteById($id): ResultInterface
     {
-        if (method_exists($this->controllerObject, 'deleteById')) {
-            return $this->controllerObject->deleteById($id);
+        $result = $this->dataStore->delete($id);
+
+        if (empty($result)) {
+            throw new NotFound();
         }
 
-        throw new \Exception('Not implemented method');
+        return new Result(null);
     }
 
 
@@ -131,11 +145,16 @@ class User extends BaseAbstract
      */
     public function getById($id): ResultInterface
     {
-        if (method_exists($this->controllerObject, 'getById')) {
-            return $this->controllerObject->getById($id);
+        $result = $this->dataStore->read($id);
+
+        if (empty($result)) {
+            throw new NotFound();
         }
 
-        throw new \Exception('Not implemented method');
+        // prepare result fields types
+        $result = $this->prepareResultFieldsTypes($result);
+
+        return new Result($result);
     }
 
 
@@ -146,13 +165,24 @@ class User extends BaseAbstract
      */
     public function patchById($id, $bodyData): ResultInterface
     {
-        if (method_exists($this->controllerObject, 'patchById')) {
-            $bodyDataArray = (array)$bodyData;
+        $result = $this->dataStore->read($id);
 
-            return $this->controllerObject->patchById($id, $bodyDataArray);
+        if (empty($result)) {
+            throw new NotFound();
         }
 
-        throw new \Exception('Not implemented method');
+        foreach ((array)$bodyData as $name => $value) {
+            if ($value !== null && $name != 'id') {
+                $result[$name] = $value;
+            }
+        }
+
+        // prepare result fields types
+        $result = $this->prepareResultFieldsTypes($result);
+
+        $this->dataStore->rewrite($result);
+
+        return new Result($result);
     }
 
 
@@ -163,12 +193,42 @@ class User extends BaseAbstract
      */
     public function putById($id, $bodyData): ResultInterface
     {
-        if (method_exists($this->controllerObject, 'putById')) {
-            $bodyDataArray = (array)$bodyData;
+        return $this->patchById($id, $bodyData);
+    }
 
-            return $this->controllerObject->putById($id, $bodyDataArray);
+    /**
+     * @param array $data
+     *
+     * @return ResultInterface
+     * @throws \Exception
+     */
+    protected function getUpdateResult(array $data): ResultInterface
+    {
+        if (!empty($data)) {
+            $ids = [];
+            foreach ($data as $id) {
+                $ids[] = "eq(id,$id)";
+            }
+
+            $queryData = new \DataStoreExample\OpenAPI\Server\V1\DTO\UserGETQueryData();
+            $queryData->rql = "or(eq(id,nosuchid)," . implode(",", $ids) . ")";
+
+            return $this->get($queryData);
         }
 
-        throw new \Exception('Not implemented method');
+        return new Result(null);
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return array
+     */
+    protected function prepareResultFieldsTypes(array $data): array
+    {
+        $data['id'] = (string)$data['id'];
+        $data['active'] = (bool)$data['active'];
+
+        return $data;
     }
 }
