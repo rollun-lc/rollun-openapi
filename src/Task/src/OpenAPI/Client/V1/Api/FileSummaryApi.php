@@ -50,11 +50,6 @@ use OpenAPI\Client\ObjectSerializer;
 class FileSummaryApi
 {
     /**
-     * @var bool
-     */
-    const IS_API_CLIENT = true;
-
-    /**
      * @var ClientInterface
      */
     protected $client;
@@ -127,7 +122,7 @@ class FileSummaryApi
      *
      * @throws ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return \Task\OpenAPI\Client\V1\Model\DeleteResult|\Task\OpenAPI\Client\V1\Model\ErrorResult|\Task\OpenAPI\Client\V1\Model\ErrorResult
+     * @return array
      */
     public function fileSummaryIdDelete($id)
     {
@@ -153,28 +148,10 @@ class FileSummaryApi
             try {
                 $response = $this->client->send($request, $options);
             } catch (RequestException $e) {
-                throw new ApiException(
-                    "[{$e->getCode()}] {$e->getMessage()}",
-                    $e->getCode(),
-                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
-                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
-                );
+                $response = $e->getResponse();
             }
 
             $statusCode = $response->getStatusCode();
-
-            if ($statusCode < 200 || $statusCode > 299) {
-                throw new ApiException(
-                    sprintf(
-                        '[%d] Error connecting to the API (%s)',
-                        $statusCode,
-                        $request->getUri()
-                    ),
-                    $statusCode,
-                    $response->getHeaders(),
-                    $response->getBody()
-                );
-            }
 
             $responseBody = $response->getBody();
             switch($statusCode) {
@@ -436,7 +413,7 @@ class FileSummaryApi
      *
      * @throws ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return \Task\OpenAPI\Client\V1\Model\TaskInfoResult|\Task\OpenAPI\Client\V1\Model\ErrorResult|\Task\OpenAPI\Client\V1\Model\ErrorResult
+     * @return array
      */
     public function fileSummaryIdGet($id)
     {
@@ -462,28 +439,10 @@ class FileSummaryApi
             try {
                 $response = $this->client->send($request, $options);
             } catch (RequestException $e) {
-                throw new ApiException(
-                    "[{$e->getCode()}] {$e->getMessage()}",
-                    $e->getCode(),
-                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
-                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
-                );
+                $response = $e->getResponse();
             }
 
             $statusCode = $response->getStatusCode();
-
-            if ($statusCode < 200 || $statusCode > 299) {
-                throw new ApiException(
-                    sprintf(
-                        '[%d] Error connecting to the API (%s)',
-                        $statusCode,
-                        $request->getUri()
-                    ),
-                    $statusCode,
-                    $response->getHeaders(),
-                    $response->getBody()
-                );
-            }
 
             $responseBody = $response->getBody();
             switch($statusCode) {
@@ -741,58 +700,40 @@ class FileSummaryApi
     /**
      * Operation fileSummaryPost
      *
-     * @param  \Task\OpenAPI\Client\V1\Model\InlineObject $inline_object inline_object (required)
+     * @param  \Task\OpenAPI\Client\V1\Model\PostFileSummary $post_file_summary post_file_summary (required)
      *
      * @throws ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return \Task\OpenAPI\Client\V1\Model\TaskInfoResult|\Task\OpenAPI\Client\V1\Model\ErrorResult|\Task\OpenAPI\Client\V1\Model\ErrorResult
+     * @return array
      */
-    public function fileSummaryPost($inline_object)
+    public function fileSummaryPost($post_file_summary)
     {
-        list($response) = $this->fileSummaryPostWithHttpInfo($inline_object);
+        list($response) = $this->fileSummaryPostWithHttpInfo($post_file_summary);
         return $response;
     }
 
     /**
      * Operation fileSummaryPostWithHttpInfo
      *
-     * @param  \Task\OpenAPI\Client\V1\Model\InlineObject $inline_object (required)
+     * @param  \Task\OpenAPI\Client\V1\Model\PostFileSummary $post_file_summary (required)
      *
      * @throws ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of \Task\OpenAPI\Client\V1\Model\TaskInfoResult|\Task\OpenAPI\Client\V1\Model\ErrorResult|\Task\OpenAPI\Client\V1\Model\ErrorResult, HTTP status code, HTTP response headers (array of strings)
      */
-    public function fileSummaryPostWithHttpInfo($inline_object)
+    public function fileSummaryPostWithHttpInfo($post_file_summary)
     {
-        $request = $this->fileSummaryPostRequest($inline_object);
+        $request = $this->fileSummaryPostRequest($post_file_summary);
 
         try {
             $options = $this->createHttpClientOption();
             try {
                 $response = $this->client->send($request, $options);
             } catch (RequestException $e) {
-                throw new ApiException(
-                    "[{$e->getCode()}] {$e->getMessage()}",
-                    $e->getCode(),
-                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
-                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
-                );
+                $response = $e->getResponse();
             }
 
             $statusCode = $response->getStatusCode();
-
-            if ($statusCode < 200 || $statusCode > 299) {
-                throw new ApiException(
-                    sprintf(
-                        '[%d] Error connecting to the API (%s)',
-                        $statusCode,
-                        $request->getUri()
-                    ),
-                    $statusCode,
-                    $response->getHeaders(),
-                    $response->getBody()
-                );
-            }
 
             $responseBody = $response->getBody();
             switch($statusCode) {
@@ -884,14 +825,14 @@ class FileSummaryApi
      *
      * 
      *
-     * @param  \Task\OpenAPI\Client\V1\Model\InlineObject $inline_object (required)
+     * @param  \Task\OpenAPI\Client\V1\Model\PostFileSummary $post_file_summary (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function fileSummaryPostAsync($inline_object)
+    public function fileSummaryPostAsync($post_file_summary)
     {
-        return $this->fileSummaryPostAsyncWithHttpInfo($inline_object)
+        return $this->fileSummaryPostAsyncWithHttpInfo($post_file_summary)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -904,15 +845,15 @@ class FileSummaryApi
      *
      * 
      *
-     * @param  \Task\OpenAPI\Client\V1\Model\InlineObject $inline_object (required)
+     * @param  \Task\OpenAPI\Client\V1\Model\PostFileSummary $post_file_summary (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function fileSummaryPostAsyncWithHttpInfo($inline_object)
+    public function fileSummaryPostAsyncWithHttpInfo($post_file_summary)
     {
         $returnType = '\Task\OpenAPI\Client\V1\Model\TaskInfoResult';
-        $request = $this->fileSummaryPostRequest($inline_object);
+        $request = $this->fileSummaryPostRequest($post_file_summary);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -951,17 +892,17 @@ class FileSummaryApi
     /**
      * Create request for operation 'fileSummaryPost'
      *
-     * @param  \Task\OpenAPI\Client\V1\Model\InlineObject $inline_object (required)
+     * @param  \Task\OpenAPI\Client\V1\Model\PostFileSummary $post_file_summary (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    protected function fileSummaryPostRequest($inline_object)
+    protected function fileSummaryPostRequest($post_file_summary)
     {
-        // verify the required parameter 'inline_object' is set
-        if ($inline_object === null || (is_array($inline_object) && count($inline_object) === 0)) {
+        // verify the required parameter 'post_file_summary' is set
+        if ($post_file_summary === null || (is_array($post_file_summary) && count($post_file_summary) === 0)) {
             throw new \InvalidArgumentException(
-                'Missing the required parameter $inline_object when calling fileSummaryPost'
+                'Missing the required parameter $post_file_summary when calling fileSummaryPost'
             );
         }
 
@@ -977,8 +918,8 @@ class FileSummaryApi
 
         // body params
         $_tempBody = null;
-        if (isset($inline_object)) {
-            $_tempBody = $inline_object;
+        if (isset($post_file_summary)) {
+            $_tempBody = $post_file_summary;
         }
 
         if ($multipart) {

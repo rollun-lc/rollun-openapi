@@ -39,6 +39,11 @@ namespace Task\OpenAPI\Client\V1;
  */
 class Configuration
 {
+    /**
+     * @var array
+     */
+    public static $additionalData = ['fileSummaryIdDelete'=>['className'=>'FileSummaryApi','params' => [['paramName'=>'id','paramType'=>'string'],]],'fileSummaryIdGet'=>['className'=>'FileSummaryApi','params' => [['paramName'=>'id','paramType'=>'string'],]],'fileSummaryPost'=>['className'=>'FileSummaryApi','params' => [['paramName'=>'post_file_summary','paramType'=>'\Task\OpenAPI\Client\V1\Model\PostFileSummary'],]],];
+
     private static $defaultConfiguration;
 
     /**

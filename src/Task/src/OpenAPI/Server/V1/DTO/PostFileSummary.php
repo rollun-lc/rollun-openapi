@@ -7,7 +7,7 @@ use Articus\DataTransfer\Annotation as DTA;
 
 /**
  */
-class InlineObject
+class PostFileSummary
 {
     /**
      * N parameter

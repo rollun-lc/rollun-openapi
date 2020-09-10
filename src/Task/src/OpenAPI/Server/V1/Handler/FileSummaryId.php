@@ -20,6 +20,9 @@ use rollun\dic\InsideConstruct;
  */
 class FileSummaryId extends AbstractHandler
 {
+    /**
+     * ATTENTION! REST_OBJECT should be declared in service manager
+     */
     const REST_OBJECT = \Task\OpenAPI\Server\V1\Rest\FileSummary::class;
 
     /**
@@ -39,8 +42,6 @@ class FileSummaryId extends AbstractHandler
      * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\Task\OpenAPI\Server\V1\DTO\DeleteResult::class})
      * @param ServerRequestInterface $request
      *
-     * @throws PHException\HttpCode 501 if the method is not implemented
-     *
      * @return array
      */
     public function fileSummaryIdDelete(ServerRequestInterface $request): array
@@ -51,8 +52,6 @@ class FileSummaryId extends AbstractHandler
      * @PHA\Get()
      * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\Task\OpenAPI\Server\V1\DTO\TaskInfoResult::class})
      * @param ServerRequestInterface $request
-     *
-     * @throws PHException\HttpCode 501 if the method is not implemented
      *
      * @return array
      */

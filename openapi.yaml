@@ -1,24 +1,23 @@
 openapi: 3.0.0
 info:
   version: "1"
-  title: HelloUser
+  title: Task
 servers:
-  - url: http://rollun-openapi/openapi/HelloUser/v1
+  - url: http://rollun-openapi/openapi/Task/v1
 tags:
-  - name: User
-  - name: Hello
+  - name: FileSummary
 paths:
-  /User:
+  /FileSummary:
     post:
       tags:
-        - User
+        - FileSummary
       responses:
         '201':
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserResult'
+                $ref: '#/components/schemas/TaskInfoResult'
         '400':
           description: Bad Request
           content:
@@ -36,25 +35,25 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
-  /User/{id}:
+              $ref: '#/components/schemas/PostFileSummary'
+  /FileSummary/{id}:
     get:
       tags:
-        - User
+        - FileSummary
       parameters:
         - name: id
           in: path
           required: true
           schema:
             type: string
-            example: '5f51f78ccaa4c'
+            example: 'qwerty123'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserResult'
+                $ref: '#/components/schemas/TaskInfoResult'
         '404':
           description: Not Found
           content:
@@ -67,24 +66,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResult'
-  /Hello/{id}:
-    get:
+    delete:
       tags:
-        - Hello
+        - FileSummary
       parameters:
         - name: id
           in: path
           required: true
           schema:
             type: string
-            example: '5f51f78ccaa4c'
+            example: 'qwerty123'
       responses:
-        '200':
-          description: OK
+        '204':
+          description: No Content
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HelloResult'
+                $ref: '#/components/schemas/DeleteResult'
         '404':
           description: Not Found
           content:
@@ -132,37 +130,103 @@ components:
       properties:
         data:
           type: object
-    UserResult:
+    PostFileSummary:
+      type: object
+      properties:
+        n:
+          type: integer
+          description: 'N parameter'
+          example: 5
+    TaskInfoResult:
       allOf:
         - $ref: '#/components/schemas/Result'
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/User'
-    User:
+          $ref: '#/components/schemas/TaskInfo'
+    TaskInfo:
       type: object
       required:
         - id
-        - name
+        - timeout
+        - stage
+        - status
       properties:
         id:
           type: string
-          example: '5f51f78ccaa4c'
-        name:
+          example: 'qwerty123'
+        timeout:
+          type: integer
+          example: '3'
+        stage:
+          $ref: '#/components/schemas/Stage'
+        status:
+          $ref: '#/components/schemas/Status'
+        startTime:
           type: string
-          example: 'Roman'
-    HelloResult:
+          description: 'Task start time UTC'
+          example: '2020-11-20T13:14:15Z'
+        result:
+          $ref: '#/components/schemas/SummaryResult'
+    Stage:
+      type: object
+      required:
+        - stage
+        - all
+      properties:
+        stage:
+          type: string
+          description: 'Current stage'
+          example: 'writing 2'
+        all:
+          type: array
+          description: 'All possible stages'
+          items:
+            type: string
+          example: [ 'writing 1','writing 2','writing 3','calc summary','done' ]
+    Status:
+      type: object
+      required:
+        - state
+        - all
+      properties:
+        state:
+          type: string
+          description: 'Current state'
+          example: 'pending'
+        all:
+          type: array
+          description: 'All possible states'
+          items:
+            type: string
+          example: [ 'pending','fulfilled','rejected' ]
+    SummaryResult:
       allOf:
         - $ref: '#/components/schemas/Result'
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/Hello'
-    Hello:
+          $ref: '#/components/schemas/Summary'
+    DeleteResult:
+      allOf:
+        - $ref: '#/components/schemas/Result'
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Delete'
+    Summary:
       type: object
       required:
-        - message
+        - summary
       properties:
-        message:
-          type: string
-          example: 'Hello, Roman!'
+        summary:
+          type: integer
+          example: '15'
+    Delete:
+      type: object
+      required:
+        - isDeleted
+      properties:
+        isDeleted:
+          type: boolean
+          example: true

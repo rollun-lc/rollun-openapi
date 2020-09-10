@@ -1,6 +1,6 @@
 <?php
 /**
- * InlineObject
+ * PostFileSummary
  *
  * PHP version 7.2
  *
@@ -34,14 +34,14 @@ use OpenAPI\Client\ObjectSerializer;
 use OpenAPI\Client\Model\ModelInterface;
 
 /**
- * InlineObject Class Doc Comment
+ * PostFileSummary Class Doc Comment
  *
  * @category Class
  * @package  Task\OpenAPI\Client\V1
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  */
-class InlineObject implements ModelInterface, ArrayAccess
+class PostFileSummary implements ModelInterface, ArrayAccess
 {
     const DISCRIMINATOR = null;
 
@@ -50,7 +50,7 @@ class InlineObject implements ModelInterface, ArrayAccess
       *
       * @var string
       */
-    protected static $openAPIModelName = 'inline_object';
+    protected static $openAPIModelName = 'PostFileSummary';
 
     /**
       * Array of property to type mappings. Used for (de)serialization

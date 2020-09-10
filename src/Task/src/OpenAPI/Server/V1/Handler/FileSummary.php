@@ -20,6 +20,9 @@ use rollun\dic\InsideConstruct;
  */
 class FileSummary extends AbstractHandler
 {
+    /**
+     * ATTENTION! REST_OBJECT should be declared in service manager
+     */
     const REST_OBJECT = \Task\OpenAPI\Server\V1\Rest\FileSummary::class;
 
     /**
@@ -38,9 +41,8 @@ class FileSummary extends AbstractHandler
      * @PHA\Post()
      * TODO check if consumer is valid, if it has correct priority and if it can be moved to class annotation
      * @PHA\Consumer(name=PHConsumer\Json::class, mediaType="application/json")
-     * @PHA\Attribute(name=PHAttribute\Transfer::class, options={"type":\Task\OpenAPI\Server\V1\DTO\InlineObject::class,"objectAttr":"bodyData"})
+     * @PHA\Attribute(name=PHAttribute\Transfer::class, options={"type":\Task\OpenAPI\Server\V1\DTO\PostFileSummary::class,"objectAttr":"bodyData", "errorAttr":"errors"})
      * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\Task\OpenAPI\Server\V1\DTO\TaskInfoResult::class})
-     *
      * @param ServerRequestInterface $request
      *
      * @return array

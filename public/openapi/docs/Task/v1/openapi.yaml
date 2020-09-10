@@ -31,17 +31,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResult'
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                n:
-                  type: integer
-                  description: 'N parameter'
-                  example: 5
-        description: Data that needs for task creating
-        required: true
+              $ref: '#/components/schemas/PostFileSummary'
   /FileSummary/{id}:
     get:
       tags:
@@ -136,6 +130,13 @@ components:
       properties:
         data:
           type: object
+    PostFileSummary:
+      type: object
+      properties:
+        n:
+          type: integer
+          description: 'N parameter'
+          example: 5
     TaskInfoResult:
       allOf:
         - $ref: '#/components/schemas/Result'
