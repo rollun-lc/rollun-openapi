@@ -32,21 +32,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResult'
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - id
-                - name
-              properties:
-                id:
-                  type: string
-                  example: '1'
-                name:
-                  type: string
-                  example: 'Roman'
-        required: true
+              $ref: '#/components/schemas/User'
   /User/{id}:
     get:
       tags:

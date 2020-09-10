@@ -409,30 +409,30 @@ class UserApi
     /**
      * Operation userPost
      *
-     * @param  \HelloUser\OpenAPI\Client\V1\Model\InlineObject $inline_object inline_object (required)
+     * @param  \HelloUser\OpenAPI\Client\V1\Model\User $user user (required)
      *
      * @throws ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array
      */
-    public function userPost($inline_object)
+    public function userPost($user)
     {
-        list($response) = $this->userPostWithHttpInfo($inline_object);
+        list($response) = $this->userPostWithHttpInfo($user);
         return $response;
     }
 
     /**
      * Operation userPostWithHttpInfo
      *
-     * @param  \HelloUser\OpenAPI\Client\V1\Model\InlineObject $inline_object (required)
+     * @param  \HelloUser\OpenAPI\Client\V1\Model\User $user (required)
      *
      * @throws ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of \HelloUser\OpenAPI\Client\V1\Model\UserResult|\HelloUser\OpenAPI\Client\V1\Model\ErrorResult|\HelloUser\OpenAPI\Client\V1\Model\ErrorResult, HTTP status code, HTTP response headers (array of strings)
      */
-    public function userPostWithHttpInfo($inline_object)
+    public function userPostWithHttpInfo($user)
     {
-        $request = $this->userPostRequest($inline_object);
+        $request = $this->userPostRequest($user);
 
         try {
             $options = $this->createHttpClientOption();
@@ -534,14 +534,14 @@ class UserApi
      *
      * 
      *
-     * @param  \HelloUser\OpenAPI\Client\V1\Model\InlineObject $inline_object (required)
+     * @param  \HelloUser\OpenAPI\Client\V1\Model\User $user (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function userPostAsync($inline_object)
+    public function userPostAsync($user)
     {
-        return $this->userPostAsyncWithHttpInfo($inline_object)
+        return $this->userPostAsyncWithHttpInfo($user)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -554,15 +554,15 @@ class UserApi
      *
      * 
      *
-     * @param  \HelloUser\OpenAPI\Client\V1\Model\InlineObject $inline_object (required)
+     * @param  \HelloUser\OpenAPI\Client\V1\Model\User $user (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function userPostAsyncWithHttpInfo($inline_object)
+    public function userPostAsyncWithHttpInfo($user)
     {
         $returnType = '\HelloUser\OpenAPI\Client\V1\Model\UserResult';
-        $request = $this->userPostRequest($inline_object);
+        $request = $this->userPostRequest($user);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -601,17 +601,17 @@ class UserApi
     /**
      * Create request for operation 'userPost'
      *
-     * @param  \HelloUser\OpenAPI\Client\V1\Model\InlineObject $inline_object (required)
+     * @param  \HelloUser\OpenAPI\Client\V1\Model\User $user (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    protected function userPostRequest($inline_object)
+    protected function userPostRequest($user)
     {
-        // verify the required parameter 'inline_object' is set
-        if ($inline_object === null || (is_array($inline_object) && count($inline_object) === 0)) {
+        // verify the required parameter 'user' is set
+        if ($user === null || (is_array($user) && count($user) === 0)) {
             throw new \InvalidArgumentException(
-                'Missing the required parameter $inline_object when calling userPost'
+                'Missing the required parameter $user when calling userPost'
             );
         }
 
@@ -627,8 +627,8 @@ class UserApi
 
         // body params
         $_tempBody = null;
-        if (isset($inline_object)) {
-            $_tempBody = $inline_object;
+        if (isset($user)) {
+            $_tempBody = $user;
         }
 
         if ($multipart) {

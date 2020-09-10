@@ -42,7 +42,7 @@ class Configuration
     /**
      * @var array
      */
-    public static $additionalData = ['helloIdGet'=>['className'=>'HelloApi','params' => [['paramName'=>'id','paramType'=>'string'],]],'userIdGet'=>['className'=>'UserApi','params' => [['paramName'=>'id','paramType'=>'string'],]],'userPost'=>['className'=>'UserApi','params' => [['paramName'=>'inline_object','paramType'=>'\HelloUser\OpenAPI\Client\V1\Model\InlineObject'],]],];
+    public static $additionalData = ['helloIdGet'=>['className'=>'HelloApi','params' => [['paramName'=>'id','paramType'=>'string'],]],'userIdGet'=>['className'=>'UserApi','params' => [['paramName'=>'id','paramType'=>'string'],]],'userPost'=>['className'=>'UserApi','params' => [['paramName'=>'user','paramType'=>'\HelloUser\OpenAPI\Client\V1\Model\User'],]],];
 
     private static $defaultConfiguration;
 

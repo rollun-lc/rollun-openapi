@@ -48,7 +48,7 @@ class User extends BaseAbstract
 	 */
 	public function post($bodyData): ResultInterface
 	{
-		$result = $this->api->userPost(new \HelloUser\OpenAPI\Client\V1\Model\InlineObject($bodyData));
+		$result = $this->api->userPost(new \HelloUser\OpenAPI\Client\V1\Model\User($bodyData));
 
 		return new Result($result['data'], $result['messages']);
 	}
