@@ -52,7 +52,7 @@ if (!empty($manifestData['tags'])) {
 
 // create generator config
 file_put_contents(
-    'openapi_client_config.json', json_encode(['invokerPackage' => "$title\\OpenAPI\\Client\\V$version", 'srcBasePath' => "src/$title/src/OpenAPI/Client/V$version"])
+    'openapi_client_config.json', json_encode(['invokerPackage' => "$title\\OpenAPI\\V$version\\Client", 'srcBasePath' => "src/$title/src/OpenAPI/V$version/Client"])
 );
 sleep(1);
 
@@ -61,7 +61,7 @@ $templatePath = dirname(__DIR__) . '/template/client';
 
 // generate
 exec(
-    "openapi-generator generate --global-property apis,apiDocs=false,apiTests=false,models,modelDocs=false,modelTests=false,supportingFiles=Configuration.php -i $manifest -o tmp -g php -c openapi_client_config.json -t $templatePath",
+    "openapi-generator generate --global-property apis,apiDocs=false,apiTests=false,models=false,modelDocs=false,modelTests=false,supportingFiles=Configuration.php -i $manifest -o tmp -g php -c openapi_client_config.json -t $templatePath",
     $output
 );
 
@@ -75,7 +75,7 @@ exec("rm openapi_client_config.json", $output3);
 /**
  * Generate REST classes
  */
-$restDir = "src/$title/src/OpenAPI/Client/V$version/Rest";
+$restDir = "src/$title/src/OpenAPI/V$version/Client/Rest";
 if (!file_exists($restDir)) {
     mkdir($restDir, 0777, true);
     sleep(1);
@@ -83,12 +83,12 @@ if (!file_exists($restDir)) {
 
 foreach ($tags as $tag) {
     // create namespace
-    $namespace = (new \Nette\PhpGenerator\PhpNamespace("$title\OpenAPI\Client\V$version\Rest"))
+    $namespace = (new \Nette\PhpGenerator\PhpNamespace("$title\OpenAPI\V$version\Client\Rest"))
         ->addUse('OpenAPI\Server\Rest\BaseAbstract')
         ->addUse('rollun\Callables\Task\ResultInterface')
         ->addUse('rollun\Callables\Task\Result')
         ->addUse('GuzzleHttp\Client')
-        ->addUse("$title\OpenAPI\Client\V$version\Api\\{$tag}Api");
+        ->addUse("$title\OpenAPI\V$version\Client\Api\\{$tag}Api");
 
     // create class
     $class = $namespace->addClass($tag);
@@ -107,8 +107,8 @@ foreach ($tags as $tag) {
     $constructor->addParameter('lifeCycleToken');
 
     // get additional data
-    include_once "src/$title/src/OpenAPI/Client/V$version/Configuration.php";
-    $configurationClass = "\\$title\OpenAPI\Client\V$version\Configuration";
+    include_once "src/$title/src/OpenAPI/V$version/Client/Configuration.php";
+    $configurationClass = "\\$title\OpenAPI\V$version\Client\Configuration";
     $additionalData = $configurationClass::$additionalData;
 
     $defaultMethodBody = "throw new \Exception('Not implemented method');\n\n";

@@ -39,7 +39,7 @@ class HelloId extends AbstractHandler
 
     /**
      * @PHA\Get()
-     * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\HelloUser\OpenAPI\V1\Server\DTO\HelloResult::class})
+     * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\HelloUser\OpenAPI\V1\DTO\HelloResult::class})
      * @param ServerRequestInterface $request
      *
      * @return array

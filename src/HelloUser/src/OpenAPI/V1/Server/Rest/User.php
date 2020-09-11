@@ -5,7 +5,6 @@ namespace HelloUser\OpenAPI\V1\Server\Rest;
 use OpenAPI\Server\Rest\BaseAbstract;
 use rollun\Callables\Task\Result;
 use rollun\Callables\Task\ResultInterface;
-use rollun\dic\InsideConstruct;
 
 /**
  * Class User

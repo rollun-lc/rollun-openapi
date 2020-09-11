@@ -2,7 +2,6 @@
 
 namespace HelloUser\OpenAPI\V1\Server\Rest;
 
-use HelloUser\OpenAPI\V1\Server\Rest\User;
 use OpenAPI\Server\Rest\BaseAbstract;
 use rollun\Callables\Task\Result;
 use rollun\Callables\Task\ResultInterface;

@@ -54,7 +54,7 @@ if (!empty($manifestData['tags'])) {
 $templatePath = dirname(__DIR__) . '/template/server';
 
 // create generator config
-file_put_contents('openapi_config.json', json_encode(['invokerPackage' => "$title\\OpenAPI\\V$version\\Server", 'srcBasePath' => "src/$title/src/OpenAPI/V$version/Server"]));
+file_put_contents('openapi_config.json', json_encode(['invokerPackage' => "$title\\OpenAPI\\V$version", 'srcBasePath' => "src/$title/src/OpenAPI/V$version"]));
 
 // generate
 exec("openapi-generator generate -i $manifest -o tmp-openapi -g php-ze-ph -c openapi_config.json -t $templatePath", $output);
@@ -67,6 +67,7 @@ $content = "<?php\n\nreturn [\n\Articus\PathHandler\RouteInjection\Factory::clas
 foreach ($pathHandlerData['Articus\PathHandler\RouteInjection\Factory']['paths'] as $path => $handlers) {
     $content .= "'$path' => [\n";
     foreach ($handlers as $handler) {
+        $handler = str_replace("\Handler", "\Server\Handler", $handler);
         $content .= "\\$handler::class,\n";
     }
     $content .= "],\n";
@@ -76,19 +77,36 @@ $content .= "],\n";
 
 $content .= "'dependencies'=>[\n'invokables'=>[\n";
 foreach ($tags as $tag) {
-    $content .= "\\$title\\OpenAPI\\V$version\\Server\\Rest\\$tag::class=>\\$title\\OpenAPI\V$version\\Server\\\Rest\\$tag::class,\n";
+    $content .= "\\$title\\OpenAPI\\V$version\\Server\\Rest\\$tag::class=>\\$title\\OpenAPI\V$version\\Server\\Rest\\$tag::class,\n";
 }
 $content .= "],\n],\n";
 $content .= "];";
 
 file_put_contents($file, $content);
 
-// copy
-exec("cp -R tmp-openapi/src/$title/. src/$title/", $output1);
+// copy all
+exec("cp -R tmp-openapi/src/$title/. src/$title/");
+
+// prepare handlers dir
+$handlersDir = "src/$title/src/OpenAPI/V$version/Server/Handler";
+
+// make dirs
+exec("mkdir src/$title/src/OpenAPI/V$version/Server && mkdir $handlersDir");
+
+// copy handlers
+exec("cp -R src/$title/src/OpenAPI/V$version/Handler/. $handlersDir/");
+
+// update namespace for handlers
+foreach (scandir($handlersDir) as $handler) {
+    if (!in_array($handler, ['.', '..'])) {
+        file_put_contents("$handlersDir/$handler", str_replace("\Handler;", "\Server\Handler;", file_get_contents("$handlersDir/$handler")));
+    }
+}
 
 // clearing
-exec("rm -R tmp-openapi", $output2);
-exec("rm openapi_config.json", $output3);
+exec("rm -R src/$title/src/OpenAPI/V$version/Handler");
+exec("rm -R tmp-openapi");
+exec("rm openapi_config.json");
 
 // create api docs
 $docsDir = "public/openapi/docs/$title/v$version";
@@ -105,7 +123,7 @@ $html = str_replace('{{manifest}}', array_pop($manifestParts), $html);
 file_put_contents($docsDir . '/index.html', $html);
 
 // copy
-exec("cp $manifest $docsDir/", $output4);
+exec("cp $manifest $docsDir/");
 
 /**
  * Generate REST classes
@@ -235,7 +253,7 @@ foreach ($tags as $tag) {
 }
 
 // show generator messages
-foreach (array_merge($output, $output1, $output2, $output3, $output4) as $v) {
+foreach ($output as $v) {
     echo $v . PHP_EOL;
 }
 die();

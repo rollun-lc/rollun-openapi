@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace HelloUser\OpenAPI\V1\Server\DTO;
+namespace HelloUser\OpenAPI\V1\DTO;
 
 use Articus\DataTransfer\Annotation as DTA;
 
