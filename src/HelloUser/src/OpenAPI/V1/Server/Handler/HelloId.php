@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 
-namespace HelloUser\OpenAPI\Server\V1\Handler;
+namespace HelloUser\OpenAPI\V1\Server\Handler;
 
 use Articus\PathHandler\Annotation as PHA;
 use Articus\PathHandler\Consumer as PHConsumer;
@@ -16,14 +16,17 @@ use Psr\Http\Message\ServerRequestInterface;
 use rollun\dic\InsideConstruct;
 
 /**
- * @PHA\Route(pattern="/User/{id}")
+ * @PHA\Route(pattern="/Hello/{id}")
  */
-class UserId extends AbstractHandler
+class HelloId extends AbstractHandler
 {
-    const REST_OBJECT = \HelloUser\OpenAPI\Server\V1\Rest\User::class;
+    /**
+     * ATTENTION! REST_OBJECT should be declared in service manager
+     */
+    const REST_OBJECT = \HelloUser\OpenAPI\V1\Server\Rest\Hello::class;
 
     /**
-     * UserId constructor.
+     * HelloId constructor.
      *
      * @param RestInterface|null $restObject
      *
@@ -36,12 +39,12 @@ class UserId extends AbstractHandler
 
     /**
      * @PHA\Get()
-     * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\HelloUser\OpenAPI\Server\V1\DTO\UserResult::class})
+     * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\HelloUser\OpenAPI\V1\Server\DTO\HelloResult::class})
      * @param ServerRequestInterface $request
      *
      * @return array
      */
-    public function userIdGet(ServerRequestInterface $request): array
+    public function helloIdGet(ServerRequestInterface $request): array
     {
         return $this->runAction($request, 'Get()');
     }

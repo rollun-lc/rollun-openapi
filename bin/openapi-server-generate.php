@@ -54,7 +54,7 @@ if (!empty($manifestData['tags'])) {
 $templatePath = dirname(__DIR__) . '/template/server';
 
 // create generator config
-file_put_contents('openapi_config.json', json_encode(['invokerPackage' => "$title\\OpenAPI\\Server\\V$version", 'srcBasePath' => "src/$title/src/OpenAPI/Server/V$version"]));
+file_put_contents('openapi_config.json', json_encode(['invokerPackage' => "$title\\OpenAPI\\V$version\\Server", 'srcBasePath' => "src/$title/src/OpenAPI/V$version/Server"]));
 
 // generate
 exec("openapi-generator generate -i $manifest -o tmp-openapi -g php-ze-ph -c openapi_config.json -t $templatePath", $output);
@@ -76,9 +76,9 @@ $content .= "],\n";
 
 $content .= "'dependencies'=>[\n'invokables'=>[\n";
 foreach ($tags as $tag) {
-    $content .= "\\$title\\OpenAPI\\Server\\V$version\\Rest\\$tag::class=>\\$title\\OpenAPI\\Server\\V$version\\Rest\\$tag::class,\n";
+    $content .= "\\$title\\OpenAPI\\V$version\\Server\\Rest\\$tag::class=>\\$title\\OpenAPI\V$version\\Server\\\Rest\\$tag::class,\n";
 }
-$content .= "],\n],";
+$content .= "],\n],\n";
 $content .= "];";
 
 file_put_contents($file, $content);
@@ -110,7 +110,7 @@ exec("cp $manifest $docsDir/", $output4);
 /**
  * Generate REST classes
  */
-$restDir = "src/$title/src/OpenAPI/Server/V$version/Rest";
+$restDir = "src/$title/src/OpenAPI/V$version/Server/Rest";
 if (!file_exists($restDir)) {
     mkdir($restDir, 0777, true);
     sleep(1);
@@ -118,7 +118,7 @@ if (!file_exists($restDir)) {
 
 foreach ($tags as $tag) {
     // create namespace
-    $namespace = (new \Nette\PhpGenerator\PhpNamespace("$title\OpenAPI\Server\V$version\Rest"))
+    $namespace = (new \Nette\PhpGenerator\PhpNamespace("$title\OpenAPI\V$version\Server\Rest"))
         ->addUse('OpenAPI\Server\Rest\BaseAbstract')
         ->addUse('rollun\Callables\Task\ResultInterface')
         ->addUse('rollun\dic\InsideConstruct');

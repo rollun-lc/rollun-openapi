@@ -1,8 +1,8 @@
 <?php
-declare(strict_types=1);
 
-namespace HelloUser\OpenAPI\Server\V1\Rest;
+namespace HelloUser\OpenAPI\V1\Server\Rest;
 
+use HelloUser\OpenAPI\V1\Server\Rest\User;
 use OpenAPI\Server\Rest\BaseAbstract;
 use rollun\Callables\Task\Result;
 use rollun\Callables\Task\ResultInterface;
@@ -10,8 +10,6 @@ use rollun\dic\InsideConstruct;
 
 /**
  * Class Hello
- *
- * @author r.ratsun <r.ratsun.rollun@gmail.com>
  */
 class Hello extends BaseAbstract
 {

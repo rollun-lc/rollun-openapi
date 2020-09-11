@@ -9,10 +9,10 @@ microserviceName.com/openapi/moduleName/v1/groupTaskName/{id} GET | DELETE | PUT
 
 ## Структура namespace
 ### Server
-microserviceName/src/moduleName/src/openApi/server/v1/handler/groupTaskName.php
-microserviceName/src/moduleName/src/openApi/server/v1/handler/groupTaskNameId.php
+microserviceName/src/moduleName/src/openApi/v1/server/handler/groupTaskName.php
+microserviceName/src/moduleName/src/openApi/v1/server/handler/groupTaskNameId.php
 ### Client
-microserviceName/src/moduleName/src/openApi/client/v1/api/groupTaskNameApi.php
+microserviceName/src/moduleName/src/openApi/v1/client/api/groupTaskNameApi.php
 
 
 ## PHP

@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 
-namespace HelloUser\OpenAPI\Server\V1\Handler;
+namespace HelloUser\OpenAPI\V1\Server\Handler;
 
 use Articus\PathHandler\Annotation as PHA;
 use Articus\PathHandler\Consumer as PHConsumer;
@@ -20,7 +20,10 @@ use rollun\dic\InsideConstruct;
  */
 class User extends AbstractHandler
 {
-    const REST_OBJECT = \HelloUser\OpenAPI\Server\V1\Rest\User::class;
+    /**
+     * ATTENTION! REST_OBJECT should be declared in service manager
+     */
+    const REST_OBJECT = \HelloUser\OpenAPI\V1\Server\Rest\User::class;
 
     /**
      * User constructor.
@@ -38,8 +41,8 @@ class User extends AbstractHandler
      * @PHA\Post()
      * TODO check if consumer is valid, if it has correct priority and if it can be moved to class annotation
      * @PHA\Consumer(name=PHConsumer\Json::class, mediaType="application/json")
-     * @PHA\Attribute(name=PHAttribute\Transfer::class, options={"type":\HelloUser\OpenAPI\Server\V1\DTO\User::class,"objectAttr":"bodyData", "errorAttr":"errors"})
-     * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\HelloUser\OpenAPI\Server\V1\DTO\UserResult::class})
+     * @PHA\Attribute(name=PHAttribute\Transfer::class, options={"type":\HelloUser\OpenAPI\V1\Server\DTO\User::class,"objectAttr":"bodyData", "errorAttr":"errors"})
+     * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\HelloUser\OpenAPI\V1\Server\DTO\UserResult::class})
      * @param ServerRequestInterface $request
      *
      * @return array
