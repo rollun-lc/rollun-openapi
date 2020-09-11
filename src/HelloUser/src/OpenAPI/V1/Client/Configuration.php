@@ -4,7 +4,7 @@
  * PHP version 7.2
  *
  * @category Class
- * @package  HelloUser\OpenAPI\Client\V1
+ * @package  HelloUser\OpenAPI\V1\Client
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  */
@@ -26,14 +26,14 @@
  * Do not edit the class manually.
  */
 
-namespace HelloUser\OpenAPI\Client\V1;
+namespace HelloUser\OpenAPI\V1\Client;
 
 /**
  * Configuration Class Doc Comment
  * PHP version 7.2
  *
  * @category Class
- * @package  HelloUser\OpenAPI\Client\V1
+ * @package  HelloUser\OpenAPI\V1\Client
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  */
@@ -42,7 +42,7 @@ class Configuration
     /**
      * @var array
      */
-    public static $additionalData = ['helloIdGet'=>['className'=>'HelloApi','params' => [['paramName'=>'id','paramType'=>'string'],]],'userIdGet'=>['className'=>'UserApi','params' => [['paramName'=>'id','paramType'=>'string'],]],'userPost'=>['className'=>'UserApi','params' => [['paramName'=>'user','paramType'=>'\HelloUser\OpenAPI\Client\V1\Model\User'],]],];
+    public static $additionalData = ['helloIdGet'=>['className'=>'HelloApi', 'returnType' => '\HelloUser\OpenAPI\V1\Client\Model\HelloResult','params' => [['paramName'=>'id','paramType'=>'string'],]],'userIdGet'=>['className'=>'UserApi', 'returnType' => '\HelloUser\OpenAPI\V1\Client\Model\UserResult','params' => [['paramName'=>'id','paramType'=>'string'],]],'userPost'=>['className'=>'UserApi', 'returnType' => '\HelloUser\OpenAPI\V1\Client\Model\UserResult','params' => [['paramName'=>'user','paramType'=>'\HelloUser\OpenAPI\V1\Client\Model\User'],]],];
 
     private static $defaultConfiguration;
 
@@ -398,7 +398,7 @@ class Configuration
      */
     public static function toDebugReport()
     {
-        $report  = 'PHP SDK (HelloUser\OpenAPI\Client\V1) Debug Report:' . PHP_EOL;
+        $report  = 'PHP SDK (HelloUser\OpenAPI\V1\Client) Debug Report:' . PHP_EOL;
         $report .= '    OS: ' . php_uname() . PHP_EOL;
         $report .= '    PHP Version: ' . PHP_VERSION . PHP_EOL;
         $report .= '    The version of the OpenAPI document: 1' . PHP_EOL;

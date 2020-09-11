@@ -4,7 +4,7 @@
  * PHP version 7.2
  *
  * @category Class
- * @package  HelloUser\OpenAPI\Client\V1
+ * @package  HelloUser\OpenAPI\V1\Client
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  */
@@ -26,7 +26,7 @@
  * Do not edit the class manually.
  */
 
-namespace HelloUser\OpenAPI\Client\V1\Api;
+namespace HelloUser\OpenAPI\V1\Client\Api;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
@@ -35,7 +35,7 @@ use GuzzleHttp\Psr7\MultipartStream;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\RequestOptions;
 use OpenAPI\Client\ApiException;
-use HelloUser\OpenAPI\Client\V1\Configuration;
+use HelloUser\OpenAPI\V1\Client\Configuration;
 use OpenAPI\Client\HeaderSelector;
 use OpenAPI\Client\ObjectSerializer;
 
@@ -43,7 +43,7 @@ use OpenAPI\Client\ObjectSerializer;
  * UserApi Class Doc Comment
  *
  * @category Class
- * @package  HelloUser\OpenAPI\Client\V1
+ * @package  HelloUser\OpenAPI\V1\Client
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  */
@@ -118,7 +118,7 @@ class UserApi
     /**
      * Operation userIdGet
      *
-     * @param  string $id id (required)
+     * @param mixed $id id (required)
      *
      * @throws ApiException on non-2xx response
      * @throws \InvalidArgumentException
@@ -133,11 +133,11 @@ class UserApi
     /**
      * Operation userIdGetWithHttpInfo
      *
-     * @param  string $id (required)
+     * @param mixed $id (required)
      *
      * @throws ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of \HelloUser\OpenAPI\Client\V1\Model\UserResult|\HelloUser\OpenAPI\Client\V1\Model\ErrorResult|\HelloUser\OpenAPI\Client\V1\Model\ErrorResult, HTTP status code, HTTP response headers (array of strings)
+     * @return array
      */
     public function userIdGetWithHttpInfo($id)
     {
@@ -156,53 +156,27 @@ class UserApi
             $responseBody = $response->getBody();
             switch($statusCode) {
                 case 200:
-                    if ('\HelloUser\OpenAPI\Client\V1\Model\UserResult' === '\SplFileObject') {
-                        $content = $responseBody; //stream goes to serializer
-                    } else {
-                        $content = (string) $responseBody;
-                    }
-
                     return [
-                        ObjectSerializer::deserialize($content, '\HelloUser\OpenAPI\Client\V1\Model\UserResult', []),
+                        ObjectSerializer::deserialize((string) $responseBody),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
                 case 404:
-                    if ('\HelloUser\OpenAPI\Client\V1\Model\ErrorResult' === '\SplFileObject') {
-                        $content = $responseBody; //stream goes to serializer
-                    } else {
-                        $content = (string) $responseBody;
-                    }
-
                     return [
-                        ObjectSerializer::deserialize($content, '\HelloUser\OpenAPI\Client\V1\Model\ErrorResult', []),
+                        ObjectSerializer::deserialize((string) $responseBody),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
                 case 500:
-                    if ('\HelloUser\OpenAPI\Client\V1\Model\ErrorResult' === '\SplFileObject') {
-                        $content = $responseBody; //stream goes to serializer
-                    } else {
-                        $content = (string) $responseBody;
-                    }
-
                     return [
-                        ObjectSerializer::deserialize($content, '\HelloUser\OpenAPI\Client\V1\Model\ErrorResult', []),
+                        ObjectSerializer::deserialize((string) $responseBody),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
             }
 
-            $returnType = '\HelloUser\OpenAPI\Client\V1\Model\UserResult';
-            $responseBody = $response->getBody();
-            if ($returnType === '\SplFileObject') {
-                $content = $responseBody; //stream goes to serializer
-            } else {
-                $content = (string) $responseBody;
-            }
-
             return [
-                ObjectSerializer::deserialize($content, $returnType, []),
+                ObjectSerializer::deserialize((string) $responseBody),
                 $response->getStatusCode(),
                 $response->getHeaders()
             ];
@@ -210,27 +184,15 @@ class UserApi
         } catch (ApiException $e) {
             switch ($e->getCode()) {
                 case 200:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\HelloUser\OpenAPI\Client\V1\Model\UserResult',
-                        $e->getResponseHeaders()
-                    );
+                    $data = ObjectSerializer::deserialize($e->getResponseBody());
                     $e->setResponseObject($data);
                     break;
                 case 404:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\HelloUser\OpenAPI\Client\V1\Model\ErrorResult',
-                        $e->getResponseHeaders()
-                    );
+                    $data = ObjectSerializer::deserialize($e->getResponseBody());
                     $e->setResponseObject($data);
                     break;
                 case 500:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\HelloUser\OpenAPI\Client\V1\Model\ErrorResult',
-                        $e->getResponseHeaders()
-                    );
+                    $data = ObjectSerializer::deserialize($e->getResponseBody());
                     $e->setResponseObject($data);
                     break;
             }
@@ -243,7 +205,7 @@ class UserApi
      *
      * 
      *
-     * @param  string $id (required)
+     * @param mixed $id (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
@@ -263,29 +225,21 @@ class UserApi
      *
      * 
      *
-     * @param  string $id (required)
+     * @param mixed $id (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
     public function userIdGetAsyncWithHttpInfo($id)
     {
-        $returnType = '\HelloUser\OpenAPI\Client\V1\Model\UserResult';
         $request = $this->userIdGetRequest($id);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
             ->then(
-                function ($response) use ($returnType) {
-                    $responseBody = $response->getBody();
-                    if ($returnType === '\SplFileObject') {
-                        $content = $responseBody; //stream goes to serializer
-                    } else {
-                        $content = (string) $responseBody;
-                    }
-
+                function ($response) {
                     return [
-                        ObjectSerializer::deserialize($content, $returnType, []),
+                        ObjectSerializer::deserialize((string) $response->getBody()),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
@@ -310,7 +264,7 @@ class UserApi
     /**
      * Create request for operation 'userIdGet'
      *
-     * @param  string $id (required)
+     * @param mixed $id (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
@@ -360,7 +314,7 @@ class UserApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp\json_encode($_tempBody);
             } else {
                 $httpBody = $_tempBody;
             }
@@ -409,7 +363,7 @@ class UserApi
     /**
      * Operation userPost
      *
-     * @param  \HelloUser\OpenAPI\Client\V1\Model\User $user user (required)
+     * @param mixed $user user (required)
      *
      * @throws ApiException on non-2xx response
      * @throws \InvalidArgumentException
@@ -424,11 +378,11 @@ class UserApi
     /**
      * Operation userPostWithHttpInfo
      *
-     * @param  \HelloUser\OpenAPI\Client\V1\Model\User $user (required)
+     * @param mixed $user (required)
      *
      * @throws ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of \HelloUser\OpenAPI\Client\V1\Model\UserResult|\HelloUser\OpenAPI\Client\V1\Model\ErrorResult|\HelloUser\OpenAPI\Client\V1\Model\ErrorResult, HTTP status code, HTTP response headers (array of strings)
+     * @return array
      */
     public function userPostWithHttpInfo($user)
     {
@@ -447,53 +401,27 @@ class UserApi
             $responseBody = $response->getBody();
             switch($statusCode) {
                 case 201:
-                    if ('\HelloUser\OpenAPI\Client\V1\Model\UserResult' === '\SplFileObject') {
-                        $content = $responseBody; //stream goes to serializer
-                    } else {
-                        $content = (string) $responseBody;
-                    }
-
                     return [
-                        ObjectSerializer::deserialize($content, '\HelloUser\OpenAPI\Client\V1\Model\UserResult', []),
+                        ObjectSerializer::deserialize((string) $responseBody),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
                 case 400:
-                    if ('\HelloUser\OpenAPI\Client\V1\Model\ErrorResult' === '\SplFileObject') {
-                        $content = $responseBody; //stream goes to serializer
-                    } else {
-                        $content = (string) $responseBody;
-                    }
-
                     return [
-                        ObjectSerializer::deserialize($content, '\HelloUser\OpenAPI\Client\V1\Model\ErrorResult', []),
+                        ObjectSerializer::deserialize((string) $responseBody),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
                 case 500:
-                    if ('\HelloUser\OpenAPI\Client\V1\Model\ErrorResult' === '\SplFileObject') {
-                        $content = $responseBody; //stream goes to serializer
-                    } else {
-                        $content = (string) $responseBody;
-                    }
-
                     return [
-                        ObjectSerializer::deserialize($content, '\HelloUser\OpenAPI\Client\V1\Model\ErrorResult', []),
+                        ObjectSerializer::deserialize((string) $responseBody),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
             }
 
-            $returnType = '\HelloUser\OpenAPI\Client\V1\Model\UserResult';
-            $responseBody = $response->getBody();
-            if ($returnType === '\SplFileObject') {
-                $content = $responseBody; //stream goes to serializer
-            } else {
-                $content = (string) $responseBody;
-            }
-
             return [
-                ObjectSerializer::deserialize($content, $returnType, []),
+                ObjectSerializer::deserialize((string) $responseBody),
                 $response->getStatusCode(),
                 $response->getHeaders()
             ];
@@ -501,27 +429,15 @@ class UserApi
         } catch (ApiException $e) {
             switch ($e->getCode()) {
                 case 201:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\HelloUser\OpenAPI\Client\V1\Model\UserResult',
-                        $e->getResponseHeaders()
-                    );
+                    $data = ObjectSerializer::deserialize($e->getResponseBody());
                     $e->setResponseObject($data);
                     break;
                 case 400:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\HelloUser\OpenAPI\Client\V1\Model\ErrorResult',
-                        $e->getResponseHeaders()
-                    );
+                    $data = ObjectSerializer::deserialize($e->getResponseBody());
                     $e->setResponseObject($data);
                     break;
                 case 500:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\HelloUser\OpenAPI\Client\V1\Model\ErrorResult',
-                        $e->getResponseHeaders()
-                    );
+                    $data = ObjectSerializer::deserialize($e->getResponseBody());
                     $e->setResponseObject($data);
                     break;
             }
@@ -534,7 +450,7 @@ class UserApi
      *
      * 
      *
-     * @param  \HelloUser\OpenAPI\Client\V1\Model\User $user (required)
+     * @param mixed $user (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
@@ -554,29 +470,21 @@ class UserApi
      *
      * 
      *
-     * @param  \HelloUser\OpenAPI\Client\V1\Model\User $user (required)
+     * @param mixed $user (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
     public function userPostAsyncWithHttpInfo($user)
     {
-        $returnType = '\HelloUser\OpenAPI\Client\V1\Model\UserResult';
         $request = $this->userPostRequest($user);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
             ->then(
-                function ($response) use ($returnType) {
-                    $responseBody = $response->getBody();
-                    if ($returnType === '\SplFileObject') {
-                        $content = $responseBody; //stream goes to serializer
-                    } else {
-                        $content = (string) $responseBody;
-                    }
-
+                function ($response) {
                     return [
-                        ObjectSerializer::deserialize($content, $returnType, []),
+                        ObjectSerializer::deserialize((string) $response->getBody()),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
@@ -601,7 +509,7 @@ class UserApi
     /**
      * Create request for operation 'userPost'
      *
-     * @param  \HelloUser\OpenAPI\Client\V1\Model\User $user (required)
+     * @param mixed $user (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
@@ -646,7 +554,7 @@ class UserApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp\json_encode($_tempBody);
             } else {
                 $httpBody = $_tempBody;
             }

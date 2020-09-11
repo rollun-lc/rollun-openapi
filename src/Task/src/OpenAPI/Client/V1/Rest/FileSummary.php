@@ -6,7 +6,6 @@ use GuzzleHttp\Client;
 use OpenAPI\Server\Rest\BaseAbstract;
 use Task\OpenAPI\Client\V1\Api\FileSummaryApi;
 use rollun\Callables\Task\Result;
-use rollun\Callables\Task\ResultInterface;
 
 /**
  * Class FileSummary
@@ -33,7 +32,7 @@ class FileSummary extends BaseAbstract
 	/**
 	 * @inheritDoc
 	 */
-	public function deleteById($id): ResultInterface
+	public function deleteById($id)
 	{
 		$result = $this->api->fileSummaryIdDelete($id);
 
@@ -44,7 +43,7 @@ class FileSummary extends BaseAbstract
 	/**
 	 * @inheritDoc
 	 */
-	public function getById($id): ResultInterface
+	public function getById($id)
 	{
 		$result = $this->api->fileSummaryIdGet($id);
 
@@ -57,7 +56,7 @@ class FileSummary extends BaseAbstract
 	 *
 	 * @param array $bodyData
 	 */
-	public function post($bodyData): ResultInterface
+	public function post($bodyData)
 	{
 		$result = $this->api->fileSummaryPost(new \Task\OpenAPI\Client\V1\Model\PostFileSummary($bodyData));
 

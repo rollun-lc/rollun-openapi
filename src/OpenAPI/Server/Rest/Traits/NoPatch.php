@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace OpenAPI\Server\Rest\Traits;
 
-use rollun\Callables\Task\ResultInterface;
-
 /**
  * Trait NoPatch
  *
@@ -16,10 +14,10 @@ trait NoPatch
      * @param $queryData
      * @param $bodyData
      *
-     * @return ResultInterface
+     * @return mixed
      * @throws \Exception
      */
-    public function patch($queryData, $bodyData): ResultInterface
+    public function patch($queryData, $bodyData)
     {
         throw new \Exception('Not implemented method');
     }

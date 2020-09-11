@@ -32,7 +32,7 @@ class Configuration
     /**
      * @var array
      */
-    public static $additionalData = [{{#apiInfo}}{{#apis}}{{#operations}}{{#operation}}'{{operationId}}'=>['className'=>'{{classname}}','params' => [{{#allParams}}['paramName'=>'{{paramName}}','paramType'=>'{{dataType}}'],{{/allParams}}]],{{/operation}}{{/operations}}{{/apis}}{{/apiInfo}}];
+    public static $additionalData = [{{#apiInfo}}{{#apis}}{{#operations}}{{#operation}}'{{operationId}}'=>['className'=>'{{classname}}', 'returnType' => '{{#returnType}}{{responses.0.dataType}}{{/returnType}}','params' => [{{#allParams}}['paramName'=>'{{paramName}}','paramType'=>'{{dataType}}'],{{/allParams}}]],{{/operation}}{{/operations}}{{/apis}}{{/apiInfo}}];
 
     private static $defaultConfiguration;
 

@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace OpenAPI\Server\Rest\Traits;
 
-use rollun\Callables\Task\ResultInterface;
-
 /**
  * Trait NoGetById
  *
@@ -15,10 +13,10 @@ trait NoGetById
     /**
      * @param $id
      *
-     * @return ResultInterface
+     * @return mixed
      * @throws \Exception
      */
-    public function getById($id): ResultInterface
+    public function getById($id)
     {
         throw new \Exception('Not implemented method');
     }

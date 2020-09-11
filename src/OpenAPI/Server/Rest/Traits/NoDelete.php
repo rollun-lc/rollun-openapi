@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace OpenAPI\Server\Rest\Traits;
 
-use rollun\Callables\Task\ResultInterface;
-
 /**
  * Trait NoDelete
  *
@@ -15,10 +13,10 @@ trait NoDelete
     /**
      * @param $queryData
      *
-     * @return ResultInterface
+     * @return mixed
      * @throws \Exception
      */
-    public function delete($queryData = null): ResultInterface
+    public function delete($queryData = null)
     {
         throw new \Exception('Not implemented method');
     }

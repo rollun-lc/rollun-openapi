@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace OpenAPI\Server\Rest\Traits;
 
-use rollun\Callables\Task\ResultInterface;
-
 /**
  * Trait NoPost
  *
@@ -15,10 +13,10 @@ trait NoPost
     /**
      * @param $bodyData
      *
-     * @return ResultInterface
+     * @return mixed
      * @throws \Exception
      */
-    public function post($bodyData): ResultInterface
+    public function post($bodyData)
     {
         throw new \Exception('Not implemented method');
     }

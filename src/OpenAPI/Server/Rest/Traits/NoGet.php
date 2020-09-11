@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace OpenAPI\Server\Rest\Traits;
 
-use rollun\Callables\Task\ResultInterface;
-
 /**
  * Trait NoGet
  *
@@ -15,10 +13,10 @@ trait NoGet
     /**
      * @param null $queryData
      *
-     * @return ResultInterface
+     * @return mixed
      * @throws \Exception
      */
-    public function get($queryData = null): ResultInterface
+    public function get($queryData = null)
     {
         throw new \Exception('Not implemented method');
     }

@@ -28,57 +28,6 @@ class ObjectSerializer
     }
 
     /**
-     * Serialize data
-     *
-     * @param mixed  $data   the data to serialize
-     * @param string $type   the OpenAPIToolsType of the data
-     * @param string $format the format of the OpenAPITools type of the data
-     *
-     * @return string|object serialized form of $data
-     */
-    public static function sanitizeForSerialization($data, $type = null, $format = null)
-    {
-        if (is_scalar($data) || null === $data) {
-            return $data;
-        } elseif ($data instanceof \DateTime) {
-            return ($format === 'date') ? $data->format('Y-m-d') : $data->format(self::$dateTimeFormat);
-        } elseif (is_array($data)) {
-            foreach ($data as $property => $value) {
-                $data[$property] = self::sanitizeForSerialization($value);
-            }
-            return $data;
-        } elseif (is_object($data)) {
-            $values = [];
-            if ($data instanceof ModelInterface) {
-                $formats = $data::openAPIFormats();
-                foreach ($data::openAPITypes() as $property => $openAPIType) {
-                    $getter = $data::getters()[$property];
-                    $value = $data->$getter();
-                    if ($value !== null
-                        && !in_array(
-                            $openAPIType, ['DateTime', 'bool', 'boolean', 'byte', 'double', 'float', 'int', 'integer', 'mixed', 'number', 'object', 'string', 'void'], true
-                        )
-                        && method_exists($openAPIType, 'getAllowableEnumValues')
-                        && !in_array($value, $openAPIType::getAllowableEnumValues(), true)) {
-                        $imploded = implode("', '", $openAPIType::getAllowableEnumValues());
-                        throw new \InvalidArgumentException("Invalid value for enum '$openAPIType', must be one of: '$imploded'");
-                    }
-                    if ($value !== null) {
-                        $values[$data::attributeMap()[$property]] = self::sanitizeForSerialization($value, $openAPIType, $formats[$property]);
-                    }
-                }
-            } else {
-                foreach ($data as $property => $value) {
-                    $values[$property] = self::sanitizeForSerialization($value);
-                }
-            }
-            return (object)$values;
-        } else {
-            return (string)$data;
-        }
-    }
-
-    /**
      * Sanitize filename by removing path.
      * e.g. ../../sun.gif becomes sun.gif
      *
@@ -224,111 +173,15 @@ class ObjectSerializer
     }
 
     /**
-     * Deserialize a JSON string into an object
+     * Deserialize a JSON string into an array
      *
-     * @param mixed    $data          object or primitive to be deserialized
-     * @param string   $class         class name is passed as a string
-     * @param string[] $httpHeaders   HTTP headers
-     * @param string   $discriminator discriminator if polymorphism is used
+     * @param string $data
      *
-     * @return object|array|null a single or an array of $class instances
+     * @return array
      */
-    public static function deserialize($data, $class, $httpHeaders = null)
+    public static function deserialize($data)
     {
         // we always return an array or null
-        return !empty($data) ? json_decode($data, true) : $data;
-
-        /**
-         * Original code bellow
-         */
-        if (null === $data) {
-            return null;
-        } elseif (substr($class, 0, 4) === 'map[') { // for associative array e.g. map[string,int]
-            $data = is_string($data) ? json_decode($data) : $data;
-            settype($data, 'array');
-            $inner = substr($class, 4, -1);
-            $deserialized = [];
-            if (strrpos($inner, ",") !== false) {
-                $subClass_array = explode(',', $inner, 2);
-                $subClass = $subClass_array[1];
-                foreach ($data as $key => $value) {
-                    $deserialized[$key] = self::deserialize($value, $subClass, null);
-                }
-            }
-            return $deserialized;
-        } elseif (strcasecmp(substr($class, -2), '[]') === 0) {
-            $data = is_string($data) ? json_decode($data) : $data;
-            $subClass = substr($class, 0, -2);
-            $values = [];
-            foreach ($data as $key => $value) {
-                $values[] = self::deserialize($value, $subClass, null);
-            }
-            return $values;
-        } elseif ($class === 'object') {
-            settype($data, 'array');
-            return $data;
-        } elseif ($class === '\DateTime') {
-            // Some API's return an invalid, empty string as a
-            // date-time property. DateTime::__construct() will return
-            // the current time for empty input which is probably not
-            // what is meant. The invalid empty string is probably to
-            // be interpreted as a missing field/value. Let's handle
-            // this graceful.
-            if (!empty($data)) {
-                return new \DateTime($data);
-            } else {
-                return null;
-            }
-        } elseif (in_array($class, ['DateTime', 'bool', 'boolean', 'byte', 'double', 'float', 'int', 'integer', 'mixed', 'number', 'object', 'string', 'void'], true)) {
-            settype($data, $class);
-            return $data;
-        } elseif ($class === '\SplFileObject') {
-            /** @var \Psr\Http\Message\StreamInterface $data */
-
-            // determine file name
-            if (array_key_exists('Content-Disposition', $httpHeaders) && preg_match('/inline; filename=[\'"]?([^\'"\s]+)[\'"]?$/i', $httpHeaders['Content-Disposition'], $match)) {
-                $filename = Configuration::getDefaultConfiguration()->getTempFolderPath() . DIRECTORY_SEPARATOR . self::sanitizeFilename($match[1]);
-            } else {
-                $filename = tempnam(Configuration::getDefaultConfiguration()->getTempFolderPath(), '');
-            }
-
-            $file = fopen($filename, 'w');
-            while ($chunk = $data->read(200)) {
-                fwrite($file, $chunk);
-            }
-            fclose($file);
-
-            return new \SplFileObject($filename, 'r');
-        } elseif (method_exists($class, 'getAllowableEnumValues')) {
-            if (!in_array($data, $class::getAllowableEnumValues(), true)) {
-                $imploded = implode("', '", $class::getAllowableEnumValues());
-                throw new \InvalidArgumentException("Invalid value for enum '$class', must be one of: '$imploded'");
-            }
-            return $data;
-        } else {
-            $data = is_string($data) ? json_decode($data) : $data;
-            // If a discriminator is defined and points to a valid subclass, use it.
-            $discriminator = $class::DISCRIMINATOR;
-            if (!empty($discriminator) && isset($data->{$discriminator}) && is_string($data->{$discriminator})) {
-                $subclass = '\OpenAPI\Client\Model\\' . $data->{$discriminator};
-                if (is_subclass_of($subclass, $class)) {
-                    $class = $subclass;
-                }
-            }
-            $instance = new $class();
-            foreach ($instance::openAPITypes() as $property => $type) {
-                $propertySetter = $instance::setters()[$property];
-
-                if (!isset($propertySetter) || !isset($data->{$instance::attributeMap()[$property]})) {
-                    continue;
-                }
-
-                $propertyValue = $data->{$instance::attributeMap()[$property]};
-                if (isset($propertyValue)) {
-                    $instance->$propertySetter(self::deserialize($propertyValue, $type, null));
-                }
-            }
-            return $instance;
-        }
+        return !empty($data) ? json_decode($data, true) : [];
     }
 }

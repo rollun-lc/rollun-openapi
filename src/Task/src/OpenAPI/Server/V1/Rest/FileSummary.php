@@ -5,7 +5,6 @@ namespace Task\OpenAPI\Server\V1\Rest;
 
 use OpenAPI\Server\Rest\BaseAbstract;
 use OpenAPI\Server\Rest\RestInterface;
-use rollun\Callables\Task\ResultInterface;
 use rollun\Callables\TaskExample;
 use rollun\dic\InsideConstruct;
 
@@ -40,7 +39,7 @@ class FileSummary extends BaseAbstract implements RestInterface
      *
      * @throws \Exception
      */
-    public function post($bodyData): ResultInterface
+    public function post($bodyData)
     {
         return $this->controllerObject->runTask($bodyData);
     }
@@ -48,7 +47,7 @@ class FileSummary extends BaseAbstract implements RestInterface
     /**
      * @inheritDoc
      */
-    public function getById($id): ResultInterface
+    public function getById($id)
     {
         return $this->controllerObject->getTaskInfoById($id);
     }
