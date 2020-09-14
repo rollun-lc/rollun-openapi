@@ -1,13 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace DataStoreExample\OpenAPI\Server\V1\Rest;
+namespace DataStoreExample\OpenAPI\V1\Server\Rest;
 
 use Articus\PathHandler\Exception\HttpCode;
 use Articus\PathHandler\Exception\NotFound;
 use OpenAPI\Server\Rest\BaseAbstract;
-use rollun\Callables\Task\Result;
-use rollun\Callables\Task\ResultInterface;
 use rollun\datastore\DataStore\Interfaces\DataStoreInterface;
 use rollun\datastore\Rql\RqlParser;
 use rollun\datastore\Rql\RqlQuery;
@@ -42,7 +40,7 @@ class User extends BaseAbstract
     /**
      * @inheritDoc
      */
-    public function delete($queryData = null): ResultInterface
+    public function delete($queryData = [])
     {
         $query = empty($queryData->rql) ? new RqlQuery() : RqlParser::rqlDecode($queryData->rql);
 
@@ -51,13 +49,13 @@ class User extends BaseAbstract
             throw new HttpCode(404, "No records exists for such query");
         }
 
-        return new Result(null);
+        return [];
     }
 
     /**
      * @inheritDoc
      */
-    public function get($queryData = null): ResultInterface
+    public function get($queryData = [])
     {
         $limit = empty($queryData->limit) ? 1000 : $queryData->limit;
         $offset = empty($queryData->offset) ? 0 : $queryData->offset;
@@ -77,13 +75,13 @@ class User extends BaseAbstract
             $result[$k] = $this->prepareResultFieldsTypes($row);
         }
 
-        return new Result($result);
+        return ['data' => $result];
     }
 
     /**
      * @inheritDoc
      */
-    public function patch($queryData, $bodyData): ResultInterface
+    public function patch($queryData, $bodyData)
     {
         $query = empty($queryData->rql) ? new RqlQuery() : RqlParser::rqlDecode($queryData->rql);
 
@@ -102,7 +100,7 @@ class User extends BaseAbstract
     /**
      * @inheritDoc
      */
-    public function post($bodyData): ResultInterface
+    public function post($bodyData)
     {
         // prepare input data
         $inputData = [];
@@ -119,7 +117,7 @@ class User extends BaseAbstract
     /**
      * @inheritDoc
      */
-    public function deleteById($id): ResultInterface
+    public function deleteById($id)
     {
         $result = $this->dataStore->delete($id);
 
@@ -127,14 +125,14 @@ class User extends BaseAbstract
             throw new NotFound();
         }
 
-        return new Result(null);
+        return [];
     }
 
 
     /**
      * @inheritDoc
      */
-    public function getById($id): ResultInterface
+    public function getById($id)
     {
         $result = $this->dataStore->read($id);
 
@@ -145,14 +143,14 @@ class User extends BaseAbstract
         // prepare result fields types
         $result = $this->prepareResultFieldsTypes($result);
 
-        return new Result($result);
+        return ['data' => $result];
     }
 
 
     /**
      * @inheritDoc
      */
-    public function patchById($id, $bodyData): ResultInterface
+    public function patchById($id, $bodyData)
     {
         $result = $this->dataStore->read($id);
 
@@ -171,14 +169,14 @@ class User extends BaseAbstract
 
         $this->dataStore->rewrite($result);
 
-        return new Result($result);
+        return ['data' => $result];
     }
 
 
     /**
      * @inheritDoc
      */
-    public function putById($id, $bodyData): ResultInterface
+    public function putById($id, $bodyData)
     {
         return $this->patchById($id, $bodyData);
     }
@@ -186,10 +184,10 @@ class User extends BaseAbstract
     /**
      * @param array $data
      *
-     * @return ResultInterface
+     * @return array
      * @throws \Exception
      */
-    protected function getUpdateResult(array $data): ResultInterface
+    protected function getUpdateResult(array $data)
     {
         if (!empty($data)) {
             $ids = [];
@@ -203,7 +201,7 @@ class User extends BaseAbstract
             return $this->get($queryData);
         }
 
-        return new Result(null);
+        return [];
     }
 
     /**

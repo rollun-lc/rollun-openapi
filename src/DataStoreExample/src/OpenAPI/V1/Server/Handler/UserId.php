@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 
-namespace DataStoreExample\OpenAPI\Server\V1\Handler;
+namespace DataStoreExample\OpenAPI\V1\Server\Handler;
 
 use Articus\PathHandler\Annotation as PHA;
 use Articus\PathHandler\Consumer as PHConsumer;
@@ -23,7 +23,7 @@ class UserId extends AbstractHandler
     /**
      * ATTENTION! REST_OBJECT should be declared in service manager
      */
-    const REST_OBJECT = \DataStoreExample\OpenAPI\Server\V1\Rest\User::class;
+    const REST_OBJECT = \DataStoreExample\OpenAPI\V1\Server\Rest\User::class;
 
     /**
      * UserId constructor.
@@ -39,7 +39,7 @@ class UserId extends AbstractHandler
 
     /**
      * @PHA\Delete()
-     * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\DataStoreExample\OpenAPI\Server\V1\DTO\Result::class})
+     * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\DataStoreExample\OpenAPI\V1\DTO\Result::class})
      * @param ServerRequestInterface $request
      *
      * @return array
@@ -50,7 +50,7 @@ class UserId extends AbstractHandler
     }
     /**
      * @PHA\Get()
-     * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\DataStoreExample\OpenAPI\Server\V1\DTO\UserResult::class})
+     * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\DataStoreExample\OpenAPI\V1\DTO\UserResult::class})
      * @param ServerRequestInterface $request
      *
      * @return array
@@ -63,8 +63,8 @@ class UserId extends AbstractHandler
      * @PHA\Patch()
      * TODO check if consumer is valid, if it has correct priority and if it can be moved to class annotation
      * @PHA\Consumer(name=PHConsumer\Json::class, mediaType="application/json")
-     * @PHA\Attribute(name=PHAttribute\Transfer::class, options={"type":\DataStoreExample\OpenAPI\Server\V1\DTO\User::class,"objectAttr":"bodyData", "errorAttr":"errors"})
-     * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\DataStoreExample\OpenAPI\Server\V1\DTO\UserResult::class})
+     * @PHA\Attribute(name=PHAttribute\Transfer::class, options={"type":\DataStoreExample\OpenAPI\V1\DTO\User::class,"objectAttr":"bodyData", "errorAttr":"errors"})
+     * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\DataStoreExample\OpenAPI\V1\DTO\UserResult::class})
      * @param ServerRequestInterface $request
      *
      * @return array
@@ -77,8 +77,8 @@ class UserId extends AbstractHandler
      * @PHA\Put()
      * TODO check if consumer is valid, if it has correct priority and if it can be moved to class annotation
      * @PHA\Consumer(name=PHConsumer\Json::class, mediaType="application/json")
-     * @PHA\Attribute(name=PHAttribute\Transfer::class, options={"type":\DataStoreExample\OpenAPI\Server\V1\DTO\PutUser::class,"objectAttr":"bodyData", "errorAttr":"errors"})
-     * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\DataStoreExample\OpenAPI\Server\V1\DTO\UserResult::class})
+     * @PHA\Attribute(name=PHAttribute\Transfer::class, options={"type":\DataStoreExample\OpenAPI\V1\DTO\PutUser::class,"objectAttr":"bodyData", "errorAttr":"errors"})
+     * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\DataStoreExample\OpenAPI\V1\DTO\UserResult::class})
      * @param ServerRequestInterface $request
      *
      * @return array

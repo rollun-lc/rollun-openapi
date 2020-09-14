@@ -19,7 +19,7 @@ class User extends BaseAbstract
 	public function getById($id)
 	{
 		// send request
-		$data = $this->api->userIdGet($id);
+		$data = $this->getApi()->userIdGet($id);
 
 		// validation of response
 		$result = $this->transfer((array)$data, \HelloUser\OpenAPI\V1\DTO\UserResult::class);
@@ -36,14 +36,23 @@ class User extends BaseAbstract
 	public function post($bodyData)
 	{
 		// validation of $bodyData
-		$bodyDataObject = $this->transfer((array)$bodyData, \HelloUser\OpenAPI\V1\DTO\User::class);
+		$bodyDataObject = $this->transfer((array)$bodyData, '\HelloUser\OpenAPI\V1\DTO\User');
 
 		// send request
-		$data = $this->api->userPost($bodyData);
+		$data = $this->getApi()->userPost($bodyData);
 
 		// validation of response
 		$result = $this->transfer((array)$data, \HelloUser\OpenAPI\V1\DTO\UserResult::class);
 
 		return $result;
+	}
+
+
+	/**
+	 * @return \HelloUser\OpenAPI\V1\Client\Api\UserApi
+	 */
+	protected function getApi(): object
+	{
+		return $this->api;
 	}
 }

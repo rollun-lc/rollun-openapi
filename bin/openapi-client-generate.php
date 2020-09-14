@@ -102,11 +102,14 @@ foreach ($tags as $tag) {
     $namespace = (new \Nette\PhpGenerator\PhpNamespace("$title\OpenAPI\V$version\Client\Rest"))
         ->addUse('OpenAPI\Client\Rest\BaseAbstract');
 
+    // prepare api name
+    $apiName = "\\$title\\OpenAPI\\V$version\\Client\\Api\\{$tag}Api";
+
     // create class
     $class = $namespace->addClass($tag);
     $class->setExtends('OpenAPI\Client\Rest\BaseAbstract');
     $class->addComment("Class $tag");
-    $class->addProperty('apiName', "\\$title\\OpenAPI\\V$version\\Client\\Api\\{$tag}Api")->setProtected()->addComment("@var string");
+    $class->addProperty('apiName', $apiName)->setProtected()->addComment("@var string");
 
     // get additional data
     include_once "src/$title/src/OpenAPI/V$version/Client/Configuration.php";
@@ -133,11 +136,11 @@ foreach ($tags as $tag) {
             switch (str_replace(lcfirst(str_replace('Api', '', $row['className'])), '', $action)) {
                 case 'Post':
                     $bodyType = str_replace("Client\Model", "DTO", $row['params'][0]['paramType']);
-                    $body = "// validation of \$bodyData\n\$bodyDataObject = \$this->transfer((array)\$bodyData, $bodyType::class);\n\n";
+                    $body = "// validation of \$bodyData\n\$bodyDataObject = \$this->transfer((array)\$bodyData, '$bodyType');\n\n";
 
                     $method = $class
                         ->addMethod('post')
-                        ->setBody(sprintf($bodyTemplate, $body, "\$this->api->{$action}(" . implode(',', $inputParams) . ")"))
+                        ->setBody(sprintf($bodyTemplate, $body, "\$this->getApi()->{$action}(" . implode(',', $inputParams) . ")"))
                         ->addComment('@inheritDoc')
                         ->addComment('')
                         ->addComment('@param array $bodyData');
@@ -148,11 +151,11 @@ foreach ($tags as $tag) {
                     $body = "// validation of \$queryData\n\$queryDataObject = \$this->transfer((array)\$queryData, $queryType::class);\n\n";
 
                     $bodyType = str_replace("Client\Model", "DTO", $row['params'][0]['paramType']);
-                    $body .= "// validation of \$bodyData\n\$bodyDataObject = \$this->transfer((array)\$bodyData, $bodyType::class);\n\n";
+                    $body .= "// validation of \$bodyData\n\$bodyDataObject = \$this->transfer((array)\$bodyData, '$bodyType');\n\n";
 
                     $method = $class
                         ->addMethod('patch')
-                        ->setBody(sprintf($bodyTemplate, $body, "\$this->api->{$action}(" . implode(',', $inputParams) . ")"))
+                        ->setBody(sprintf($bodyTemplate, $body, "\$this->getApi()->{$action}(" . implode(',', $inputParams) . ")"))
                         ->addComment('@inheritDoc')
                         ->addComment('')
                         ->addComment('@param array $queryData')
@@ -166,7 +169,7 @@ foreach ($tags as $tag) {
 
                     $method = $class
                         ->addMethod('get')
-                        ->setBody(sprintf($bodyTemplate, $body, "\$this->api->{$action}(" . implode(',', $inputParams) . ")"))
+                        ->setBody(sprintf($bodyTemplate, $body, "\$this->getApi()->{$action}(" . implode(',', $inputParams) . ")"))
                         ->addComment('@inheritDoc')
                         ->addComment('')
                         ->addComment('@param array $queryData');
@@ -178,7 +181,7 @@ foreach ($tags as $tag) {
 
                     $method = $class
                         ->addMethod('delete')
-                        ->setBody(sprintf($bodyTemplate, $body, "\$this->api->{$action}(" . implode(',', $inputParams) . ")"))
+                        ->setBody(sprintf($bodyTemplate, $body, "\$this->getApi()->{$action}(" . implode(',', $inputParams) . ")"))
                         ->addComment('@inheritDoc')
                         ->addComment('')
                         ->addComment('@param array $queryData');
@@ -187,17 +190,17 @@ foreach ($tags as $tag) {
                 case 'IdGet':
                     $method = $class
                         ->addMethod('getById')
-                        ->setBody(sprintf($bodyTemplate, "", "\$this->api->{$action}(\$id)"))
+                        ->setBody(sprintf($bodyTemplate, "", "\$this->getApi()->{$action}(\$id)"))
                         ->addComment('@inheritDoc');
                     $method->addParameter('id');
                     break;
                 case 'IdPatch':
                     $bodyType = str_replace("Client\Model", "DTO", $row['params'][0]['paramType']);
-                    $body = "// validation of \$bodyData\n\$bodyDataObject = \$this->transfer((array)\$bodyData, $bodyType::class);\n\n";
+                    $body = "// validation of \$bodyData\n\$bodyDataObject = \$this->transfer((array)\$bodyData, '$bodyType');\n\n";
 
                     $method = $class
                         ->addMethod('patchById')
-                        ->setBody(sprintf($bodyTemplate, $body, "\$this->api->{$action}(\$id, new {$row['params'][1]['paramType']}(\$bodyData))"))
+                        ->setBody(sprintf($bodyTemplate, $body, "\$this->getApi()->{$action}(\$id, \$bodyData)"))
                         ->addComment('@inheritDoc')
                         ->addComment('')
                         ->addComment('@param array $bodyData');
@@ -206,11 +209,11 @@ foreach ($tags as $tag) {
                     break;
                 case 'IdPut':
                     $bodyType = str_replace("Client\Model", "DTO", $row['params'][0]['paramType']);
-                    $body = "// validation of \$bodyData\n\$bodyDataObject = \$this->transfer((array)\$bodyData, $bodyType::class);\n\n";
+                    $body = "// validation of \$bodyData\n\$bodyDataObject = \$this->transfer((array)\$bodyData, '$bodyType');\n\n";
 
                     $method = $class
                         ->addMethod('putById')
-                        ->setBody(sprintf($bodyTemplate, $body, "\$this->api->{$action}(\$id, new {$row['params'][1]['paramType']}(\$bodyData))"))
+                        ->setBody(sprintf($bodyTemplate, $body, "\$this->getApi()->{$action}(\$id, \$bodyData)"))
                         ->addComment('@inheritDoc')
                         ->addComment('')
                         ->addComment('@param array $bodyData');
@@ -220,13 +223,20 @@ foreach ($tags as $tag) {
                 case 'IdDelete':
                     $method = $class
                         ->addMethod('deleteById')
-                        ->setBody(sprintf($bodyTemplate, "", "\$this->api->{$action}(\$id)"))
+                        ->setBody(sprintf($bodyTemplate, "", "\$this->getApi()->{$action}(\$id)"))
                         ->addComment('@inheritDoc');
                     $method->addParameter('id');
                     break;
             }
         }
     }
+
+    $method = $class
+        ->addMethod('getApi')
+        ->setProtected()
+        ->setReturnType('object')
+        ->setBody("return \$this->api;")
+        ->addComment('@return ' . $apiName);
 
     file_put_contents("$restDir/$tag.php", "<?php\n\n" . (string)$namespace);
 }

@@ -63,23 +63,28 @@ exec("openapi-generator generate -i $manifest -o tmp-openapi -g php-ze-ph -c ope
 $pathHandlerData = yaml_parse(file_get_contents('tmp-openapi/application/config/path_handler.yml'));
 
 $file = 'config/autoload/' . lcfirst($title) . '_v' . $version . '_path_handler.global.php';
-$content = "<?php\n\nreturn [\n\Articus\PathHandler\RouteInjection\Factory::class => [\n'paths'=>[\n";
+$content = "<?php\n\n";
+$content .= "return [\n";
+$content .= "    \Articus\PathHandler\RouteInjection\Factory::class => [\n";
+$content .= "        'paths' => [\n";
 foreach ($pathHandlerData['Articus\PathHandler\RouteInjection\Factory']['paths'] as $path => $handlers) {
-    $content .= "'$path' => [\n";
+    $content .= "            '$path' => [\n";
     foreach ($handlers as $handler) {
         $handler = str_replace("\Handler", "\Server\Handler", $handler);
-        $content .= "\\$handler::class,\n";
+        $content .= "                \\$handler::class,\n";
     }
-    $content .= "],\n";
+    $content .= "            ],\n";
 }
-$content .= "],\n";
-$content .= "],\n";
+$content .= "        ],\n";
+$content .= "    ],\n";
 
-$content .= "'dependencies'=>[\n'invokables'=>[\n";
+$content .= "    'dependencies' => [\n";
+$content .= "        'invokables' => [\n";
 foreach ($tags as $tag) {
-    $content .= "\\$title\\OpenAPI\\V$version\\Server\\Rest\\$tag::class=>\\$title\\OpenAPI\V$version\\Server\\Rest\\$tag::class,\n";
+    $content .= "            \\$title\\OpenAPI\\V$version\\Server\\Rest\\$tag::class => \\$title\\OpenAPI\V$version\\Server\\Rest\\$tag::class,\n";
 }
-$content .= "],\n],\n";
+$content .= "        ],\n";
+$content .= "    ],\n";
 $content .= "];";
 
 file_put_contents($file, $content);

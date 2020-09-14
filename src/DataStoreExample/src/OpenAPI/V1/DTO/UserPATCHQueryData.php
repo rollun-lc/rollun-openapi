@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace DataStoreExample\OpenAPI\Server\V1\DTO;
+namespace DataStoreExample\OpenAPI\V1\DTO;
 
 use Articus\DataTransfer\Annotation as DTA;
 
 /**
- * Query parameters for userDELETE
+ * Query parameters for userPATCH
  */
-class UserDELETEQueryData
+class UserPATCHQueryData
 {
     /**
      * @DTA\Data(field="rql", nullable=true)

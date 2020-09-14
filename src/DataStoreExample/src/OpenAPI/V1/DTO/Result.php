@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace DataStoreExample\OpenAPI\Server\V1\DTO;
+namespace DataStoreExample\OpenAPI\V1\DTO;
 
 use Articus\DataTransfer\Annotation as DTA;
 
@@ -18,11 +18,11 @@ class Result
     /**
      * @DTA\Data(field="messages", nullable=true)
      * TODO check validator and strategy are correct and can handle container item type
-     * @DTA\Strategy(name="ObjectArray", options={"type":\DataStoreExample\OpenAPI\Server\V1\DTO\Message::class})
+     * @DTA\Strategy(name="ObjectArray", options={"type":\DataStoreExample\OpenAPI\V1\DTO\Message::class})
      * @DTA\Validator(name="Collection", options={"validators":{
-     *     {"name":"Dictionary", "options":{"type":\DataStoreExample\OpenAPI\Server\V1\DTO\Message::class}}
+     *     {"name":"Dictionary", "options":{"type":\DataStoreExample\OpenAPI\V1\DTO\Message::class}}
      * }})
-     * @var \DataStoreExample\OpenAPI\Server\V1\DTO\Message[]
+     * @var \DataStoreExample\OpenAPI\V1\DTO\Message[]
      */
     public $messages;
 }
