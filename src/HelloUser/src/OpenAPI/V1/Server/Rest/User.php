@@ -3,8 +3,6 @@
 namespace HelloUser\OpenAPI\V1\Server\Rest;
 
 use OpenAPI\Server\Rest\BaseAbstract;
-use rollun\Callables\Task\Result;
-use rollun\Callables\Task\ResultInterface;
 
 /**
  * Class User
@@ -16,7 +14,7 @@ class User extends BaseAbstract
     /**
      * @inheritDoc
      */
-    public function post($bodyData): ResultInterface
+    public function post($bodyData)
     {
         if (!file_exists(self::DIR)) {
             mkdir(self::DIR, 0777, true);
@@ -40,7 +38,7 @@ class User extends BaseAbstract
     /**
      * @inheritDoc
      */
-    public function getById($id): ResultInterface
+    public function getById($id)
     {
         // prepare fileName
         $fileName = $this->getFilePath($id);
@@ -49,10 +47,9 @@ class User extends BaseAbstract
             throw new \InvalidArgumentException('No such user');
         }
 
-        // get data from file
-        $data = json_decode(file_get_contents($fileName), true);
-
-        return new Result($data);
+        return [
+            'data' => json_decode(file_get_contents($fileName), true)
+        ];
     }
 
     /**

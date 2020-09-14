@@ -41,9 +41,9 @@ abstract class BaseAbstract extends \OpenAPI\Server\Rest\BaseAbstract
      *
      * @param DataTransferService $dataTransfer
      * @param LoggerInterface     $logger
-     * @param mixed               $lifeCycleToken
+     * @param string              $lifeCycleToken
      */
-    public function __construct(DataTransferService $dataTransfer, LoggerInterface $logger, $lifeCycleToken)
+    public function __construct(DataTransferService $dataTransfer, LoggerInterface $logger, string $lifeCycleToken)
     {
         // prepare api name
         $apiName = $this->apiName;
@@ -58,11 +58,11 @@ abstract class BaseAbstract extends \OpenAPI\Server\Rest\BaseAbstract
 
     /**
      * @param string $apiName
-     * @param mixed  $lifeCycleToken
+     * @param string $lifeCycleToken
      *
      * @return object
      */
-    protected function createApi(string $apiName, $lifeCycleToken): object
+    protected function createApi(string $apiName, string $lifeCycleToken): object
     {
         return new $apiName(new Client(['headers' => ['LifeCycleToken' => $lifeCycleToken]]));
     }

@@ -74,6 +74,6 @@ abstract class AbstractHandler
                 throw new \InvalidArgumentException('Unknown http method');
         }
 
-        return $result->toArrayForDto();
+        return $result;
     }
 }

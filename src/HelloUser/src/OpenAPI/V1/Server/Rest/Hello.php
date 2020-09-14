@@ -3,8 +3,6 @@
 namespace HelloUser\OpenAPI\V1\Server\Rest;
 
 use OpenAPI\Server\Rest\BaseAbstract;
-use rollun\Callables\Task\Result;
-use rollun\Callables\Task\ResultInterface;
 use rollun\dic\InsideConstruct;
 
 /**
@@ -32,11 +30,15 @@ class Hello extends BaseAbstract
     /**
      * @inheritDoc
      */
-    public function getById($id): ResultInterface
+    public function getById($id)
     {
         // get user
-        $user = $this->userObject->getById($id)->toArrayForDto();
+        $user = $this->userObject->getById($id);
 
-        return new Result(['message' => "Hello, {$user['data']['name']}!"]);
+        return [
+            'data' => [
+                'message' => "Hello, {$user['data']['name']}!"
+            ]
+        ];
     }
 }

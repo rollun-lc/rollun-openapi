@@ -2,7 +2,7 @@
 
 namespace HelloUser\OpenAPI\V1\Client\Rest;
 
-use OpenAPI\Server\Rest\Client\BaseAbstract;
+use OpenAPI\Client\Rest\BaseAbstract;
 
 /**
  * Class Hello

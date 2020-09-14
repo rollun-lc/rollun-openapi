@@ -8,6 +8,7 @@ require 'vendor/autoload.php';
 $container = require 'config/container.php';
 
 \rollun\dic\InsideConstruct::setContainer($container);
+$container->setService(\rollun\logger\LifeCycleToken::class, \rollun\logger\LifeCycleToken::generateToken());
 
 /** @var \OpenAPI\Server\Rest\RestInterface $rest */
 $rest = $container->get(\HelloUser\OpenAPI\V1\Client\Rest\User::class);
