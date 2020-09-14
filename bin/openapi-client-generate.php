@@ -56,7 +56,11 @@ if (!empty($manifestData['tags'])) {
 $templatePath = dirname(__DIR__) . '/template/server';
 file_put_contents('openapi_config.json', json_encode(['invokerPackage' => "$title\\OpenAPI\\V$version", 'srcBasePath' => "src/$title/src/OpenAPI/V$version"]));
 exec("openapi-generator generate -i $manifest -o tmp-openapi -g php-ze-ph -c openapi_config.json -t $templatePath");
-exec("mkdir src/$title/src/OpenAPI/V$version/DTO");
+$dtoDir = "src/$title/src/OpenAPI/V$version/DTO";
+if (!file_exists($dtoDir)) {
+    mkdir($dtoDir, 0777, true);
+    sleep(1);
+}
 exec("cp -R tmp-openapi/src/$title/src/OpenAPI/V$version/DTO/. src/$title/src/OpenAPI/V$version/DTO/");
 exec("rm -R tmp-openapi");
 exec("rm openapi_config.json");
@@ -96,32 +100,13 @@ if (!file_exists($restDir)) {
 foreach ($tags as $tag) {
     // create namespace
     $namespace = (new \Nette\PhpGenerator\PhpNamespace("$title\OpenAPI\V$version\Client\Rest"))
-        ->addUse('OpenAPI\Server\Rest\BaseAbstract')
-        ->addUse('GuzzleHttp\Client')
-        ->addUse('rollun\dic\InsideConstruct')
-        ->addUse('Articus\DataTransfer\Service', 'DataTransferService')
-        ->addUse("$title\OpenAPI\V$version\Client\Api\\{$tag}Api");
+        ->addUse('OpenAPI\Server\Rest\Client\BaseAbstract');
 
     // create class
     $class = $namespace->addClass($tag);
-    $class->setExtends('OpenAPI\Server\Rest\BaseAbstract');
+    $class->setExtends('OpenAPI\Server\Rest\Client\BaseAbstract');
     $class->addComment("Class $tag");
-    $class->addProperty('api')->setProtected()->addComment("@var {$tag}Api");
-    $class->addProperty('dt')->setProtected()->addComment("@var DataTransferService");
-    $class->addConstant('IS_API_CLIENT', true);
-
-    // create constructor
-    $constructor = $class
-        ->addMethod('__construct')
-        ->addComment("$tag constructor.")
-        ->addComment("")
-        ->addComment('@param string|null $lifeCycleToken')
-        ->addComment('@param DataTransferService|null $dt')
-        ->setBody(
-            "\n\$this->api = new {$tag}Api(new Client(['headers' => ['LifeCycleToken' => \$lifeCycleToken]]));\nInsideConstruct::init(['dt' => DataTransferService::class]);"
-        );
-    $constructor->addParameter('lifeCycleToken');
-    $constructor->addParameter('dt', null);
+    $class->addProperty('apiName', "\\$title\\OpenAPI\\V$version\\Client\\Api\\{$tag}Api")->setProtected()->addComment("@var string");
 
     // get additional data
     include_once "src/$title/src/OpenAPI/V$version/Client/Configuration.php";
@@ -146,17 +131,13 @@ foreach ($tags as $tag) {
             $returnType = str_replace("Client\Model", "DTO", $row['returnType']);
 
             // prepare body template
-            $bodyTemplate = "     %s\$data = %s;\n\$result = new $returnType();\n\n\$errors = \$this->dt->transfer(\$data, \$result);\nif (!empty(\$errors)) {\n";
-            $bodyTemplate .= "    throw new \Exception('Validation of response is failed! Details: '. json_encode(\$errors));\n}\n\nreturn \$result;";
+            $bodyTemplate = "     %s// send request\n\$data = %s;\n\n// validation of response\n\$result = \$this->transfer((array)\$data, $returnType::class);\n\nreturn \$result;";
 
             switch (str_replace(lcfirst(str_replace('Api', '', $row['className'])), '', $action)) {
                 case 'Post':
                     $bodyType = str_replace("Client\Model", "DTO", $row['params'][0]['paramType']);
 
-                    $body = "\$errors = \$this->dt->transfer(\$bodyData, new $bodyType());\n";
-                    $body .= "if (!empty(\$errors)) {\n";
-                    $body .= "    throw new \Exception('Validation of request is failed! Details: '. json_encode(\$errors));\n";
-                    $body .= "}\n\n";
+                    $body = "// validation of \$bodyData\n\$bodyDataObject = \$this->transfer((array)\$bodyData, $bodyType::class);\n\n";
 
                     $method = $class
                         ->addMethod('post')

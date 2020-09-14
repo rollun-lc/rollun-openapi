@@ -34,7 +34,7 @@ class ApiInstanceAbstractFactory implements AbstractFactoryInterface
             $lifeCycleToken =  (string)$container->get(LifeCycleToken::class);
         }
 
-        return new $requestedName($lifeCycleToken);
+        return new $requestedName($lifeCycleToken, $container->get(\Articus\DataTransfer\Service::class));
     }
 }
 
