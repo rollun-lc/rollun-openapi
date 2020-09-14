@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace OpenAPI\Client\Factory;
 
 use Interop\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 use rollun\logger\LifeCycleToken;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 
@@ -31,10 +32,14 @@ class ApiInstanceAbstractFactory implements AbstractFactoryInterface
 
         // set life cycle token
         if ($container->has(LifeCycleToken::class)) {
-            $lifeCycleToken =  (string)$container->get(LifeCycleToken::class);
+            $lifeCycleToken = (string)$container->get(LifeCycleToken::class);
         }
 
-        return new $requestedName($lifeCycleToken, $container->get(\Articus\DataTransfer\Service::class));
+        return new $requestedName(
+            $container->get(\Articus\DataTransfer\Service::class),
+            $container->get(LoggerInterface::class),
+            $lifeCycleToken
+        );
     }
 }
 

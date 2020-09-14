@@ -89,9 +89,10 @@ exec("cp -R tmp-openapi/src/$title/. src/$title/");
 
 // prepare handlers dir
 $handlersDir = "src/$title/src/OpenAPI/V$version/Server/Handler";
-
-// make dirs
-exec("mkdir src/$title/src/OpenAPI/V$version/Server && mkdir $handlersDir");
+if (!file_exists($handlersDir)) {
+    mkdir($handlersDir, 0777, true);
+    sleep(1);
+}
 
 // copy handlers
 exec("cp -R src/$title/src/OpenAPI/V$version/Handler/. $handlersDir/");
@@ -138,7 +139,7 @@ foreach ($tags as $tag) {
     // create namespace
     $namespace = (new \Nette\PhpGenerator\PhpNamespace("$title\OpenAPI\V$version\Server\Rest"))
         ->addUse('OpenAPI\Server\Rest\BaseAbstract')
-        ->addUse('rollun\Callables\Task\ResultInterface')
+        ->addUse('Psr\Log\LoggerInterface')
         ->addUse('rollun\dic\InsideConstruct');
 
     // create class
@@ -147,6 +148,7 @@ foreach ($tags as $tag) {
     $class->addConstant('CONTROLLER_OBJECT', 'Name of service which implements OpenApi logic');
     $class->addComment("Class $tag");
     $class->addProperty('controllerObject')->setProtected()->addComment('@var object');
+    $class->addProperty('logger')->setProtected()->addComment('@var LoggerInterface');
 
     // create constructor
     $constructor = $class
@@ -154,13 +156,14 @@ foreach ($tags as $tag) {
         ->addComment("$tag constructor.")
         ->addComment("")
         ->addComment('@param mixed $controllerObject')
+        ->addComment('@param LoggerInterface|null logger')
         ->addComment("")
         ->addComment('@throws \ReflectionException')
-        ->setBody("InsideConstruct::init(['controllerObject' => self::CONTROLLER_OBJECT]);");
+        ->setBody("InsideConstruct::init(['controllerObject' => self::CONTROLLER_OBJECT, 'logger' => LoggerInterface::class]);");
     $constructor->addParameter('controllerObject', null);
+    $constructor->addParameter('logger', null);
 
     $defaultMethodBody = "throw new \Exception('Not implemented method');\n\n";
-    $defaultMethodReturn = 'rollun\Callables\Task\ResultInterface';
 
     foreach ($pathHandlerData['httpMethods'] as $action => $row) {
         if ($row['className'] == $tag) {
@@ -169,7 +172,6 @@ foreach ($tags as $tag) {
                     $method = $class
                         ->addMethod('post')
                         ->setBody('if (method_exists($this->controllerObject, \'post\')) {' . "\n" . '    $bodyDataArray = (array) $bodyData;' . "\n\n" . '    return $this->controllerObject->post($bodyDataArray);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
-                        ->setReturnType($defaultMethodReturn)
                         ->addComment('@inheritDoc')
                         ->addComment('')
                         ->addComment('@param ' . $row['bodyData'] . ' $bodyData');
@@ -179,7 +181,6 @@ foreach ($tags as $tag) {
                     $method = $class
                         ->addMethod('patch')
                         ->setBody('if (method_exists($this->controllerObject, \'patch\')) {' . "\n" . '    $bodyDataArray = (array) $bodyData;' . "\n" . '    $queryDataArray = (array) $queryData;' . "\n\n" . '    return $this->controllerObject->patch($queryDataArray, $bodyDataArray);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
-                        ->setReturnType($defaultMethodReturn)
                         ->addComment('@inheritDoc')
                         ->addComment('')
                         ->addComment('@param ' . $row['queryData'] . ' $queryData')
@@ -191,27 +192,24 @@ foreach ($tags as $tag) {
                     $method = $class
                         ->addMethod('get')
                         ->setBody('if (method_exists($this->controllerObject, \'get\')) {' . "\n" . '    $queryDataArray = (array) $queryData;' . "\n\n" . '    return $this->controllerObject->get($queryDataArray);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
-                        ->setReturnType($defaultMethodReturn)
                         ->addComment('@inheritDoc')
                         ->addComment('')
                         ->addComment('@param ' . $row['queryData'] . ' $queryData');
-                    $method->addParameter('queryData', null);
+                    $method->addParameter('queryData', []);
                     break;
                 case 'Delete':
                     $method = $class
                         ->addMethod('delete')
                         ->setBody('if (method_exists($this->controllerObject, \'delete\')) {' . "\n" . '    $queryDataArray = (array) $queryData;' . "\n\n" . '    return $this->controllerObject->delete($queryDataArray);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
-                        ->setReturnType($defaultMethodReturn)
                         ->addComment('@inheritDoc')
                         ->addComment('')
                         ->addComment('@param ' . $row['queryData'] . ' $queryData');
-                    $method->addParameter('queryData', null);
+                    $method->addParameter('queryData', []);
                     break;
                 case 'IdGet':
                     $method = $class
                         ->addMethod('getById')
                         ->setBody('if (method_exists($this->controllerObject, \'getById\')) {' . "\n" . '    return $this->controllerObject->getById($id);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
-                        ->setReturnType($defaultMethodReturn)
                         ->addComment('@inheritDoc');
                     $method->addParameter('id');
                     break;
@@ -219,7 +217,6 @@ foreach ($tags as $tag) {
                     $method = $class
                         ->addMethod('patchById')
                         ->setBody('if (method_exists($this->controllerObject, \'patchById\')) {' . "\n" . '    $bodyDataArray = (array) $bodyData;' . "\n\n" . '    return $this->controllerObject->patchById($id, $bodyDataArray);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
-                        ->setReturnType($defaultMethodReturn)
                         ->addComment('@inheritDoc')
                         ->addComment('')
                         ->addComment('@param ' . $row['bodyData'] . ' $bodyData');
@@ -230,7 +227,6 @@ foreach ($tags as $tag) {
                     $method = $class
                         ->addMethod('putById')
                         ->setBody('if (method_exists($this->controllerObject, \'putById\')) {' . "\n" . '    $bodyDataArray = (array) $bodyData;' . "\n\n" . '    return $this->controllerObject->putById($id, $bodyDataArray);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
-                        ->setReturnType($defaultMethodReturn)
                         ->addComment('@inheritDoc')
                         ->addComment('')
                         ->addComment('@param ' . $row['bodyData'] . ' $bodyData');
@@ -241,7 +237,6 @@ foreach ($tags as $tag) {
                     $method = $class
                         ->addMethod('deleteById')
                         ->setBody('if (method_exists($this->controllerObject, \'deleteById\')) {' . "\n" . '    return $this->controllerObject->deleteById($id);' . "\n" . '}' . "\n\n" .$defaultMethodBody)
-                        ->setReturnType($defaultMethodReturn)
                         ->addComment('@inheritDoc');
                     $method->addParameter('id');
                     break;

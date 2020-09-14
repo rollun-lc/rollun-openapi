@@ -100,11 +100,11 @@ if (!file_exists($restDir)) {
 foreach ($tags as $tag) {
     // create namespace
     $namespace = (new \Nette\PhpGenerator\PhpNamespace("$title\OpenAPI\V$version\Client\Rest"))
-        ->addUse('OpenAPI\Server\Rest\Client\BaseAbstract');
+        ->addUse('OpenAPI\Client\Rest\BaseAbstract');
 
     // create class
     $class = $namespace->addClass($tag);
-    $class->setExtends('OpenAPI\Server\Rest\Client\BaseAbstract');
+    $class->setExtends('OpenAPI\Client\Rest\BaseAbstract');
     $class->addComment("Class $tag");
     $class->addProperty('apiName', "\\$title\\OpenAPI\\V$version\\Client\\Api\\{$tag}Api")->setProtected()->addComment("@var string");
 
@@ -170,7 +170,7 @@ foreach ($tags as $tag) {
                         ->addComment('@inheritDoc')
                         ->addComment('')
                         ->addComment('@param array $queryData');
-                    $method->addParameter('queryData', null);
+                    $method->addParameter('queryData', []);
                     break;
                 case 'Delete':
                     $queryType = "\\$title\\OpenAPI\\V$version\\DTO\\" . str_replace('Api', '', $row['className']) . "DELETEQueryData";
@@ -182,7 +182,7 @@ foreach ($tags as $tag) {
                         ->addComment('@inheritDoc')
                         ->addComment('')
                         ->addComment('@param array $queryData');
-                    $method->addParameter('queryData', null);
+                    $method->addParameter('queryData', []);
                     break;
                 case 'IdGet':
                     $method = $class

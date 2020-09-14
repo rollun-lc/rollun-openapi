@@ -1,10 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace OpenAPI\Server\Rest\Client;
+namespace OpenAPI\Client\Rest;
 
 use Articus\DataTransfer\Service as DataTransferService;
 use GuzzleHttp\Client;
+use Psr\Log\LoggerInterface;
 
 /**
  * Abstract class BaseAbstract
@@ -31,14 +32,18 @@ abstract class BaseAbstract extends \OpenAPI\Server\Rest\BaseAbstract
     protected $dataTransfer;
 
     /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    /**
      * BaseAbstract constructor.
      *
-     * @param mixed               $lifeCycleToken
      * @param DataTransferService $dataTransfer
-     *
-     * @throws \ReflectionException
+     * @param LoggerInterface     $logger
+     * @param mixed               $lifeCycleToken
      */
-    public function __construct($lifeCycleToken, DataTransferService $dataTransfer)
+    public function __construct(DataTransferService $dataTransfer, LoggerInterface $logger, $lifeCycleToken)
     {
         // prepare api name
         $apiName = $this->apiName;
@@ -48,6 +53,7 @@ abstract class BaseAbstract extends \OpenAPI\Server\Rest\BaseAbstract
 
         $this->api = $this->createApi($apiName, $lifeCycleToken);
         $this->dataTransfer = $dataTransfer;
+        $this->logger = $logger;
     }
 
     /**
