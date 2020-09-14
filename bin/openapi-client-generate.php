@@ -124,9 +124,6 @@ foreach ($tags as $tag) {
                 }
             }
 
-            // prepare query type
-            $queryType = "\\$title\\OpenAPI\\V$version\\DTO\\" . str_replace("Patch", "", $action) . "PATCHQueryData";
-
             // prepare return DTO type
             $returnType = str_replace("Client\Model", "DTO", $row['returnType']);
 
@@ -136,7 +133,6 @@ foreach ($tags as $tag) {
             switch (str_replace(lcfirst(str_replace('Api', '', $row['className'])), '', $action)) {
                 case 'Post':
                     $bodyType = str_replace("Client\Model", "DTO", $row['params'][0]['paramType']);
-
                     $body = "// validation of \$bodyData\n\$bodyDataObject = \$this->transfer((array)\$bodyData, $bodyType::class);\n\n";
 
                     $method = $class
@@ -148,16 +144,15 @@ foreach ($tags as $tag) {
                     $method->addParameter('bodyData');
                     break;
                 case 'Patch':
-                    $bodyType = str_replace("Client\Model", "DTO", $row['params'][1]['paramType']);
-//
-//                    $body = "\$errors = \$this->dt->transfer(\$bodyData, new $bodyType());\n";
-//                    $body .= "if (!empty(\$errors)) {\n";
-//                    $body .= "    throw new \Exception('Validation of request is failed! Details: '. json_encode(\$errors));\n";
-//                    $body .= "}\n\n";
+                    $queryType = "\\$title\\OpenAPI\\V$version\\DTO\\" . str_replace('Api', '', $row['className']) . "PATCHQueryData";
+                    $body = "// validation of \$queryData\n\$queryDataObject = \$this->transfer((array)\$queryData, $queryType::class);\n\n";
+
+                    $bodyType = str_replace("Client\Model", "DTO", $row['params'][0]['paramType']);
+                    $body .= "// validation of \$bodyData\n\$bodyDataObject = \$this->transfer((array)\$bodyData, $bodyType::class);\n\n";
 
                     $method = $class
                         ->addMethod('patch')
-                        ->setBody(sprintf($bodyTemplate, "", "\$this->api->{$action}(" . implode(',', $inputParams) . ")"))
+                        ->setBody(sprintf($bodyTemplate, $body, "\$this->api->{$action}(" . implode(',', $inputParams) . ")"))
                         ->addComment('@inheritDoc')
                         ->addComment('')
                         ->addComment('@param array $queryData')
@@ -166,18 +161,24 @@ foreach ($tags as $tag) {
                     $method->addParameter('bodyData');
                     break;
                 case 'Get':
+                    $queryType = "\\$title\\OpenAPI\\V$version\\DTO\\" . str_replace('Api', '', $row['className']) . "GETQueryData";
+                    $body = "// validation of \$queryData\n\$queryDataObject = \$this->transfer((array)\$queryData, $queryType::class);\n\n";
+
                     $method = $class
                         ->addMethod('get')
-                        ->setBody(sprintf($bodyTemplate, "", "\$this->api->{$action}(" . implode(',', $inputParams) . ")"))
+                        ->setBody(sprintf($bodyTemplate, $body, "\$this->api->{$action}(" . implode(',', $inputParams) . ")"))
                         ->addComment('@inheritDoc')
                         ->addComment('')
                         ->addComment('@param array $queryData');
                     $method->addParameter('queryData', null);
                     break;
                 case 'Delete':
+                    $queryType = "\\$title\\OpenAPI\\V$version\\DTO\\" . str_replace('Api', '', $row['className']) . "DELETEQueryData";
+                    $body = "// validation of \$queryData\n\$queryDataObject = \$this->transfer((array)\$queryData, $queryType::class);\n\n";
+
                     $method = $class
                         ->addMethod('delete')
-                        ->setBody(sprintf($bodyTemplate, "", "\$this->api->{$action}(" . implode(',', $inputParams) . ")"))
+                        ->setBody(sprintf($bodyTemplate, $body, "\$this->api->{$action}(" . implode(',', $inputParams) . ")"))
                         ->addComment('@inheritDoc')
                         ->addComment('')
                         ->addComment('@param array $queryData');
@@ -191,9 +192,12 @@ foreach ($tags as $tag) {
                     $method->addParameter('id');
                     break;
                 case 'IdPatch':
+                    $bodyType = str_replace("Client\Model", "DTO", $row['params'][0]['paramType']);
+                    $body = "// validation of \$bodyData\n\$bodyDataObject = \$this->transfer((array)\$bodyData, $bodyType::class);\n\n";
+
                     $method = $class
                         ->addMethod('patchById')
-                        ->setBody(sprintf($bodyTemplate, "", "\$this->api->{$action}(\$id, new {$row['params'][1]['paramType']}(\$bodyData))"))
+                        ->setBody(sprintf($bodyTemplate, $body, "\$this->api->{$action}(\$id, new {$row['params'][1]['paramType']}(\$bodyData))"))
                         ->addComment('@inheritDoc')
                         ->addComment('')
                         ->addComment('@param array $bodyData');
@@ -201,9 +205,12 @@ foreach ($tags as $tag) {
                     $method->addParameter('bodyData');
                     break;
                 case 'IdPut':
+                    $bodyType = str_replace("Client\Model", "DTO", $row['params'][0]['paramType']);
+                    $body = "// validation of \$bodyData\n\$bodyDataObject = \$this->transfer((array)\$bodyData, $bodyType::class);\n\n";
+
                     $method = $class
                         ->addMethod('putById')
-                        ->setBody(sprintf($bodyTemplate, "", "\$this->api->{$action}(\$id, new {$row['params'][1]['paramType']}(\$bodyData))"))
+                        ->setBody(sprintf($bodyTemplate, $body, "\$this->api->{$action}(\$id, new {$row['params'][1]['paramType']}(\$bodyData))"))
                         ->addComment('@inheritDoc')
                         ->addComment('')
                         ->addComment('@param array $bodyData');
