@@ -11,13 +11,20 @@ $container = require 'config/container.php';
 $container->setService(\rollun\logger\LifeCycleToken::class, \rollun\logger\LifeCycleToken::generateToken());
 
 /** @var \OpenAPI\Server\Rest\RestInterface $rest */
-$rest = $container->get(\HelloUser\OpenAPI\V1\Client\Rest\User::class);
+$rest = $container->get(\DataStoreExample\OpenAPI\V1\Client\Rest\User::class);
 
-$id = 'a1231';
+$bodyData = [
+    [
+        'id'   => '5f51f78ccaa4c122',
+        'name' => 'John 22',
+        'surname' => 'Smith 22',
+        'active' => false,
+    ]
+];
 
-//$result = $rest->post(['id' => $id, 'name' => 'Test 123']);
-$result = $rest->getById($id);
-//$result = $rest->deleteById($id);
+$result = $rest->post($bodyData);
+//$result = $rest->getById('5f51f78ccaa4c122');
+//$result = $rest->deleteById('5f51f78ccaa4c122');
 
 echo '<pre>';
 print_r($result);

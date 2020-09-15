@@ -72,22 +72,36 @@ abstract class BaseAbstract extends \OpenAPI\Server\Rest\BaseAbstract
      * @param string      $dto
      * @param string|null $validationMessage
      *
-     * @return object
+     * @return object|array
      * @throws \Exception
      */
-    protected function transfer(array $data, string $dto, string $validationMessage = null): object
+    protected function transfer(array $data, string $dto, string $validationMessage = null)
     {
         // prepare validation message
         if ($validationMessage === null) {
             $validationMessage = 'Validation is failed!';
         }
 
-        $object = new $dto();
-        $errors = $this->dataTransfer->transfer($data, $object);
+        if (substr($dto, -2) == '[]') {
+            // prepare class name
+            $dto = str_replace('[]', '', $dto);
+
+            $result = [];
+            $errors = [];
+            foreach ($data as $item) {
+                $object = new $dto();
+                $errors = array_merge($errors, $this->dataTransfer->transfer($item, $object));
+                $result[] = $object;
+            }
+        } else {
+            $result = new $dto();
+            $errors = $this->dataTransfer->transfer($data, $result);
+        }
+
         if (!empty($errors)) {
             throw new \Exception($validationMessage . ' Details: ' . json_encode($errors));
         }
 
-        return $object;
+        return $result;
     }
 }
