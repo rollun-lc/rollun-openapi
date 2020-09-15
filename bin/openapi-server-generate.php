@@ -1,9 +1,10 @@
 <?php
 
-if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
-    chdir(dirname(__DIR__));
-} elseif (file_exists(dirname(dirname(__DIR__)) . '/vendor/autoload.php')) {
-    chdir(dirname(dirname(__DIR__)));
+$generatorRoot = dirname(__DIR__);
+if (file_exists($generatorRoot . '/vendor/autoload.php')) {
+    chdir($generatorRoot);
+} elseif (file_exists(dirname(dirname(dirname($generatorRoot))) . '/vendor/autoload.php')) {
+    chdir(dirname(dirname(dirname($generatorRoot))));
 } else {
     throw new \Exception("Can't find 'vendor/autoload.php' file");
 }
@@ -121,7 +122,7 @@ if (!file_exists($docsDir)) {
 }
 
 // create docs index.html
-$html = file_get_contents('template/server/docs/index.html');
+$html = file_get_contents($generatorRoot . '/template/server/docs/index.html');
 $html = str_replace('{{title}}', $manifestData['info']['title'], $html);
 $manifestParts = explode("/", $manifest);
 $html = str_replace('{{manifest}}', array_pop($manifestParts), $html);

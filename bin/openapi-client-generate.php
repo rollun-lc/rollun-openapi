@@ -2,8 +2,8 @@
 
 if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
     chdir(dirname(__DIR__));
-} elseif (file_exists(dirname(dirname(__DIR__)) . '/vendor/autoload.php')) {
-    chdir(dirname(dirname(__DIR__)));
+} elseif (file_exists(dirname(dirname(dirname(dirname(__DIR__)))) . '/vendor/autoload.php')) {
+    chdir(dirname(dirname(dirname(dirname(__DIR__)))));
 } else {
     throw new \Exception("Can't find 'vendor/autoload.php' file");
 }

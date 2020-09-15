@@ -11,12 +11,12 @@ namespace OpenAPI\Server\Rest\Traits;
 trait NoDelete
 {
     /**
-     * @param $queryData
+     * @param array $queryData
      *
      * @return mixed
      * @throws \Exception
      */
-    public function delete($queryData = null)
+    public function delete($queryData = [])
     {
         throw new \Exception('Not implemented method');
     }

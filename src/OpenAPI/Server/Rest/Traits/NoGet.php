@@ -11,12 +11,12 @@ namespace OpenAPI\Server\Rest\Traits;
 trait NoGet
 {
     /**
-     * @param null $queryData
+     * @param array $queryData
      *
      * @return mixed
      * @throws \Exception
      */
-    public function get($queryData = null)
+    public function get($queryData = [])
     {
         throw new \Exception('Not implemented method');
     }
