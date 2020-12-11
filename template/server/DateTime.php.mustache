@@ -7,7 +7,7 @@ use Articus\DataTransfer\Strategy\StrategyInterface;
 
 class DateTime implements StrategyInterface
 {
-    const DATE_TIME_FORMAT = \DateTime::RFC3339;
+    const DATE_TIME_FORMAT = 'Y-m-d\TH:i:s\Z';
 
     /**
      * @inheritdoc
