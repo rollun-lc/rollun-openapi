@@ -12,7 +12,7 @@
 {{/isDate}}
 {{#isDateTime}}
      * @DTA\Strategy(name="DateTime")
-     * @DTA\Validator(name="Date", options={"format": \DateTime::RFC3339})
+     * @DTA\Validator(name="Date", options={"format": "Y-m-d\TH:i:s\Z"})
 {{/isDateTime}}
 {{/isContainer}}
 {{#isContainer}}
