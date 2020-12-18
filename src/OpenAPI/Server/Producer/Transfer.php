@@ -130,7 +130,10 @@ class Transfer extends Base
             foreach ($loggerWriters->toArray() as $writer) {
                 if ($writer instanceof Messages) {
                     foreach ($writer->getMessages() as $row) {
-                        $result[self::KEY_MESSAGES][] = [self::KEY_LEVEL => $row['level'], self::KEY_MESSAGE => $row['message']];
+                        $result[self::KEY_MESSAGES][] = [
+                            self::KEY_LEVEL => $row[Messages::KEY_LEVEL],
+                            self::KEY_MESSAGE => $row[Messages::KEY_MESSAGE]
+                        ];
                     }
                 }
             }
