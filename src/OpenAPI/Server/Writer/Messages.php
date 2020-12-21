@@ -34,8 +34,8 @@ class Messages extends AbstractWriter
     protected function doWrite(array $event)
     {
         $this->messages[] = [
-            self::KEY_LEVEL   => $event['level'],
-            self::KEY_MESSAGE => $event['message'],
+            self::KEY_LEVEL   => $event[self::KEY_LEVEL],
+            self::KEY_MESSAGE => $event[self::KEY_MESSAGE],
         ];
     }
 }

@@ -20,8 +20,8 @@ class Transfer extends Base
     // @todo ErrorResult
 
     const KEY_MESSAGES = 'messages';
-    const KEY_LEVEL = Messages::KEY_LEVEL;
-    const KEY_MESSAGE = Messages::KEY_MESSAGE;
+    const KEY_LEVEL = 'level';
+    const KEY_MESSAGE = 'message';
 
     const TYPE_ERROR = LogLevel::ERROR;
 
