@@ -21,7 +21,7 @@ class Transfer extends Base
 
     const KEY_MESSAGES = 'messages';
     const KEY_LEVEL = 'level';
-    const KEY_MESSAGE = 'message';
+    const KEY_MESSAGE = 'text';
 
     const TYPE_ERROR = LogLevel::ERROR;
 
