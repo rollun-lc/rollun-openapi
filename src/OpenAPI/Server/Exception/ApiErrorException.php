@@ -17,6 +17,7 @@ class ApiErrorException extends Exception
         if (empty($errorType)) {
             throw new InvalidArgumentException("Error type cannot be empty");
         }
+        $this->errorType = $errorType;
 
         parent::__construct($message, $httpStatus, $previous);
     }
