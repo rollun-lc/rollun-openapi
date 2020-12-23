@@ -5,8 +5,10 @@ namespace OpenAPI\Server\MetadataProvider;
 
 use Articus\PathHandler\Exception as PHException;
 use Articus\PathHandler\MetadataProvider\Annotation as Base;
+use OpenAPI\Server\Exception\ApiErrorException;
 use OpenAPI\Server\Producer\Transfer;
 use Psr\Http\Message\ServerRequestInterface;
+use Throwable;
 
 /**
  * Class Annotation
@@ -24,13 +26,28 @@ class Annotation extends Base
     {
         try {
             $result = parent::executeHandlerMethod($handlerName, $httpMethod, $handler, $request);
-        } catch (\Throwable $e) {
-            // prepare code
+        } catch (ApiErrorException $e) {
+            // because message writes to http reason where new lines not allowed
+            $message = $this->deleteNewLines($e->getMessage());
+
+            throw new PHException\HttpCode(
+                $e->getHttpStatus(),
+                $message,
+                Transfer::getSingleErrorMessages($message, $e->getErrorType())
+            );
+        } catch (Throwable $e) {
+            // because message writes to http reason where new lines not allowed
+            $message = $this->deleteNewLines($e->getMessage());
             $code = !empty($e->getCode()) ? $e->getCode() : 500;
 
-            throw new PHException\HttpCode($code, $e->getMessage(), Transfer::getSingleErrorMessages($e->getMessage()));
+            throw new PHException\HttpCode($code, $message, Transfer::getSingleErrorMessages($message));
         }
 
         return $result;
+    }
+
+    private function deleteNewLines(string $string): string
+    {
+        return preg_replace('/\R+/', " ", $string);
     }
 }

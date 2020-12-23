@@ -6,6 +6,7 @@ namespace OpenAPI\Server\Producer;
 use Articus\DataTransfer\Service as DTService;
 use Articus\PathHandler\Exception\HttpCode;
 use Articus\PathHandler\Producer\Transfer as Base;
+use InvalidArgumentException;
 use OpenAPI\Server\Writer\Messages;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
@@ -22,8 +23,13 @@ class Transfer extends Base
     const KEY_MESSAGES = 'messages';
     const KEY_LEVEL = 'level';
     const KEY_MESSAGE = 'text';
+    const KEY_TYPE = 'type';
 
-    const TYPE_ERROR = LogLevel::ERROR;
+    const LEVEL_ERROR = LogLevel::ERROR;
+
+    const TYPE_UNDEFINED_ERROR = "UNDEFINED";
+    const TYPE_LOGGER_ERROR = "LOGGER_MESSAGE";
+    const TYPE_VALIDATION_ERROR = "INVALID_RESPONSE";
 
     /**
      * @var string|null
@@ -38,10 +44,10 @@ class Transfer extends Base
     /**
      * Transfer constructor.
      *
-     * @param callable    $streamFactory
-     * @param DTService   $dtService
-     * @param DTService   $logger
-     * @param null        $mapper
+     * @param callable $streamFactory
+     * @param DTService $dtService
+     * @param LoggerInterface $logger
+     * @param null $mapper
      * @param string|null $responseType
      */
     public function __construct(callable $streamFactory, DTService $dtService, LoggerInterface $logger, $mapper = null, $responseType = null)
@@ -60,8 +66,8 @@ class Transfer extends Base
     public static function getErrorMessages(array $messages): array
     {
         foreach ($messages as $row) {
-            if (!isset($row[self::KEY_LEVEL]) || !isset($row[self::KEY_MESSAGE])) {
-                throw new \InvalidArgumentException('Invalid message array');
+            if (!isset($row[self::KEY_LEVEL]) || !isset($row[self::KEY_MESSAGE]) || !isset($row[self::KEY_TYPE])) {
+                throw new InvalidArgumentException('Invalid message array');
             }
         }
 
@@ -70,12 +76,17 @@ class Transfer extends Base
 
     /**
      * @param string $value
+     * @param string $type
      *
      * @return array
      */
-    public static function getSingleErrorMessages(string $value): array
+    public static function getSingleErrorMessages(string $value, string $type = self::TYPE_UNDEFINED_ERROR): array
     {
-        return self::getErrorMessages([[self::KEY_LEVEL => self::TYPE_ERROR, self::KEY_MESSAGE => $value]]);
+        return self::getErrorMessages([[
+            self::KEY_LEVEL => self::LEVEL_ERROR,
+            self::KEY_MESSAGE => $value,
+            self::KEY_TYPE => $type
+        ]]);
     }
 
     /**
@@ -98,6 +109,7 @@ class Transfer extends Base
 
     /**
      * @inheritdoc
+     * @throws HttpCode
      */
     protected function stringify($objectOrArray): string
     {
@@ -112,7 +124,11 @@ class Transfer extends Base
             $preparedErrors = [];
             self::collectValidatorMessages($errors, $preparedErrors);
             foreach ($preparedErrors as $field => $error) {
-                $rows[] = [self::KEY_LEVEL => self::TYPE_ERROR, self::KEY_MESSAGE => "$field => $error"];
+                $rows[] = [
+                    self::KEY_LEVEL => self::LEVEL_ERROR,
+                    self::KEY_MESSAGE => "$field => $error",
+                    self::KEY_TYPE => self::TYPE_VALIDATION_ERROR
+                ];
             }
 
             throw new HttpCode(500, 'Response validation failed', self::getErrorMessages($rows));
@@ -132,7 +148,8 @@ class Transfer extends Base
                     foreach ($writer->getMessages() as $row) {
                         $result[self::KEY_MESSAGES][] = [
                             self::KEY_LEVEL => $row[Messages::KEY_LEVEL],
-                            self::KEY_MESSAGE => $row[Messages::KEY_MESSAGE]
+                            self::KEY_MESSAGE => $row[Messages::KEY_MESSAGE],
+                            self::KEY_TYPE => self::TYPE_LOGGER_ERROR
                         ];
                     }
                 }
