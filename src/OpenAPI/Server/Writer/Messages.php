@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace OpenAPI\Server\Writer;
 
-use Zend\Log\Writer\AbstractWriter;
+use rollun\logger\Writer\AbstractWriter;
 
 /**
  * Class Messages
