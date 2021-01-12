@@ -58,7 +58,8 @@ $templatePath = dirname(__DIR__) . '/template/server';
 file_put_contents('openapi_config.json', json_encode(['invokerPackage' => "$title\\OpenAPI\\V$version", 'srcBasePath' => "src/$title/src/OpenAPI/V$version"]));
 
 // generate
-exec("openapi-generator generate -i $manifest -o tmp-openapi -g php-ze-ph -c openapi_config.json -t $templatePath", $output);
+$caseOption = "--additional-properties=variableNamingConvention=camelCase";
+exec("openapi-generator generate -i $manifest $caseOption -o tmp-openapi -g php-ze-ph -c openapi_config.json -t $templatePath", $output);
 
 // generate config to autoload
 $pathHandlerData = yaml_parse(file_get_contents('tmp-openapi/application/config/path_handler.yml'));

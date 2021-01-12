@@ -55,7 +55,9 @@ if (!empty($manifestData['tags'])) {
  */
 $templatePath = dirname(__DIR__) . '/template/server';
 file_put_contents('openapi_config.json', json_encode(['invokerPackage' => "$title\\OpenAPI\\V$version", 'srcBasePath' => "src/$title/src/OpenAPI/V$version"]));
-exec("openapi-generator generate -i $manifest -o tmp-openapi -g php-ze-ph -c openapi_config.json -t $templatePath");
+// set CamelCase
+$caseOption = "--additional-properties=variableNamingConvention=camelCase";
+exec("openapi-generator generate -i $manifest $caseOption -o tmp-openapi -g php-ze-ph -c openapi_config.json -t $templatePath");
 $dtoDir = "src/$title/src/OpenAPI/V$version/DTO";
 if (!file_exists($dtoDir)) {
     mkdir($dtoDir, 0777, true);
@@ -76,7 +78,7 @@ $templatePath = dirname(__DIR__) . '/template/client';
 
 // generate
 exec(
-    "openapi-generator generate --global-property apis,apiDocs=false,apiTests=false,models=false,modelDocs=false,modelTests=false,supportingFiles=Configuration.php -i $manifest -o tmp -g php -c openapi_client_config.json -t $templatePath",
+    "openapi-generator generate --global-property apis,apiDocs=false,apiTests=false,models=false,modelDocs=false,modelTests=false,supportingFiles=Configuration.php -i $manifest $caseOption -o tmp -g php -c openapi_client_config.json -t $templatePath",
     $output
 );
 
