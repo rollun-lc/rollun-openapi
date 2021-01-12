@@ -14,5 +14,5 @@ class Delete
      * @DTA\Validator(name="Type", options={"type":"bool"})
      * @var bool
      */
-    public $is_deleted;
+    public $isDeleted;
 }

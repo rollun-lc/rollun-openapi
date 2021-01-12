@@ -41,7 +41,7 @@ class TaskInfo
      * @DTA\Validator(name="Type", options={"type":"string"})
      * @var string
      */
-    public $start_time;
+    public $startTime;
     /**
      * @DTA\Data(field="result", nullable=true)
      * @DTA\Strategy(name="Object", options={"type":\Task\OpenAPI\V1\DTO\SummaryResult::class})
