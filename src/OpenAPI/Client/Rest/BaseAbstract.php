@@ -4,7 +4,10 @@ declare(strict_types=1);
 namespace OpenAPI\Client\Rest;
 
 use Articus\DataTransfer\Service as DataTransferService;
+use Exception;
 use GuzzleHttp\Client;
+use InvalidArgumentException;
+use OpenAPI\Client\Api\ApiInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -12,7 +15,7 @@ use Psr\Log\LoggerInterface;
  *
  * @author r.ratsun <r.ratsun.rollun@gmail.com>
  */
-abstract class BaseAbstract extends \OpenAPI\Server\Rest\BaseAbstract
+abstract class BaseAbstract extends \OpenAPI\Server\Rest\BaseAbstract implements ClientInterface
 {
     const IS_API_CLIENT = true;
 
@@ -22,7 +25,7 @@ abstract class BaseAbstract extends \OpenAPI\Server\Rest\BaseAbstract
     protected $apiName = '';
 
     /**
-     * @var object
+     * @var ApiInterface
      */
     protected $api;
 
@@ -48,7 +51,7 @@ abstract class BaseAbstract extends \OpenAPI\Server\Rest\BaseAbstract
         // prepare api name
         $apiName = $this->apiName;
         if (empty($this->apiName)) {
-            throw new \InvalidArgumentException('Param $apiName is required!');
+            throw new InvalidArgumentException('Param $apiName is required!');
         }
 
         $this->api = $this->createApi($apiName, $lifeCycleToken);
@@ -60,9 +63,9 @@ abstract class BaseAbstract extends \OpenAPI\Server\Rest\BaseAbstract
      * @param string $apiName
      * @param string $lifeCycleToken
      *
-     * @return object
+     * @return ApiInterface
      */
-    protected function createApi(string $apiName, string $lifeCycleToken): object
+    protected function createApi(string $apiName, string $lifeCycleToken): ApiInterface
     {
         return new $apiName(new Client(['headers' => ['LifeCycleToken' => $lifeCycleToken]]));
     }
@@ -73,7 +76,7 @@ abstract class BaseAbstract extends \OpenAPI\Server\Rest\BaseAbstract
      * @param string|null $validationMessage
      *
      * @return object|array
-     * @throws \Exception
+     * @throws Exception
      */
     protected function transfer(array $data, string $dto, string $validationMessage = null)
     {
@@ -99,9 +102,25 @@ abstract class BaseAbstract extends \OpenAPI\Server\Rest\BaseAbstract
         }
 
         if (!empty($errors)) {
-            throw new \Exception($validationMessage . ' Details: ' . json_encode($errors));
+            throw new Exception($validationMessage . ' Details: ' . json_encode($errors));
         }
 
         return $result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setHostIndex(int $index): void
+    {
+        $this->api->setHostIndex($index);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getHosts(): array
+    {
+        return $this->api->getHosts();
     }
 }
