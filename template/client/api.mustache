@@ -24,6 +24,7 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\MultipartStream;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\RequestOptions;
+use OpenAPI\Client\Api\ApiInterface;
 use OpenAPI\Client\ApiException;
 use {{invokerPackage}}\Configuration;
 use OpenAPI\Client\HeaderSelector;
@@ -37,7 +38,7 @@ use OpenAPI\Client\ObjectSerializer;
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  */
-{{#operations}}class {{classname}}
+{{#operations}}class {{classname}} implements ApiInterface
 {
     /**
      * @var ClientInterface
@@ -63,28 +64,26 @@ use OpenAPI\Client\ObjectSerializer;
      * @param ClientInterface $client
      * @param Configuration   $config
      * @param HeaderSelector  $selector
-     * @param int             $host_index (Optional) host index to select the list of hosts if defined in the OpenAPI spec
+     * @param int             $hostIndex (Optional) host index to select the list of hosts if defined in the OpenAPI spec
      */
     public function __construct(
         ClientInterface $client = null,
         Configuration $config = null,
         HeaderSelector $selector = null,
-        $host_index = 0
+        $hostIndex = 0
     ) {
         $this->client = $client ?: new Client();
         $this->config = $config ?: new Configuration();
         $this->headerSelector = $selector ?: new HeaderSelector();
-        $this->hostIndex = $host_index;
+        $this->hostIndex = $hostIndex;
     }
 
     /**
-     * Set the host index
-     *
-     * @param  int $host_index
+     * {@inheritDoc}
      */
-    public function setHostIndex($host_index)
+    public function setHostIndex(int $hostIndex): void
     {
-        $this->hostIndex = $host_index;
+        $this->hostIndex = $hostIndex;
     }
 
     /**
@@ -92,9 +91,17 @@ use OpenAPI\Client\ObjectSerializer;
      *
      * @return int
      */
-    public function getHostIndex()
+    public function getHostIndex(): int
     {
         return $this->hostIndex;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getHosts(): array
+    {
+        return $this->config->getHostSettings();
     }
 
     /**
@@ -596,7 +603,7 @@ use OpenAPI\Client\ObjectSerializer;
         $query = \GuzzleHttp\Psr7\build_query($queryParams);
         return new Request(
             '{{httpMethod}}',
-            {{^servers.0}}$this->config->getHost(){{/servers.0}}{{#servers.0}}$operationHost{{/servers.0}} . $resourcePath . ($query ? "?{$query}" : ''),
+            {{^servers.0}}$this->getHost(){{/servers.0}}{{#servers.0}}$operationHost{{/servers.0}} . $resourcePath . ($query ? "?{$query}" : ''),
             $headers,
             $httpBody
         );
@@ -620,6 +627,16 @@ use OpenAPI\Client\ObjectSerializer;
         }
 
         return $options;
+    }
+
+    /**
+     * Returns host by hostIndex
+     *
+     * @return string
+     */
+    protected function getHost(): string
+    {
+        return $this->config->getHostFromSettings($this->hostIndex);
     }
 }
 {{/operations}}
