@@ -428,9 +428,9 @@ class Configuration
     /**
      * Returns an array of host settings
      *
-     * @return an array of host settings
+     * @return array an array of host settings
      */
-    public function getHostSettings()
+    public function getHostSettings(): array
     {
         return [
         {{#servers}}
@@ -466,15 +466,13 @@ class Configuration
     /**
      * Returns URL based on the index and variables
      *
-     * @param index array index of the host settings
-     * @param variables hash of variable and the corresponding value (optional)
-     * @return URL based on host settings
+     * @param $index int array index of the host settings
+     * @param $variables array|null hash of variable and the corresponding value (optional)
+     * @return string URL based on host settings
      */
-    public function getHostFromSettings($index, $variables = null)
+    public function getHostFromSettings(int $index, ?array $variables = null): string
     {
-        if (null === $variables) {
-            $variables = [];
-        }
+        $variables = $variables === null ? [] : $variables;
 
         $hosts = $this->getHostSettings();
 
