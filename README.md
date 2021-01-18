@@ -62,3 +62,44 @@
 Нет, почти все классы с этой библиотеки нужны для работы в продакшене: роутинг, сереализация дто и т.д.
 Для генерации кода используются только команды из ./bin директории, а так же пакет ```nette/php-generator```, который
 помещен в dev секцию, так что не подтянется в продакшене. 
+
+## Переключение между хостами
+С версии 3.0.2 Rest классы реализуют интерфейс [`OpenAPI\Client\Rest\ClientInterface`](src/OpenAPI/Client/Rest/ClientInterface.php),
+который включает в себя интерфейс [`OpenAPI\Client\Rest\HostSelectionInterface`](src/OpenAPI/Client/Rest/HostSelectionInterface.php),
+который позволяет переключаться между хостами. 
+
+Чтобы воспользоваться этой возможностью, замените `OpenAPI\Server\Rest\RestInterface` на [`OpenAPI\Client\Rest\ClientInterface`](src/OpenAPI/Client/Rest/ClientInterface.php),
+который так же включает в себя RestInterface, так что ничего не сломается.
+
+```php
+<?php
+
+namespace OpenAPI;
+
+use HelloUser\OpenAPI\V1\Client\Rest\Hello;
+use OpenAPI\Client\Rest\ClientInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+use rollun\dic\InsideConstruct;use Zend\Diactoros\Response;
+
+class TestHandler implements RequestHandlerInterface
+{
+    /**
+     * @var ClientInterface|null
+     */
+    private $rest;
+
+    public function __construct(ClientInterface $rest = null)
+    {
+        InsideConstruct::init(['rest' => Hello::class]);
+    }
+
+    public function handle(ServerRequestInterface $request): ResponseInterface
+    {
+        $this->rest->setHostIndex(1);
+        $result = $this->rest->getById('10');
+        return new Response\JsonResponse($result);
+    }
+}
+```
