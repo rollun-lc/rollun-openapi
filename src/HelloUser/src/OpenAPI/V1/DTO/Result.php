@@ -11,7 +11,8 @@ class Result
 {
     /**
      * @DTA\Data(field="data", nullable=true)
-     * @DTA\Validator(name="Type", options={"type":"object"})
+     * @DTA\Strategy(name="Object", options={"type":object::class})
+     * @DTA\Validator(name="Dictionary", options={"type":object::class})
      * @var object
      */
     public $data;
