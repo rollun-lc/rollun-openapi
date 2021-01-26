@@ -62,3 +62,13 @@
      * @DTA\Validator(name="Regex", options={"pattern":"{{{pattern}}}"})
 {{/pattern}}
 {{/hasValidation}}
+{{!-- Validate enum --}}
+{{#isEnum}}
+     * @DTA\Validator(name="Enum", options={"allowed":{
+     {{#allowableValues}}
+        {{#enumVars}}
+     *      "{{&value}}"{{^-last}},{{/-last}}
+        {{/enumVars}}
+     {{/allowableValues}}
+     * }})
+{{/isEnum}}
