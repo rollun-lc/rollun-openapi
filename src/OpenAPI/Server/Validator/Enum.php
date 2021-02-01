@@ -24,14 +24,53 @@ class Enum extends AbstractValidator
 
     public function setAllowed($allowed): void
     {
-        $this->allowed = $allowed;
+        $this->allowed = array_map(function ($item) {
+            return $this->castToType($item);
+        }, $allowed);
+    }
+
+    /**
+     * Converts variable to their best type
+     *
+     * @param $item
+     * @return false|mixed|string
+     */
+    protected function castToType($item)
+    {
+        if (filter_var($item, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE) !== null) {
+            return (int)$item;
+        }
+        if (filter_var($item, FILTER_VALIDATE_FLOAT, FILTER_NULL_ON_FAILURE) !== null) {
+            return (float)$item;
+        }
+
+        if (is_string($item)) {
+            $first = substr($item, 0, 1);
+            $last = substr($item, -1);
+
+            // if string wrapped in single quotes
+            if ($first === "'" && $last === "'") {
+                // string without quotes
+                $item = substr($item, 1, -1);
+            }
+
+            // validate bool
+            // I'm not use filter_var cause FILTER_VALIDATE_BOOLEAN tries to be smart, recognizing words like Yes, No,
+            // Off, On, both string and native types of true and false.
+            $lowerItem = strtolower($item);
+            if ($lowerItem === 'false') return false;
+            elseif ($lowerItem === 'true') return true;
+
+            return (string)$item;
+        }
+
+        return $item;
     }
 
     public function isValid($value): bool
     {
-        if (!$result = in_array($value, $this->allowed))
-        {
-            $this->error(self::INVALID, implode(', ',$this->allowed));
+        if (!$result = in_array($value, $this->allowed, true)) {
+            $this->error(self::INVALID, implode(', ', $this->allowed));
         }
 
         return $result;
