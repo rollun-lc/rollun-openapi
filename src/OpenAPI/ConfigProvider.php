@@ -103,6 +103,7 @@ class ConfigProvider
                 'validators'     => [
                     'invokables' => [
                         Validator\Type::class                    => Validator\Type::class,
+                        Validator\Enum::class                    => Validator\Enum::class,
                         Validator\QueryParameterType::class      => Validator\QueryParameterType::class,
                         Validator\QueryParameterArrayType::class => Validator\QueryParameterArrayType::class,
                     ],
@@ -114,6 +115,7 @@ class ConfigProvider
                         'Dictionary'              => Dictionary::class,
                         'Collection'              => Collection::class,
                         'Type'                    => Validator\Type::class,
+                        'Enum'                    => Validator\Enum::class,
                         'QueryParameterType'      => Validator\QueryParameterType::class,
                         'QueryParameterArrayType' => Validator\QueryParameterArrayType::class,
                     ]
