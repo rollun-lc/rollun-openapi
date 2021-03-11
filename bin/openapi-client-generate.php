@@ -125,7 +125,7 @@ foreach ($tags as $tag) {
                 if (strpos($param['paramType'], 'OpenAPI') !== false) {
                     $inputParams[] = "\$bodyData";
                 } else {
-                    $inputParams[] = "\$queryDataObject->{$param['paramName']}";
+                    $inputParams[] = "\$queryData['{$param['paramName']}']";
                 }
             }
 
