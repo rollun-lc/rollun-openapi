@@ -25,6 +25,7 @@ use GuzzleHttp\Psr7\MultipartStream;
 use GuzzleHttp\Psr7\Query;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\RequestOptions;
+use InvalidArgumentException;
 use OpenAPI\Client\Api\ApiInterface;
 use OpenAPI\Client\ApiException;
 use {{invokerPackage}}\Configuration;
@@ -210,7 +211,7 @@ use OpenAPI\Client\ObjectSerializer;
             {{#dataType}}
                 {{^isWildcard}}case {{code}}:{{/isWildcard}}{{#isWildcard}}default:{{/isWildcard}}
                     return [
-                        ObjectSerializer::deserialize((string) $responseBody),
+                        $this->deserialize((string) $responseBody),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
@@ -221,7 +222,7 @@ use OpenAPI\Client\ObjectSerializer;
         {{/responses}}
 
             return [
-                ObjectSerializer::deserialize((string) $responseBody),
+                $this->deserialize((string) $responseBody),
                 $response->getStatusCode(),
                 $response->getHeaders()
             ];
@@ -236,7 +237,7 @@ use OpenAPI\Client\ObjectSerializer;
         {{#responses}}
             {{#dataType}}
                 {{^isWildcard}}case {{code}}:{{/isWildcard}}{{#isWildcard}}default:{{/isWildcard}}
-                    $data = ObjectSerializer::deserialize($e->getResponseBody());
+                    $data = $this->deserialize((string) $e->getResponseBody());
                     $e->setResponseObject($data);
                     break;
             {{/dataType}}
@@ -324,7 +325,7 @@ use OpenAPI\Client\ObjectSerializer;
                 function ($response) {
                     {{#returnType}}
                     return [
-                        ObjectSerializer::deserialize((string) $response->getBody()),
+                        $this->deserialize((string) $response->getBody()),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
@@ -641,6 +642,30 @@ use OpenAPI\Client\ObjectSerializer;
     protected function getHost(): string
     {
         return $this->config->getHostFromSettings($this->hostIndex);
+    }
+
+    /**
+     * Decodes response body
+     *
+     * @param string $responseBody
+     * @return array
+     */
+    protected function deserialize(string $responseBody): array
+    {
+        try {
+            return ObjectSerializer::deserialize($responseBody);
+        } catch (InvalidArgumentException $exception) {
+            return [
+                'data' => null,
+                'messages' => [
+                    [
+                        'level' => 'error',
+                        'type' => 'INVALID_RESPONSE',
+                        'text' => 'Response body decoding error: "' . $exception->getMessage() . '"'
+                    ]
+                ]
+            ];
+        }
     }
 }
 {{/operations}}
