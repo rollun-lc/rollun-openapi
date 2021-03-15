@@ -35,6 +35,7 @@ use GuzzleHttp\Psr7\MultipartStream;
 use GuzzleHttp\Psr7\Query;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\RequestOptions;
+use InvalidArgumentException;
 use OpenAPI\Client\Api\ApiInterface;
 use OpenAPI\Client\ApiException;
 use HelloUser\OpenAPI\V1\Client\Configuration;
@@ -168,26 +169,26 @@ class HelloApi implements ApiInterface
             switch($statusCode) {
                 case 200:
                     return [
-                        ObjectSerializer::deserialize((string) $responseBody),
+                        $this->deserialize((string) $responseBody),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
                 case 404:
                     return [
-                        ObjectSerializer::deserialize((string) $responseBody),
+                        $this->deserialize((string) $responseBody),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
                 case 500:
                     return [
-                        ObjectSerializer::deserialize((string) $responseBody),
+                        $this->deserialize((string) $responseBody),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
             }
 
             return [
-                ObjectSerializer::deserialize((string) $responseBody),
+                $this->deserialize((string) $responseBody),
                 $response->getStatusCode(),
                 $response->getHeaders()
             ];
@@ -195,15 +196,15 @@ class HelloApi implements ApiInterface
         } catch (ApiException $e) {
             switch ($e->getCode()) {
                 case 200:
-                    $data = ObjectSerializer::deserialize($e->getResponseBody());
+                    $data = $this->deserialize((string) $e->getResponseBody());
                     $e->setResponseObject($data);
                     break;
                 case 404:
-                    $data = ObjectSerializer::deserialize($e->getResponseBody());
+                    $data = $this->deserialize((string) $e->getResponseBody());
                     $e->setResponseObject($data);
                     break;
                 case 500:
-                    $data = ObjectSerializer::deserialize($e->getResponseBody());
+                    $data = $this->deserialize((string) $e->getResponseBody());
                     $e->setResponseObject($data);
                     break;
             }
@@ -250,7 +251,7 @@ class HelloApi implements ApiInterface
             ->then(
                 function ($response) {
                     return [
-                        ObjectSerializer::deserialize((string) $response->getBody()),
+                        $this->deserialize((string) $response->getBody()),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
@@ -398,5 +399,29 @@ class HelloApi implements ApiInterface
     protected function getHost(): string
     {
         return $this->config->getHostFromSettings($this->hostIndex);
+    }
+
+    /**
+     * Decodes response body
+     *
+     * @param string $responseBody
+     * @return array
+     */
+    protected function deserialize(string $responseBody): array
+    {
+        try {
+            return ObjectSerializer::deserialize($responseBody);
+        } catch (InvalidArgumentException $exception) {
+            return [
+                'data' => null,
+                'messages' => [
+                    [
+                        'level' => 'error',
+                        'type' => 'INVALID_RESPONSE',
+                        'text' => 'Response body decoding error: "' . $exception->getMessage() . '"'
+                    ]
+                ]
+            ];
+        }
     }
 }
