@@ -156,6 +156,9 @@ class UserApi implements ApiInterface
             try {
                 $response = $this->client->send($request, $options);
             } catch (RequestException $e) {
+                if (!$e->hasResponse()) {
+                    throw $e;
+                }
                 $response = $e->getResponse();
             }
 
@@ -401,6 +404,9 @@ class UserApi implements ApiInterface
             try {
                 $response = $this->client->send($request, $options);
             } catch (RequestException $e) {
+                if (!$e->hasResponse()) {
+                    throw $e;
+                }
                 $response = $e->getResponse();
             }
 
