@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  rollun-openapi-nginx:
+    build:
+      context: docker/nginx
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/var/www/app
+    ports:
+      - 8080:80
+    depends_on:
+      - rollun-openapi-php-fpm
+
+  rollun-openapi-php-fpm:
+    build:
+      context: docker/php-fpm
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/var/www/app
+    environment:
+      PHP_IDE_CONFIG: serverName=rollun-openapi
+
+  rollun-openapi-logstash:
+    image: docker.elastic.co/logstash/logstash:7.7.0
+    volumes:
+      - ./docker/logstash/config/:/usr/share/logstash/config/
