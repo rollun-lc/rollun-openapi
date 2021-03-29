@@ -50,6 +50,9 @@ use Zend\Expressive\Router\Route;
  * @return void
  */
 return function (Application $app, MiddlewareFactory $factory, ContainerInterface $container): void {
+    $app->get('/',
+        \OpenAPI\TestHandler::class,
+        'index');
 
     $app->get(
         '/oauth/redirect',
