@@ -54,7 +54,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "rollun\\test\\OpenAPI": "test/"
+      "rollun\\test\\OpenAPI\\": "test/"
     }
   },
   "bin": [
