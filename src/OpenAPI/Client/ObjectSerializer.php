@@ -2,6 +2,7 @@
 
 namespace OpenAPI\Client;
 
+use InvalidArgumentException;
 use OpenAPI\Client\Model\ModelInterface;
 
 /**
@@ -178,10 +179,30 @@ class ObjectSerializer
      * @param string $data
      *
      * @return array
+     *
+     * @throws InvalidArgumentException when cannot decode json
      */
-    public static function deserialize($data)
+    public static function deserialize(string $data): array
     {
         // we always return an array or null
-        return !empty($data) ? json_decode($data, true) : [];
+        return !empty($data) ? self::json_decode($data) : [];
+    }
+
+    /**
+     * @param string $json
+     * @return array
+     *
+     * @throws InvalidArgumentException
+     */
+    protected static function json_decode(string $json): array
+    {
+        $decoded = json_decode($json, true);
+
+        if ($decoded === null && json_last_error() !== JSON_ERROR_NONE) {
+            $message = json_last_error_msg();
+            throw new InvalidArgumentException("Cannot decode json string: $message.");
+        }
+
+        return $decoded;
     }
 }
