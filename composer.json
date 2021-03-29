@@ -52,6 +52,11 @@
       "HelloUser\\": "src/HelloUser/src/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "rollun\\test\\OpenAPI\\": "test/"
+    }
+  },
   "bin": [
     "bin/openapi-server-generate",
     "bin/openapi-client-generate"
