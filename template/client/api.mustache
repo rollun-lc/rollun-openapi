@@ -31,6 +31,7 @@ use OpenAPI\Client\ApiException;
 use {{invokerPackage}}\Configuration;
 use OpenAPI\Client\HeaderSelector;
 use OpenAPI\Client\ObjectSerializer;
+use Psr\Log\LoggerInterface;
 
 /**
  * {{classname}} Class Doc Comment
@@ -63,21 +64,34 @@ use OpenAPI\Client\ObjectSerializer;
     protected $hostIndex;
 
     /**
-     * @param ClientInterface $client
-     * @param Configuration   $config
-     * @param HeaderSelector  $selector
-     * @param int             $hostIndex (Optional) host index to select the list of hosts if defined in the OpenAPI spec
+     * @var LoggerInterface|null
+     */
+    private $logger;
+
+    /**
+     * @param ClientInterface|null $client
+     * @param Configuration|null $config
+     * @param HeaderSelector|null $selector
+     * @param int $hostIndex (Optional) host index to select the list of hosts if defined in the OpenAPI spec
+     * @param LoggerInterface|null $logger
      */
     public function __construct(
         ClientInterface $client = null,
         Configuration $config = null,
         HeaderSelector $selector = null,
-        $hostIndex = 0
+        $hostIndex = 0,
+        LoggerInterface $logger = null
     ) {
         $this->client = $client ?: new Client();
         $this->config = $config ?: Configuration::getDefaultConfiguration();
         $this->headerSelector = $selector ?: new HeaderSelector();
         $this->hostIndex = $hostIndex;
+        $this->logger = $logger;
+    }
+
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
     }
 
     /**
@@ -189,15 +203,32 @@ use OpenAPI\Client\ObjectSerializer;
     {
         $request = $this->{{operationId}}Request({{^vendorExtensions.x-group-parameters}}{{#allParams}}${{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}{{/vendorExtensions.x-group-parameters}}{{#vendorExtensions.x-group-parameters}}$associative_array{{/vendorExtensions.x-group-parameters}});
 
+        $this->log('info', 'Openapi send request.', [
+            'requestBody' => (string)$request->getBody(),
+            'requestUri' => (string)$request->getUri()
+        ]);
+
         try {
             $options = $this->createHttpClientOption();
             try {
                 $response = $this->client->send($request, $options);
+
+                $this->log('info', 'Openapi response successfully received.', [
+                    'class' => self::class,
+                    'responseBody' => (string)$response->getBody(),
+                    'responseStatusCode' => $response->getStatusCode()
+                ]);
             } catch (RequestException $e) {
                 if (!$e->hasResponse()) {
                     throw $e;
                 }
                 $response = $e->getResponse();
+
+                $this->log('info', 'Openapi not 2xx response received.', [
+                    'class' => self::class,
+                    'responseBody' => (string)$response->getBody(),
+                    'responseStatusCode' => $response->getStatusCode()
+                ]);
             }
 
             $statusCode = $response->getStatusCode();
@@ -665,6 +696,13 @@ use OpenAPI\Client\ObjectSerializer;
                     ]
                 ]
             ];
+        }
+    }
+
+    protected function log(string $level, string $message, array $context): void
+    {
+        if ($this->logger) {
+            $this->logger->log($level, $message, $context);
         }
     }
 }

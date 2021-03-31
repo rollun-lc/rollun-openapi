@@ -60,9 +60,9 @@ abstract class BaseAbstract extends \OpenAPI\Server\Rest\BaseAbstract implements
             throw new InvalidArgumentException('Param $apiName is required!');
         }
 
-        $this->api = $this->createApi($apiName, $lifeCycleToken, $config);
         $this->dataTransfer = $dataTransfer;
         $this->logger = $logger;
+        $this->api = $this->createApi($apiName, $lifeCycleToken, $config);
     }
 
     /**
@@ -77,7 +77,13 @@ abstract class BaseAbstract extends \OpenAPI\Server\Rest\BaseAbstract implements
         string $lifeCycleToken,
         ?ConfigurationInterface $config = null
     ): ApiInterface {
-        return new $apiName(new Client(['headers' => ['LifeCycleToken' => $lifeCycleToken]]), $config);
+        $api = new $apiName(new Client(['headers' => ['LifeCycleToken' => $lifeCycleToken]]), $config);
+
+        if (method_exists($api, 'setLogger')) {
+            $api->setLogger($this->logger);
+        }
+
+        return $api;
     }
 
     /**
