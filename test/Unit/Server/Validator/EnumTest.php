@@ -18,7 +18,11 @@ class EnumTest extends TestCase
     {
         $validator = new Enum(['allowed' => ['false']]);
         self::assertFalse($validator->isValid('false'));
-        self::assertNotEmpty($validator->getMessages());
+        self::assertNotEmpty($messages = $validator->getMessages());
+        // false converts to empty string since we use implode
+        self::assertEquals([
+            Enum::INVALID => "The value should be one of: [], not 'false'"
+        ],$messages);
     }
 
     public function testStringCastsToInt()
@@ -39,7 +43,10 @@ class EnumTest extends TestCase
         self::assertEmpty($validator->getMessages());
 
         self::assertFalse($validator->isValid('another'));
-        self::assertNotEmpty($validator->getMessages());
+        self::assertNotEmpty($messages = $validator->getMessages());
+        self::assertEquals([
+            Enum::INVALID => "The value should be one of: [random], not 'another'"
+        ],$messages);
     }
 
     public function testString()
@@ -49,6 +56,9 @@ class EnumTest extends TestCase
         self::assertEmpty($validator->getMessages());
 
         self::assertFalse($validator->isValid('another'));
-        self::assertNotEmpty($validator->getMessages());
+        self::assertNotEmpty($messages = $validator->getMessages());
+        self::assertEquals([
+            Enum::INVALID => "The value should be one of: [random], not 'another'"
+        ],$messages);
     }
 }
