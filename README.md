@@ -103,3 +103,7 @@ class TestHandler implements RequestHandlerInterface
     }
 }
 ```
+
+## Зависает composer install 
+Возможно проблема из-за библиотеки "rollun-com/rollun-callback". Попробуйте убрать ее из composer.json и запустить
+установку повторно. Если все прошло успешно, то установите эту библиотеку отдельно через composer require.
