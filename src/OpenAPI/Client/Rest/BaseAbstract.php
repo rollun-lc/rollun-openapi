@@ -8,6 +8,7 @@ use Exception;
 use GuzzleHttp\Client;
 use InvalidArgumentException;
 use OpenAPI\Client\Api\ApiInterface;
+use OpenAPI\Client\Configuration\ConfigurationInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -17,7 +18,7 @@ use Psr\Log\LoggerInterface;
  */
 abstract class BaseAbstract extends \OpenAPI\Server\Rest\BaseAbstract implements ClientInterface
 {
-    const IS_API_CLIENT = true;
+    public const IS_API_CLIENT = true;
 
     /**
      * @var string
@@ -45,16 +46,21 @@ abstract class BaseAbstract extends \OpenAPI\Server\Rest\BaseAbstract implements
      * @param DataTransferService $dataTransfer
      * @param LoggerInterface     $logger
      * @param string              $lifeCycleToken
+     * @param ConfigurationInterface|null $config
      */
-    public function __construct(DataTransferService $dataTransfer, LoggerInterface $logger, string $lifeCycleToken)
-    {
+    public function __construct(
+        DataTransferService $dataTransfer,
+        LoggerInterface $logger,
+        string $lifeCycleToken,
+        ?ConfigurationInterface $config = null
+    ) {
         // prepare api name
         $apiName = $this->apiName;
         if (empty($this->apiName)) {
             throw new InvalidArgumentException('Param $apiName is required!');
         }
 
-        $this->api = $this->createApi($apiName, $lifeCycleToken);
+        $this->api = $this->createApi($apiName, $lifeCycleToken, $config);
         $this->dataTransfer = $dataTransfer;
         $this->logger = $logger;
     }
@@ -62,12 +68,16 @@ abstract class BaseAbstract extends \OpenAPI\Server\Rest\BaseAbstract implements
     /**
      * @param string $apiName
      * @param string $lifeCycleToken
+     * @param ConfigurationInterface|null $config
      *
      * @return ApiInterface
      */
-    protected function createApi(string $apiName, string $lifeCycleToken): ApiInterface
-    {
-        return new $apiName(new Client(['headers' => ['LifeCycleToken' => $lifeCycleToken]]));
+    protected function createApi(
+        string $apiName,
+        string $lifeCycleToken,
+        ?ConfigurationInterface $config = null
+    ): ApiInterface {
+        return new $apiName(new Client(['headers' => ['LifeCycleToken' => $lifeCycleToken]]), $config);
     }
 
     /**
@@ -122,5 +132,19 @@ abstract class BaseAbstract extends \OpenAPI\Server\Rest\BaseAbstract implements
     public function getHosts(): array
     {
         return $this->api->getHosts();
+    }
+
+    /**
+     * @param string $key
+     * @param $value
+     * @todo
+     */
+    public function setConfig($key, $value): void
+    {
+        $config = $this->api->getConfig();
+        $setter = 'set' . $key;
+        if (method_exists($config,$setter)) {
+            $config->{$setter}($value);
+        }
     }
 }

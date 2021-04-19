@@ -9,6 +9,7 @@ use Articus\DataTransfer\Validator\Collection;
 use Articus\DataTransfer\Validator\Dictionary;
 use Articus\DataTransfer\Validator\Factory as ValidatorFactory;
 use OpenAPI\Client\Factory\ApiInstanceAbstractFactory;
+use OpenAPI\Client\Factory\ConfigurationAbstractFactory;
 use OpenAPI\Server\MetadataProvider\Annotation;
 use Articus\PathHandler\PluginManager as ArticusPluginManager;
 use Articus\PathHandler\RouteInjection\Factory as RouteInjectionFactory;
@@ -72,7 +73,8 @@ class ConfigProvider
                     Annotation::class          => AnnotationFactory::class,
                 ],
                 'abstract_factories' => [
-                    ApiInstanceAbstractFactory::class
+                    ApiInstanceAbstractFactory::class,
+                    ConfigurationAbstractFactory::class,
                 ]
             ],
             ConfigAbstractFactory::class => [
