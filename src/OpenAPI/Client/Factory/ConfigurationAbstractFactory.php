@@ -51,7 +51,7 @@ class ConfigurationAbstractFactory implements AbstractFactoryInterface
 
         $config = $container->get('config')[self::KEY][$requestedName] ?? [];
 
-        if (isset($config[self::KEY_AUTHENTICATOR]) || $config[self::KEY_CONFIG][self::KEY_AUTHENTICATOR]) {
+        if (isset($config[self::KEY_AUTHENTICATOR]) || isset($config[self::KEY_CONFIG][self::KEY_AUTHENTICATOR])) {
             $authenticator = $config[self::KEY_AUTHENTICATOR] ?? $config[self::KEY_CONFIG][self::KEY_AUTHENTICATOR];
             if (is_string($authenticator)) {
                 $authenticator = $container->get($authenticator);
