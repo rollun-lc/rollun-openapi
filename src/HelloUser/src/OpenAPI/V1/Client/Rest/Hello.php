@@ -9,6 +9,8 @@ use OpenAPI\Client\Rest\BaseAbstract;
  */
 class Hello extends BaseAbstract
 {
+	public const CONFIGURATION_CLASS = 'HelloUser\OpenAPI\V1\Client\Configuration';
+
 	/** @var string */
 	protected $apiName = '\HelloUser\OpenAPI\V1\Client\Api\HelloApi';
 
@@ -31,7 +33,7 @@ class Hello extends BaseAbstract
 	/**
 	 * @return \HelloUser\OpenAPI\V1\Client\Api\HelloApi
 	 */
-	protected function getApi(): object
+	protected function getApi(): \OpenAPI\Client\Api\ApiInterface
 	{
 		return $this->api;
 	}

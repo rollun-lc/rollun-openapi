@@ -17,6 +17,8 @@ use Articus\DataTransfer\Validator\PluginManager as ValidatorPluginManager;
 use Articus\DataTransfer\Validator\Factory\PluginManager as ValidatorPluginManagerFactory;
 use Articus\DataTransfer\Validator\TypeCompliant;
 use OpenAPI\Client\Factory\ApiInstanceAbstractFactory;
+use OpenAPI\Client\Factory\ConfigurationAbstractFactory;
+use OpenAPI\Server\MetadataProvider\Annotation;
 use OpenAPI\Server\MetadataProvider\Annotation as PathHandlerAnnotation;
 use Articus\PathHandler\PluginManager as ArticusPluginManager;
 use Articus\PathHandler\RouteInjection\Factory as RouteInjectionFactory;
@@ -90,7 +92,8 @@ class ConfigProvider
                     \Zend\Validator\ValidatorPluginManager::class => \Zend\Validator\ValidatorPluginManagerFactory::class
                 ],
                 'abstract_factories' => [
-                    ApiInstanceAbstractFactory::class
+                    ApiInstanceAbstractFactory::class,
+                    ConfigurationAbstractFactory::class,
                 ]
             ],
             ConfigAbstractFactory::class => [
