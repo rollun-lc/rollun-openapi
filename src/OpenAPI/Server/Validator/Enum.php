@@ -8,7 +8,9 @@ use Zend\Validator\AbstractValidator;
 
 class Enum extends AbstractValidator
 {
-    const INVALID = 'enumInvalid';
+    public const INVALID = 'enumInvalid';
+
+    private const MAX_ALLOWED_STRING_LENGTH = 127;
 
     /**
      * Validation failure message template definitions
@@ -17,16 +19,35 @@ class Enum extends AbstractValidator
      */
     protected $messageTemplates
         = [
-            self::INVALID => "Value should be one of: [%value%]",
+            self::INVALID => "The value should be one of: [%allowed%], not '%value%'",
         ];
 
+    /**
+     * @var array
+     */
+    protected $messageVariables = [
+        'allowed'    => 'allowedString',
+    ];
+
     protected $allowed = [];
+
+    /**
+     * String representation of $this->allowed for message variables
+     *
+     * @var string
+     */
+    protected $allowedString = '';
 
     public function setAllowed($allowed): void
     {
         $this->allowed = array_map(function ($item) {
             return $this->castToType($item);
         }, $allowed);
+
+        $this->allowedString = $this->truncate(
+            implode(', ', $this->allowed),
+            self::MAX_ALLOWED_STRING_LENGTH
+        );
     }
 
     /**
@@ -70,9 +91,14 @@ class Enum extends AbstractValidator
     public function isValid($value): bool
     {
         if (!$result = in_array($value, $this->allowed, true)) {
-            $this->error(self::INVALID, implode(', ', $this->allowed));
+            $this->error(self::INVALID, $value);
         }
 
         return $result;
+    }
+
+    private function truncate(string $string, int $length)
+    {
+        return substr($string, 0, $length);
     }
 }
