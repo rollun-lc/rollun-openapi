@@ -11,8 +11,8 @@
     "ext-curl": "*",
     "ext-json": "*",
     "ext-mbstring": "*",
-    "articus/data-transfer": "^0.2",
-    "articus/path-handler": "^0.4",
+    "articus/data-transfer": "^0.3.1",
+    "articus/path-handler": "^0.5",
     "doctrine/annotations": "^1.6",
     "guzzlehttp/guzzle": "^6.2",
     "nette/php-generator": "^3.4",
@@ -33,7 +33,8 @@
     "zendframework/zend-expressive-helpers": "^5.0",
     "zendframework/zend-serializer": "^2.9",
     "zendframework/zend-servicemanager": "^3.4",
-    "zendframework/zend-stdlib": "^3.2"
+    "zendframework/zend-stdlib": "^3.2",
+    "zendframework/zend-validator": "^2.13"
   },
   "require-dev": {
     "ext-yaml": "*",

@@ -93,12 +93,12 @@ abstract class BaseAbstract extends \OpenAPI\Server\Rest\BaseAbstract implements
             $errors = [];
             foreach ($data as $item) {
                 $object = new $dto();
-                $errors = array_merge($errors, $this->dataTransfer->transfer($item, $object));
+                $errors = array_merge($errors, $this->dataTransfer->transferToTypedData($item, $object));
                 $result[] = $object;
             }
         } else {
             $result = new $dto();
-            $errors = $this->dataTransfer->transfer($data, $result);
+            $errors = $this->dataTransfer->transferToTypedData($data, $result);
         }
 
         if (!empty($errors)) {
