@@ -10,9 +10,9 @@ return [
             ],
         ],
     ],
-    'dependencies'                                     => [
+    'dependencies' => [
         'invokables' => [
-            \HelloUser\OpenAPI\V1\Server\Rest\User::class  => \HelloUser\OpenAPI\V1\Server\Rest\User::class,
+            \HelloUser\OpenAPI\V1\Server\Rest\User::class => \HelloUser\OpenAPI\V1\Server\Rest\User::class,
             \HelloUser\OpenAPI\V1\Server\Rest\Hello::class => \HelloUser\OpenAPI\V1\Server\Rest\Hello::class,
         ],
     ],
