@@ -17,28 +17,30 @@ class DateTime implements StrategyInterface
     /**
      * @inheritdoc
      */
-    public function extract($objectValue, $object = null)
+    public function extract($from)
     {
-        $result = null;
-        if ($objectValue instanceof \DateTime) {
-            $result = $objectValue->format(static::DATE_TIME_FORMAT);
+        if ($from instanceof \DateTime) {
+            return $from->format(static::DATE_TIME_FORMAT);
         }
-        return $result;
+
+        throw new \LogicException(\sprintf(
+            'Extraction can be done only from %s, not %s',
+            \DateTime::class, \is_object($from) ? \get_class($from) : \gettype($from)
+        ));
     }
 
     /**
      * @inheritdoc
      */
-    public function hydrate($arrayValue, $objectValue, array $array = null)
+    public function hydrate($from, &$to): void
     {
-        $result = null;
-        if (!empty($arrayValue)) {
-            $date = $this->parseDateString($arrayValue);
+        $to = null;
+        if (!empty($from)) {
+            $date = $this->parseDateString($from);
             if ($date instanceof \DateTime) {
-                $result = $date;
+                $to = $date;
             }
         }
-        return $result;
     }
 
     /**
@@ -46,8 +48,8 @@ class DateTime implements StrategyInterface
      *
      * @return bool|\DateTime
      */
-    protected function parseDateString($arrayValue)
+    protected function parseDateString(string $value): \DateTime
     {
-        return \DateTime::createFromFormat(static::DATE_TIME_FORMAT, $arrayValue, new \DateTimeZone('UTC'));
+        return \DateTime::createFromFormat(static::DATE_TIME_FORMAT, $value, new \DateTimeZone('UTC'));
     }
 }

@@ -47,11 +47,11 @@ class QueryParameter implements StrategyInterface
     /**
      * @inheritdoc
      */
-    public function extract($objectValue, $object = null)
+    public function extract($from)
     {
         $result = null;
-        if ($objectValue !== null) {
-            $result = (string)$objectValue;
+        if ($from !== null) {
+            $result = (string)$from;
         }
         return $result;
     }
@@ -59,25 +59,24 @@ class QueryParameter implements StrategyInterface
     /**
      * @inheritdoc
      */
-    public function hydrate($arrayValue, $objectValue, array $array = null)
+    public function hydrate($from, &$to): void
     {
-        $result = null;
-        if ($arrayValue !== null) {
+        $to = null;
+        if ($from !== null) {
             switch ($this->type) {
                 case self::TYPE_INT:
-                    $result = (int)$arrayValue;
+                    $to = (int)$from;
                     break;
                 case self::TYPE_FLOAT:
-                    $result = (float)$arrayValue;
+                    $to = (float)$from;
                     break;
                 case self::TYPE_BOOL:
-                    $result = ($arrayValue === 'true') ? true : false;
+                    $to = $from === 'true';
                     break;
                 case self::TYPE_STRING:
-                    $result = (string)$arrayValue;
+                    $to = (string)$from;
                     break;
             }
         }
-        return $result;
     }
 }
