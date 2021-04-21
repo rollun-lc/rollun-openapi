@@ -34,4 +34,6 @@ interface ApiInterface
      * @return array
      */
     public function getHosts(): array;
+
+    public function getConfig();
 }

@@ -15,6 +15,10 @@ use Zend\ServiceManager\Factory\AbstractFactoryInterface;
  */
 class ApiInstanceAbstractFactory implements AbstractFactoryInterface
 {
+    public const KEY = self::class;
+
+    public const KEY_CONFIGURATION = 'configuration';
+
     /**
      * @inheritDoc
      */
@@ -28,7 +32,17 @@ class ApiInstanceAbstractFactory implements AbstractFactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $lifeCycleToken = null;
+        $config = $container->get('config')[self::KEY][$requestedName] ?? null;
+
+        $lifeCycleToken = $configuration = null;
+
+        // define configuration
+        if (isset($config[self::KEY_CONFIGURATION])) {
+            $configuration = $container->get($config[self::KEY_CONFIGURATION]);
+        } elseif (defined($requestedName . '::CONFIGURATION_CLASS')) {
+            $configurationClass = $requestedName::CONFIGURATION_CLASS;
+            $configuration = $container->get($configurationClass);
+        }
 
         // set life cycle token
         if ($container->has(LifeCycleToken::class)) {
@@ -38,7 +52,8 @@ class ApiInstanceAbstractFactory implements AbstractFactoryInterface
         return new $requestedName(
             $container->get(\Articus\DataTransfer\Service::class),
             $container->get(LoggerInterface::class),
-            $lifeCycleToken
+            $lifeCycleToken,
+            $configuration
         );
     }
 }

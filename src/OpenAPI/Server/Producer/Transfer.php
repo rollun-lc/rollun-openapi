@@ -47,12 +47,12 @@ class Transfer extends Base
      * @param callable $streamFactory
      * @param DTService $dtService
      * @param LoggerInterface $logger
-     * @param null $mapper
+     * @param string $subset
      * @param string|null $responseType
      */
-    public function __construct(callable $streamFactory, DTService $dtService, LoggerInterface $logger, $mapper = null, $responseType = null)
+    public function __construct(callable $streamFactory, DTService $dtService, LoggerInterface $logger, string $subset, $responseType = null)
     {
-        parent::__construct($streamFactory, $dtService);
+        parent::__construct($streamFactory, $dtService, $subset);
 
         $this->responseType = $responseType;
         $this->logger = $logger;
@@ -117,7 +117,7 @@ class Transfer extends Base
         $responseObj = !empty($responseType = $this->responseType) ? new $responseType() : [];
 
         // response validation
-        $errors = $this->dtService->transfer($objectOrArray, $responseObj);
+        $errors = $this->transferUnknownType($objectOrArray, $responseObj);
 
         if (!empty($errors)) {
             // prepare validator errors
@@ -136,7 +136,7 @@ class Transfer extends Base
 
         // result to array
         $result = [];
-        $this->dtService->transfer($responseObj, $result);
+        $this->transferUnknownType($responseObj, $result);
 
         // get logger writers
         $loggerWriters = $this->logger->getWriters();
@@ -186,5 +186,29 @@ class Transfer extends Base
             // push
             $res[$name] = $data;
         }
+    }
+
+
+    /**
+     * Since 3.0 version of articus/data-transfer we cannot call one transfer method in all cases.
+     * So we need to determine from what to what we move data
+     *
+     * @param array|object $from
+     * @param array|object $to
+     * @return array list of violations found during data validation
+     */
+    protected function transferUnknownType($from, &$to): array
+    {
+        if (is_array($from)) {
+            if (is_array($to)) {
+                throw new InvalidArgumentException('Data transfer from array to array is not possible.');
+            } else {
+                return $this->dtService->transferToTypedData($from, $to);
+            }
+        }
+
+        return is_object($to) ?
+            $this->dtService->transferTypedData($from, $to) :
+            $this->dtService->transferFromTypedData($from, $to);
     }
 }

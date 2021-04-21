@@ -46,7 +46,20 @@ $version = preg_replace("/[^0-9]/", '', $manifestData['info']['version']);
 $tags = [];
 if (!empty($manifestData['tags'])) {
     foreach ($manifestData['tags'] as $tag) {
-        $tags[] = $tag['name'];
+        $tags[] = ucfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $tag['name']))));
+    }
+}
+
+foreach ($manifestData['paths'] as $path) {
+    foreach ($path as $method) {
+        if (isset($method['tags'])) {
+            foreach ($method['tags'] as $tag) {
+                $item = ucfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $tag))));
+                if (!in_array($item, $tags)) {
+                    $tags[] = ucfirst($item);
+                }
+            }
+        }
     }
 }
 
@@ -115,7 +128,8 @@ foreach ($tags as $tag) {
 
     // get additional data
     include_once "src/$title/src/OpenAPI/V$version/Client/Configuration.php";
-    $configurationClass = "\\$title\OpenAPI\V$version\Client\Configuration";
+    $configurationClass = "$title\OpenAPI\V$version\Client\Configuration";
+    $class->addConstant('CONFIGURATION_CLASS', $configurationClass)->setPublic();
     $additionalData = $configurationClass::$additionalData;
 
     foreach ($additionalData as $action => $row) {
@@ -129,11 +143,21 @@ foreach ($tags as $tag) {
                 }
             }
 
-            // prepare return DTO type
-            $returnType = str_replace("Client\Model", "DTO", $row['returnType']);
+            // TODO
+            if (
+                !empty($row['returnType'])
+                && !in_array($row['returnType'], ['null','boolean','object','array','number','string'])
+                && substr($row['returnType'], -2) !== '[]'
+            ) {
+                // prepare return DTO type
+                $returnType = str_replace("Client\Model", "DTO", $row['returnType']);
+                // prepare body template
+                $bodyTemplate = "     %s// send request\n\$data = %s;\n\n// validation of response\n\$result = \$this->transfer((array)\$data, $returnType::class);\n\n";
+            } else {
+                $bodyTemplate = "     %s// send request\n\$result = %s;\n\n";
+            }
 
-            // prepare body template
-            $bodyTemplate = "     %s// send request\n\$data = %s;\n\n// validation of response\n\$result = \$this->transfer((array)\$data, $returnType::class);\n\nreturn \$result;";
+            $bodyTemplate .= "return \$result;";
 
             switch (str_replace(lcfirst(str_replace('Api', '', $row['className'])), '', $action)) {
                 case 'Post':
@@ -229,6 +253,31 @@ foreach ($tags as $tag) {
                         ->addComment('@inheritDoc');
                     $method->addParameter('id');
                     break;
+                default:
+                    $params = [];
+                    $body = '';
+
+                    $method = $class->addMethod($action)->addComment('@inheritDoc');
+
+                    foreach ($row['params'] as $param) {
+                        if (!empty($param['paramType']) && !in_array($param['paramType'], ['null','boolean','object','array','number','string'])) {
+                            $paramType = str_replace("Client\Model", "DTO", $param['paramType']);
+                            $body .= "// validation of \${$param['paramName']}\n";
+                            $body .= "\${$param['paramName']} = \$this->transfer((array)\${$param['paramName']}, $paramType::class);\n\n";
+                        }
+                        $params[] = "\${$param['paramName']}";
+                        if ($param['required']) {
+                            $method->addParameter($param['paramName']);
+                        } else {
+                            $method->addParameter($param['paramName'], null);
+                        }
+                    }
+
+                    $method->setBody(sprintf(
+                        $bodyTemplate,
+                        $body,
+                        "\$this->getApi()->{$action}(" . implode(', ', $params) . ")"
+                    ));
             }
         }
     }
@@ -236,9 +285,15 @@ foreach ($tags as $tag) {
     $method = $class
         ->addMethod('getApi')
         ->setProtected()
-        ->setReturnType('object')
+        ->setReturnType(\OpenAPI\Client\Api\ApiInterface::class)
         ->setBody("return \$this->api;")
         ->addComment('@return ' . $apiName);
+
+    /*$class->addMethod('getApiName')
+        ->setReturnType('string')
+        ->setBody('return $this->apiName;')
+        ->addComment('@return string');*/
+
 
     file_put_contents("$restDir/$tag.php", "<?php\n\n" . (string)$namespace);
 }

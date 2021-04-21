@@ -12,7 +12,7 @@ class UserResult
     /**
      * @DTA\Data(field="data", nullable=true)
      * @DTA\Strategy(name="Object", options={"type":\HelloUser\OpenAPI\V1\DTO\User::class})
-     * @DTA\Validator(name="Dictionary", options={"type":\HelloUser\OpenAPI\V1\DTO\User::class})
+     * @DTA\Validator(name="TypeCompliant", options={"type":\HelloUser\OpenAPI\V1\DTO\User::class})
      * @var \HelloUser\OpenAPI\V1\DTO\User
      */
     public $data;
@@ -21,7 +21,7 @@ class UserResult
      * TODO check validator and strategy are correct and can handle container item type
      * @DTA\Strategy(name="ObjectArray", options={"type":\HelloUser\OpenAPI\V1\DTO\Message::class})
      * @DTA\Validator(name="Collection", options={"validators":{
-     *     {"name":"Dictionary", "options":{"type":\HelloUser\OpenAPI\V1\DTO\Message::class}}
+     *     {"name":"TypeCompliant", "options":{"type":\HelloUser\OpenAPI\V1\DTO\Message::class}}
      * }})
      * @var \HelloUser\OpenAPI\V1\DTO\Message[]
      */

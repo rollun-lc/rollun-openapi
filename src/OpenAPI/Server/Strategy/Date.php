@@ -15,11 +15,11 @@ class Date extends DateTime
     /**
      * @inheritdoc
      */
-    protected function parseDateString($arrayValue)
+    protected function parseDateString(string $value): \DateTime
     {
         return \DateTime::createFromFormat(
             static::DATE_TIME_FORMAT . ' H:i:sP',
-            $arrayValue . ' 00:00:00+00:00',
+            $value . ' 00:00:00+00:00',
             new \DateTimeZone('UTC')
         );
     }
