@@ -19,6 +19,10 @@ class DateTime implements StrategyInterface
      */
     public function extract($from)
     {
+        if (is_null($from)) {
+            return null;
+        }
+
         if ($from instanceof \DateTime) {
             return $from->format(static::DATE_TIME_FORMAT);
         }
