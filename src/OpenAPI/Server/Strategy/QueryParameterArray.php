@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace OpenAPI\Server\Strategy;
 
+use function implode;
+use function is_array;
+
 /**
  * Class QueryParameterArray
  *
@@ -44,14 +47,14 @@ class QueryParameterArray extends QueryParameter
     /**
      * @inheritdoc
      */
-    public function extract($objectValue, $object = null)
+    public function extract($from)
     {
         $result = null;
-        if (\is_array($objectValue)) {
+        if (is_array($from)) {
             if ($this->delimiter === null) {
-                $result = $objectValue;
+                $result = $from;
             } else {
-                $result = \implode($this->delimiter, $objectValue);
+                $result = implode($this->delimiter, $from);
             }
         }
         return $result;
@@ -60,21 +63,26 @@ class QueryParameterArray extends QueryParameter
     /**
      * @inheritdoc
      */
-    public function hydrate($arrayValue, $objectValue, array $array = null)
+    public function hydrate($from, &$to): void
     {
-        $result = null;
-        if ($arrayValue !== null) {
-            $list = null;
+        $to = null;
+        if ($from !== null) {
             if ($this->delimiter === null) {
-                $list = (\is_array($arrayValue)) ? $arrayValue : [$arrayValue];
+                $list = (is_array($from)) ? $from : [$from];
             } else {
-                $list = \explode($this->delimiter, $arrayValue);
+                $list = \explode($this->delimiter, $from);
             }
-            $result = [];
+            $to = [];
             foreach ($list as $item) {
-                $result[] = parent::hydrate($item, null);
+                $to[] = $this->parentHydrate($item);
             }
         }
-        return $result;
+    }
+
+    private function parentHydrate($from)
+    {
+        $value = null;
+        parent::hydrate($from, $value);
+        return $value;
     }
 }
