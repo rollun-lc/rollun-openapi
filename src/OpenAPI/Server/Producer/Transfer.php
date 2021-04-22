@@ -149,7 +149,7 @@ class Transfer extends Base
                         $result[self::KEY_MESSAGES][] = [
                             self::KEY_LEVEL => $row[Messages::KEY_LEVEL],
                             self::KEY_MESSAGE => $row[Messages::KEY_MESSAGE],
-                            self::KEY_TYPE => self::TYPE_LOGGER_ERROR
+                            self::KEY_TYPE => $row[Messages::KEY_TYPE] ?? self::TYPE_LOGGER_ERROR
                         ];
                     }
                 }
