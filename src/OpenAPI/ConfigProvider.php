@@ -84,12 +84,14 @@ class ConfigProvider
             ],
             'validators' => [
                 'invokables' => [
+                    Validator\DateTime::class => Validator\DateTime::class,
                     Validator\Type::class => Validator\Type::class,
                     Validator\Enum::class => Validator\Enum::class,
                     Validator\QueryParameterType::class => Validator\QueryParameterType::class,
                     Validator\QueryParameterArrayType::class => Validator\QueryParameterArrayType::class,
                 ],
                 'aliases' => [
+                    'Date' => Validator\DateTime::class,
                     'Type' => Validator\Type::class,
                     'Enum' => Validator\Enum::class,
                     'QueryParameterType' => Validator\QueryParameterType::class,
