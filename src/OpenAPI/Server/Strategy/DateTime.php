@@ -15,6 +15,14 @@ class DateTime implements StrategyInterface
     const DATE_TIME_FORMAT = 'Y-m-d\TH:i:s\Z';
 
     /**
+     * RFC 3339, section 5.6 DateTime format
+     * for example, 2017-07-21T17:32:28Z or with optional fractional seconds, 2017-07-21T17:32:28.123Z.
+     *
+     * @var array<string>
+     */
+    private static $RFC339Formats = ['Y-m-d\TH:i:sP', 'Y-m-d H:i:sP', 'Y-m-d\TH:i:s.uP', 'Y-m-d H:i:s.uP'];
+
+    /**
      * @inheritdoc
      */
     public function extract($from)
@@ -48,12 +56,18 @@ class DateTime implements StrategyInterface
     }
 
     /**
-     * @param $arrayValue
-     *
+     * @param string $value
      * @return bool|\DateTime
      */
-    protected function parseDateString(string $value): \DateTime
+    protected function parseDateString(string $value)
     {
-        return \DateTime::createFromFormat(static::DATE_TIME_FORMAT, $value, new \DateTimeZone('UTC'));
+        foreach (self::$RFC339Formats as $dateTimeFormat) {
+            $dateTime = \DateTime::createFromFormat($dateTimeFormat, $value, new \DateTimeZone('UTC'));
+            if ($dateTime !== false) {
+                return $dateTime;
+            }
+        }
+
+        return false;
     }
 }
