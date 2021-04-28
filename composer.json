@@ -58,8 +58,7 @@
     }
   },
   "bin": [
-    "bin/openapi-server-generate",
-    "bin/openapi-client-generate"
+    "bin/openapi-generator"
   ],
   "extra": {
     "zf": {

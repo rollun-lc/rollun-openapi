@@ -32,11 +32,17 @@
    ![alt text](docs/assets/img/openapi.png)
 5. Для генерации кода выполните команду:
 
-   ```php vendor/bin/openapi-server-generate```
+   ```php vendor/bin/openapi-generator generate:server```
    
    или
    
-   ```php vendor/bin/openapi-client-generate```
+   ```php vendor/bin/openapi-generator generate:client```
+
+   Команда поддерживает параметры. Передаются в виде --name=value.
+   На данный момент реализована манифеста (параметр manifest).
+   Например
+   
+   ```php vendor/bin/openapi-generator generate:client --manifest=openapy.yaml```
 
 6. Обязательно добавьте сгенерированные классы в аутолоадер композера.
    ```

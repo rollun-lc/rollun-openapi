@@ -77,7 +77,14 @@ abstract class BaseAbstract extends \OpenAPI\Server\Rest\BaseAbstract implements
         string $lifeCycleToken,
         ?ConfigurationInterface $config = null
     ): ApiInterface {
-        return new $apiName(new Client(['headers' => ['LifeCycleToken' => $lifeCycleToken]]), $config);
+        return new $apiName(
+            new Client([
+                'headers' => [
+                    'LifeCycleToken' => $lifeCycleToken
+                ],
+                'timeout' => 60,
+            ]
+        ), $config);
     }
 
     /**
