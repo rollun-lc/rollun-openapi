@@ -94,6 +94,9 @@ class GenerateClientCommand extends GenerateCommandAbstract
      */
     protected function generateRest()
     {
+        $tmpConfigFile = $this->getTempSourceDirPath('Client/Configuration.php');
+        $srcConfigFile = $this->getSourceVersionedWithSectionDirPath('Configuration.php');
+        $this->copy($tmpConfigFile, $srcConfigFile);
         /**
          * Generate REST classes
          */
@@ -116,7 +119,7 @@ class GenerateClientCommand extends GenerateCommandAbstract
             $class->addProperty('apiName', $apiName)->setProtected()->addComment("@var string");
 
             // get additional data
-            include_once "src/$this->title/src/OpenAPI/V$this->version/Client/Configuration.php";
+            include_once $srcConfigFile;
             $configurationClass = "$this->title\OpenAPI\V$this->version\Client\Configuration";
             $class->addConstant('CONFIGURATION_CLASS', $configurationClass)->setPublic();
             $additionalData = $configurationClass::$additionalData;

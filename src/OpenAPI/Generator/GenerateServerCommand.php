@@ -74,11 +74,26 @@ class GenerateServerCommand extends GenerateCommandAbstract
         // TODO Надо менять в темп директории, а потом копировать
         foreach (scandir($handlerDir) as $handler) {
             if (!in_array($handler, ['.', '..'])) {
+                $content = file_get_contents("$handlerDir/$handler");
+                $content = str_replace("\Handler;", "\Server\Handler;",
+                    $content
+                );
+
+                $content = preg_replace_callback(
+                    '/public const REST_OBJECT = \\\\\w+\\\\OpenAPI\\\\V([0-9.]+)\\\\Server\\\\Rest\\\\\w+::class;/',
+                    function($matches){
+                        return str_replace(
+                            $matches[1],
+                            str_replace('.', '_', $matches[1]),
+                            $matches[0]
+                        );
+                    },
+                    $content
+                );
+
                 file_put_contents(
                     "$handlerDir/$handler",
-                    str_replace("\Handler;", "\Server\Handler;",
-                        file_get_contents("$handlerDir/$handler")
-                    )
+                    $content
                 );
             }
         }
@@ -158,7 +173,7 @@ class GenerateServerCommand extends GenerateCommandAbstract
                 ->addComment('@param LoggerInterface|null logger')
                 ->addComment("")
                 ->addComment('@throws \ReflectionException')
-                ->setBody("InsideConstruct::init(['controllerObject' => self::CONTROLLER_OBJECT, 'logger' => LoggerInterface::class]);");
+                ->setBody("InsideConstruct::init(['controllerObject' => static::CONTROLLER_OBJECT, 'logger' => LoggerInterface::class]);");
             $constructor->addParameter('controllerObject', null);
             $constructor->addParameter('logger', null);
 

@@ -7,6 +7,7 @@ namespace OpenAPI\Generator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 
@@ -60,6 +61,11 @@ abstract class GenerateCommandAbstract extends Command
     protected $outputs = [];
 
     /**
+     * @var bool
+     */
+    protected $debug = false;
+
+    /**
      * GenerateCommand constructor.
      * @param string|null $name
      */
@@ -84,8 +90,15 @@ abstract class GenerateCommandAbstract extends Command
         $this->addOption(
             'manifest',
             'm',
-            InputArgument::OPTIONAL,
+            InputOption::VALUE_OPTIONAL,
             'Location of the OpenAPI spec, as URL or file'
+        );
+
+        $this->addOption(
+            'debug',
+            'd',
+            InputOption::VALUE_OPTIONAL,
+            'Show output'
         );
 
         /*$this->addOption(
@@ -140,6 +153,11 @@ abstract class GenerateCommandAbstract extends Command
         }
         $this->manifest = $manifest;
 
+        $debug = $input->getOption('debug');
+        if ($debug === 'true') {
+            $this->debug = true;
+        }
+
         $manifestData = $this->loadManifest();
         if ($manifestData) {
             $this->manifestData = $manifestData;
@@ -159,6 +177,11 @@ abstract class GenerateCommandAbstract extends Command
      */
     protected function after(InputInterface $input, OutputInterface $output)
     {
+        if ($this->debug) {
+            foreach ($this->outputs as $item) {
+                echo $item;
+            }
+        }
         $this->removeDirectory(self::DIR_TEMPORARY);
     }
 
@@ -321,7 +344,8 @@ abstract class GenerateCommandAbstract extends Command
      * @return false|string
      */
     protected function copy($from, $to) {
-        return exec("cp -R $from $to", $this->outputs);
+        $output = $this->debug ? $this->outputs : null;
+        return exec("cp -R $from $to", $output);
     }
 
     /**
