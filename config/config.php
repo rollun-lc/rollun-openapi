@@ -27,7 +27,6 @@ $appEnv = getenv('APP_ENV');
 $aggregator = new ConfigAggregator([
     \Zend\Serializer\ConfigProvider::class,
     \rollun\repository\ConfigProvider::class,
-    \Zend\Hydrator\ConfigProvider::class,
     \Zend\Expressive\Authentication\Basic\ConfigProvider::class,
     \Zend\Expressive\Authentication\Session\ConfigProvider::class,
     \Zend\Expressive\Authentication\ConfigProvider::class,
@@ -42,10 +41,8 @@ $aggregator = new ConfigAggregator([
     \Zend\Expressive\Helper\ConfigProvider::class,
     \Zend\Expressive\ConfigProvider::class,
     \Zend\Expressive\Router\ConfigProvider::class,
-
     // Include cache configuration
     new ArrayProvider($cacheConfig),
-
     // Rollun config
     \rollun\uploader\ConfigProvider::class,
     \rollun\datastore\ConfigProvider::class,
@@ -53,10 +50,8 @@ $aggregator = new ConfigAggregator([
     \rollun\logger\ConfigProvider::class,
     \rollun\tracer\ConfigProvider::class,
     \rollun\callback\ConfigProvider::class,
-
     // OpenAPI config
     \OpenAPI\ConfigProvider::class,
-
     // Default App module config
     // Load application config in a pre-defined order in such a way that local settings
     // overwrite global settings. (Loaded as first to last):
@@ -65,14 +60,12 @@ $aggregator = new ConfigAggregator([
     //   - `local.php`
     //   - `*.local.php`
     new PhpFileProvider('config/autoload/{{,*.}global,{,*.}local}.php'),
-
     // Load application config according to environment:
     //   - `global.dev.php`,   `global.test.php`,   `prod.global.prod.php`
     //   - `*.global.dev.php`, `*.global.test.php`, `*.prod.global.prod.php`
     //   - `local.dev.php`,    `local.test.php`,     `prod.local.prod.php`
     //   - `*.local.dev.php`,  `*.local.test.php`,  `*.prod.local.prod.php`
     new PhpFileProvider(realpath(__DIR__) . "/autoload/{{,*.}global.{$appEnv},{,*.}local.{$appEnv}}.php"),
-
     // Load development config if it exists
     new PhpFileProvider(realpath(__DIR__) . '/development.config.php'),
 ], $cacheConfig['config_cache_path']);
