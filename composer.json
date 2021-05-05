@@ -50,7 +50,8 @@
       "OpenAPI\\": "src/OpenAPI/",
       "DataStoreExample\\": "src/DataStoreExample/src/",
       "Task\\": "src/Task/src/",
-      "HelloUser\\": "src/HelloUser/src/"
+      "HelloUser\\": "src/HelloUser/src/",
+      "Test\\": "src/Test/src"
     }
   },
   "autoload-dev": {
@@ -59,8 +60,7 @@
     }
   },
   "bin": [
-    "bin/openapi-server-generate",
-    "bin/openapi-client-generate"
+    "bin/openapi-generator"
   ],
   "extra": {
     "zf": {
