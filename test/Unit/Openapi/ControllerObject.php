@@ -8,11 +8,14 @@ class ControllerObject
 {
     public function post($bodyDataArray)
     {
-        $t = '';
+        return $bodyDataArray;
     }
 
     public function getById($id)
     {
-        $t = '';
+        return [
+            'id' => $id,
+            'name' => 'Test',
+        ];
     }
 }

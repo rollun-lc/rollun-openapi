@@ -3,7 +3,7 @@ info:
   version: "1.0.1"
   title: Test
 servers:
-  - url: http://rollun-openapi/openapi/Test/v1
+  - url: http://localhost:8001/openapi/Test/v1_0_1
 paths:
   /Test:
     post:

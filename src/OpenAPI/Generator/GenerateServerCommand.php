@@ -5,11 +5,24 @@ namespace OpenAPI\Generator;
 
 
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class GenerateServerCommand extends GenerateCommandAbstract
 {
     protected static $defaultName = 'generate:server';
+
+    protected function configure()
+    {
+        parent::configure();
+
+        $this->addOption(
+            'controllerObject',
+            null,
+            InputOption::VALUE_OPTIONAL,
+            'Location of the OpenAPI spec, as URL or file'
+        );
+    }
 
     /**
      * @return string
@@ -53,12 +66,15 @@ class GenerateServerCommand extends GenerateCommandAbstract
         $html = file_get_contents($tempDocIndexPath);
         $html = str_replace('{{title}}', $this->title, $html);
         $manifestParts = explode("/", $this->manifest);
-        $html = str_replace('{{manifest}}', array_pop($manifestParts), $html);
+        $manifestName = array_pop($manifestParts);
+        $html = str_replace('{{manifest}}', $manifestName, $html);
 
         file_put_contents($docsDir . '/index.html', $html);
 
         // copy
-        $this->copy($this->manifest, $docsDir);
+        $manifestContent = file_get_contents($this->manifest);
+        file_put_contents($docsDir . '/' . $manifestName, $manifestContent);
+        //$this->copy($this->manifest, $docsDir);
     }
 
     protected function copyHandlers()
@@ -71,23 +87,11 @@ class GenerateServerCommand extends GenerateCommandAbstract
         $this->copy($handlerTempDir, $handlerDir);
 
         // update namespace for handlers
-        // TODO Надо менять в темп директории, а потом копировать
+        // TODO Возможно надо менять в темп директории, а потом копировать
         foreach (scandir($handlerDir) as $handler) {
             if (!in_array($handler, ['.', '..'])) {
                 $content = file_get_contents("$handlerDir/$handler");
                 $content = str_replace("\Handler;", "\Server\Handler;",
-                    $content
-                );
-
-                $content = preg_replace_callback(
-                    '/public const REST_OBJECT = \\\\\w+\\\\OpenAPI\\\\V([0-9.]+)\\\\Server\\\\Rest\\\\\w+::class;/',
-                    function($matches){
-                        return str_replace(
-                            $matches[1],
-                            str_replace('.', '_', $matches[1]),
-                            $matches[0]
-                        );
-                    },
                     $content
                 );
 

@@ -5,13 +5,6 @@ namespace rollun\test\OpenAPI\Unit\Openapi;
 
 
 use PHPUnit\Framework\TestCase;
-/*use Test\OpenAPI\V1_0_1\Server\Handler\Test;
-use Test\OpenAPI\V1_0_1\Server\Handler\TestId;*/
-
-use Psr\Log\LoggerInterface;
-use rollun\dic\InsideConstruct;
-use Test\OpenAPI\V1_0_1\Server\Rest\Test;
-use Zend\ServiceManager\ServiceManager;
 
 class OpenapiTest extends TestCase
 {
@@ -19,11 +12,14 @@ class OpenapiTest extends TestCase
 
     protected static $container;
 
+    //protected const MANIFEST = 'test.yaml';
+    protected const MANIFEST = 'https://raw.githubusercontent.com/rollun-com/openapi-manifests/ab8c5b5c3e6364be207473c17bbc647d62bf07d7/test__v1.0.1.yml';
+
     public static function setUpBeforeClass()
     {
         global $container;
         self::$container = $container;
-        self::$pid = exec('php -S localhost:8000 1>/dev/null & echo $!');
+        self::$pid = exec('php -S localhost:8001 public/index.php 1>/dev/null & echo $!');
     }
 
     public static function tearDownAfterClass()
@@ -36,7 +32,7 @@ class OpenapiTest extends TestCase
 
     public function testGenerateServer()
     {
-        $command = 'php bin/openapi-generator generate:server --manifest=test.yaml';
+        $command = 'php bin/openapi-generator generate:server --manifest=' . self::MANIFEST;
         exec($command, $outputs);
 
         sleep(1);
@@ -60,7 +56,7 @@ class OpenapiTest extends TestCase
      */
     public function testGenerateClient()
     {
-        $command = 'php bin/openapi-generator generate:client --manifest=test.yaml --debug=true';
+        $command = 'php bin/openapi-generator generate:client  --debug=true --manifest=' . self::MANIFEST;
         exec($command);
 
         sleep(1);
@@ -75,28 +71,17 @@ class OpenapiTest extends TestCase
      */
     public function testInteraction()
     {
-        /*$config = self::$container->get('config');
-        $config['dependencies']['invokables'][ControllerObject::class] = ControllerObject::class;
-        $container = new ServiceManager();
-        $container->configure($config['dependencies']);
-        $container->setService('config', $config);
-
-        InsideConstruct::setContainer($container);
-
-        InsideConstruct::setContainer(self::$container);*/
-
         $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Test';
         $dtoClass = '\Test\\OpenAPI\\V1_0_1\\DTO\\Test';
 
-        /*$test = new $dtoClass();
-        $test->id = '12345';
-        $test->name = 'Test';*/
-
         $client = self::$container->get($clientClass);
+        $response = $client->getById(1);
+        $this->assertInstanceOf($dtoClass, $response);
+
         $response = $client->post([
             'id' => '12345',
             'name' => 'Test',
         ]);
-
+        $this->assertInstanceOf($dtoClass, $response);
     }
 }

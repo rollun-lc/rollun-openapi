@@ -192,12 +192,12 @@ abstract class GenerateCommandAbstract extends Command
      */
     protected function loadManifest()
     {
-        if (!file_exists($this->manifest)) {
+        if (!filter_var($this->manifest, FILTER_VALIDATE_URL) && !file_exists($this->manifest)) {
             throw new \Exception('Openapi manifest file doesn\'t exists!');
         }
 
         // parse manifest
-        if (strpos($this->manifest, '.yaml') !== false) {
+        if (strpos($this->manifest, '.yaml') !== false || strpos($this->manifest, '.yml') !== false) {
             $manifestData = yaml_parse(file_get_contents($this->manifest));
         } elseif (strpos($this->manifest, '.json') !== false) {
             $manifestData = json_decode(file_get_contents($this->manifest), true);
@@ -231,6 +231,7 @@ abstract class GenerateCommandAbstract extends Command
         if (file_put_contents($configFile, json_encode([
             'invokerPackage' => $invokerPackage,
             'srcBasePath' => $srcBasePath,
+            'currentVersion' => $this->version,
         ]))) {
             return $configFile;
         }
@@ -302,7 +303,12 @@ abstract class GenerateCommandAbstract extends Command
      */
     protected function defineVersion($manifestData)
     {
-        return preg_replace("/([0-9]+)\./", '$1_', ltrim($manifestData['info']['version'], 'v'));
+        return $this->modifyVersion($manifestData['info']['version']);
+    }
+
+    protected function modifyVersion($version)
+    {
+        return preg_replace("/([0-9]+)\./", '$1_', ltrim($version, 'v'));
     }
 
     /**
