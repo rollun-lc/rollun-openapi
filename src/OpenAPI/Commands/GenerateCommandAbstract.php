@@ -1,9 +1,10 @@
 <?php
 
 
-namespace OpenAPI\Generator;
+namespace OpenAPI\Commands;
 
 
+use OpenAPI\Generator\GeneratorBuilderInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -430,7 +431,7 @@ abstract class GenerateCommandAbstract extends Command
      */
     protected function getTemplateDirPath($path = '')
     {
-        return $this->getDirPath(self::DIR_TEMPLATE, $path);
+        return $this->getDirPath(__DIR__ . '/../../../' . self::DIR_TEMPLATE, $path);
     }
 
     /**

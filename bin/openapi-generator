@@ -1,8 +1,8 @@
 #!/usr/bin/env php
 <?php
 
-use OpenAPI\Generator\GenerateClientCommand;
-use OpenAPI\Generator\GenerateServerCommand;
+use OpenAPI\Commands\GenerateClientCommand;
+use OpenAPI\Commands\GenerateServerCommand;
 use OpenAPI\Generator\GeneratorBuilder;
 use Symfony\Component\Console\Application;
 

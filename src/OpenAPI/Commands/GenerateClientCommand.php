@@ -1,7 +1,7 @@
 <?php
 
 
-namespace OpenAPI\Generator;
+namespace OpenAPI\Commands;
 
 
 use Symfony\Component\Console\Input\InputInterface;
