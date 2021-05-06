@@ -30,16 +30,17 @@
 3. Подготовьте openapi манифест. Детали [здесь](docs/manifest.md).       
 4. Скачайте openapi манифест. Для этого перейдите на https://app.swaggerhub.com/home?type=API, откройте нужный вам манифест и сделайте экспорт в виде yaml файла. При скачивании, рекомендуется называть документ **openapi.yaml** так, как такое имя используется генератором по умолчанию.
    ![alt text](docs/assets/img/openapi.png)
+   В версии 7+ манифест скачивать не нужно, можно указывать урл.
 5. Для генерации кода выполните команду:
 
    ```php vendor/bin/openapi-generator generate:server```
-   
-   или
-   
+
+   В версии 7+ существенно переделаны скрипты запуска генерации и запускается так
+
    ```php vendor/bin/openapi-generator generate:client```
 
    Команда поддерживает параметры. Передаются в виде --name=value.
-   На данный момент реализована манифеста (параметр manifest).
+   На данный момент реализовано указание манифеста (параметр manifest) в виде пути или урла.
    Например
    
    ```php vendor/bin/openapi-generator generate:client --manifest=openapy.yaml```
