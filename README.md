@@ -33,10 +33,16 @@
    В версии 7+ манифест скачивать не нужно, можно указывать урл.
 5. Для генерации кода выполните команду:
 
-   ```php vendor/bin/openapi-generator generate:server```
+   ```php vendor/bin/openapi-server-generate```
+
+   или
+
+   ```php vendor/bin/openapi-client-generate```
 
    В версии 7+ существенно переделаны скрипты запуска генерации и запускается так
 
+   ```php vendor/bin/openapi-generator generate:server```
+   или
    ```php vendor/bin/openapi-generator generate:client```
 
    Команда поддерживает параметры. Передаются в виде --name=value.
