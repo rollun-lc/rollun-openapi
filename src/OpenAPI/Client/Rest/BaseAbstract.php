@@ -82,7 +82,7 @@ abstract class BaseAbstract extends \OpenAPI\Server\Rest\BaseAbstract implements
                 'headers' => [
                     'LifeCycleToken' => $lifeCycleToken
                 ],
-                'timeout' => 60,
+                'timeout' => 120,
             ]),
             $config
         );
