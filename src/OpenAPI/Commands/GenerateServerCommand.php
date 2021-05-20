@@ -156,13 +156,13 @@ class GenerateServerCommand extends GenerateCommandAbstract
         foreach ($this->tags as $tag) {
             // create namespace
             $namespace = (new \Nette\PhpGenerator\PhpNamespace("$this->title\OpenAPI\V$this->version\Server\Rest"))
-                ->addUse('OpenAPI\Server\Rest\BaseAbstract')
+                ->addUse('OpenAPI\Server\Rest\Base7Abstract')
                 ->addUse('Psr\Log\LoggerInterface')
                 ->addUse('rollun\dic\InsideConstruct');
 
             // create class
             $class = $namespace->addClass($tag);
-            $class->setExtends('OpenAPI\Server\Rest\BaseAbstract');
+            $class->setExtends('OpenAPI\Server\Rest\Base7Abstract');
             $class->addConstant('CONTROLLER_OBJECT', 'Name of service which implements OpenApi logic');
             $class->addComment("Class $tag");
             $class->addProperty('controllerObject')->setProtected()->addComment('@var object');
@@ -193,7 +193,7 @@ class GenerateServerCommand extends GenerateCommandAbstract
                                 ->addComment('@inheritDoc')
                                 ->addComment('')
                                 ->addComment('@param ' . $row['bodyData'] . ' $bodyData');
-                            $method->addParameter('bodyData');
+                            $method->addParameter('bodyData', null);
                             break;
                         case 'Patch':
                             $method = $class

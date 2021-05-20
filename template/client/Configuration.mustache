@@ -35,7 +35,22 @@ class Configuration extends ConfigurationAbstract
     /**
      * @var array
      */
-    public static $additionalData = [{{#apiInfo}}{{#apis}}{{#operations}}{{#operation}}'{{operationId}}'=>['className'=>'{{classname}}', 'returnType' => '{{#returnType}}{{responses.0.dataType}}{{/returnType}}','params' => [{{#allParams}}['paramName'=>'{{paramName}}','paramType'=>'{{dataType}}','required'=>{{required}}],{{/allParams}}]],{{/operation}}{{/operations}}{{/apis}}{{/apiInfo}}];
+    public static $additionalData = [
+        {{#apiInfo}}{{#apis}}{{#operations}}{{#operation}}
+        '{{operationId}}' => [
+            'className' => '{{classname}}',
+            'returnType' => '{{#returnType}}{{responses.0.dataType}}{{/returnType}}',
+            'params' => [
+                {{#allParams}}
+                [
+                    'paramName' => '{{paramName}}',
+                    'paramType' => '{{dataType}}',
+                    'required' => {{required}},
+                ],
+                {{/allParams}}
+            ]
+        ],{{/operation}}{{/operations}}{{/apis}}{{/apiInfo}}
+    ];
 
     /**
      * The host

@@ -22,6 +22,22 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Test'
+    get:
+      tags:
+        - Test
+      parameters:
+        - name: name
+          in: query
+          schema:
+            type: string
+      responses:
+        200:
+          description: List
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Collection'
+
   /Test/{id}:
     get:
       tags:
@@ -40,6 +56,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Test'
+  /Bla:
+    post:
+      tags:
+        - Bla
+      responses:
+        '201':
+          description: Created
 components:
   schemas:
     Test:
@@ -54,3 +77,10 @@ components:
         name:
           type: string
           example: 'Test'
+    Collection:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Test'

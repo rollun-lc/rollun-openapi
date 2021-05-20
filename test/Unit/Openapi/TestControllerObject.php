@@ -4,7 +4,7 @@
 namespace rollun\test\OpenAPI\Unit\Openapi;
 
 
-class ControllerObject
+class TestControllerObject
 {
     public function post($bodyDataArray)
     {

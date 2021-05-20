@@ -6,7 +6,8 @@ use rollun\utils\Factory\AbstractServiceAbstractFactory;
 return [
     'dependencies' => [
         'invokables' => [
-            ControllerObject::class
+            \rollun\test\OpenAPI\Unit\Openapi\TestControllerObject::class,
+            \rollun\test\OpenAPI\Unit\Openapi\BlaControllerObject::class,
         ]
     ],
     /*AbstractServiceAbstractFactory::KEY => [
