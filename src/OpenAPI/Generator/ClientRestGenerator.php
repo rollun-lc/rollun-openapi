@@ -15,7 +15,7 @@ class ClientRestGenerator
 
     protected $tag;
 
-    protected $data;
+    protected $configuration;
 
     /**
      * @var PhpNamespace
@@ -27,12 +27,12 @@ class ClientRestGenerator
      */
     protected $class;
 
-    public function __construct($title, $version, $tag, $data = [])
+    public function __construct($title, $version, $tag, $configuration)
     {
         $this->title = $title;
         $this->version = $version;
         $this->tag = $tag;
-        $this->data = $data;
+        $this->configuration = $configuration;
     }
 
     protected function defineMethodParts($data)
@@ -57,11 +57,8 @@ class ClientRestGenerator
         $this->class->addComment("Class $className");
         $this->class->addProperty('apiName', $apiName)->setProtected()->addComment("@var string");
 
-        // get additional data
-        //include_once $srcConfigFile;
-        $configurationClass = "$this->title\OpenAPI\V$this->version\Client\Configuration";
-        $this->class->addConstant('CONFIGURATION_CLASS', $configurationClass)->setPublic();
-        $actions = (new \ReflectionProperty($configurationClass, 'additionalData'))->getValue();
+        $this->class->addConstant('CONFIGURATION_CLASS', $this->configuration)->setPublic();
+        $actions = (new \ReflectionProperty($this->configuration, 'additionalData'))->getValue();
 
         foreach ($actions as $methodName => $data) {
             [$apiClass, $returnType, $params] = $this->defineMethodParts($data);

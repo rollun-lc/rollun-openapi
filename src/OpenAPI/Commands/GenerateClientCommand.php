@@ -104,10 +104,15 @@ class GenerateClientCommand extends GenerateCommandAbstract
         $restDir = $this->getSourceVersionedWithSectionDirPath('Rest');
         $this->makeDirectory($restDir);
 
+        // get additional data
+        include_once $srcConfigFile;
+        $configurationClass = "$this->title\OpenAPI\V$this->version\Client\Configuration";
+
+
         // TODO
         foreach ($this->tags as $tag) {
 
-            $generator = new ClientRestGenerator($this->title, $this->version, $tag);
+            $generator = new ClientRestGenerator($this->title, $this->version, $tag, $configurationClass);
             $namespace = $generator->generate($tag);
 
             file_put_contents("$restDir/$tag.php", "<?php\n\n" . (string)$namespace);
