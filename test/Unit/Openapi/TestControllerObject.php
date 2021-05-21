@@ -18,4 +18,16 @@ class TestControllerObject
             'name' => 'Test',
         ];
     }
+
+    public function get($query)
+    {
+        return [
+            'data' => [
+                [
+                    'id' => '1',
+                    'name' => $query['name']
+                ]
+            ]
+        ];
+    }
 }

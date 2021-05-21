@@ -100,10 +100,22 @@ class ClientRestGenerator
      *
      * @todo Раньше определялось по API классу, нужно проверить
      */
-    protected function getQueryType($apiClass, $queryType)
+    protected function makeQueryType($apiClass, $queryType)
     {
         //return "\\$this->title\\OpenAPI\\V$this->version\\DTO\\" . $this->tag . $queryType;
         return "\\$this->title\\OpenAPI\\V$this->version\\DTO\\" . str_replace('Api', '', $apiClass) . $queryType;
+    }
+
+    protected function makeBodyValidation($paramName, $className)
+    {
+        $objectName = $paramName . 'Object';
+        $result = "// validation of \$$$paramName\n";
+        $result .= "if (\$$paramName instanceof $className) {\n";
+            $result .= "    \$$paramName = \$this->toArray(\$$paramName);\n";
+        $result .= "}\n";
+        $result .= "\$$objectName = \$this->transfer((array)\$$paramName, '$className');\n\n";
+
+        return $result;
     }
 
     protected function addMethod($methodName, $apiClass, $returnType = null, $params = [])
@@ -117,9 +129,9 @@ class ClientRestGenerator
             // prepare return DTO type
             $returnType = str_replace("Client\Model", "DTO", $returnType);
             // prepare body template
-            $template = "     %s// send request\n\$data = %s;\n\n// validation of response\n\$result = \$this->transfer((array)\$data, $returnType::class);\n\n";
+            $template = "     %s\n\n// send request\n\$data = %s;\n\n// validation of response\n\$result = \$this->transfer((array)\$data, $returnType::class);\n\n";
         } else {
-            $template = "     %s// send request\n\$result = %s;\n\n";
+            $template = "     %s\n\n// send request\n\$result = %s;\n\n";
         }
 
         $template .= "return \$result;";
@@ -162,7 +174,8 @@ class ClientRestGenerator
         $body = '';
         if ($paramVariables) {
             $bodyType = str_replace("Client\Model", "DTO", $params[0]['paramType']);
-            $body = "// validation of \$bodyData\n\$bodyDataObject = \$this->transfer((array)\$bodyData, '$bodyType');\n\n";
+            //$body = "// validation of \$bodyData\n\$bodyDataObject = \$this->transfer((array)\$bodyData, '$bodyType');";
+            $body = $this->makeBodyValidation('bodyData', $bodyType);
         }
 
         $method = $this->class
@@ -181,11 +194,13 @@ class ClientRestGenerator
         $paramVariables = $this->makeParamTypes($params);
 
         //$queryType = "\\$this->title\\OpenAPI\\V$this->version\\DTO\\" . str_replace('Api', '', $row['className']) . "PATCHQueryData";
-        $queryType = $this->getQueryType($apiClass, 'PATCHQueryData');
-        $body = "// validation of \$queryData\n\$queryDataObject = \$this->transfer((array)\$queryData, $queryType::class);\n\n";
+        $queryType = $this->makeQueryType($apiClass, 'PATCHQueryData');
+        //$body = "// validation of \$queryData\n\$queryDataObject = \$this->transfer((array)\$queryData, $queryType::class);";
+        $body = $this->makeBodyValidation('queryData', $queryType);
 
         $bodyType = str_replace("Client\Model", "DTO",$params[0]['paramType']);
-        $body .= "// validation of \$bodyData\n\$bodyDataObject = \$this->transfer((array)\$bodyData, '$bodyType');\n\n";
+        //$body .= "// validation of \$bodyData\n\$bodyDataObject = \$this->transfer((array)\$bodyData, '$bodyType');";
+        $body .= $this->makeBodyValidation('bodyData', $bodyType);
 
         $method = $this->class
             ->addMethod('patch')
@@ -204,9 +219,10 @@ class ClientRestGenerator
 
         $body = '';
         if ($paramVariables) {
-            $queryType = $this->getQueryType($apiClass, "GETQueryData");
+            $queryType = $this->makeQueryType($apiClass, "GETQueryData");
             //$queryType = "\\$this->title\\OpenAPI\\V$this->version\\DTO\\" . str_replace('Api', '', $apiName) . "GETQueryData";
-            $body = "// validation of \$queryData\n\$queryDataObject = \$this->transfer((array)\$queryData, $queryType::class);\n\n";
+            //$body = "// validation of \$queryData\n\$queryDataObject = \$this->transfer((array)\$queryData, $queryType::class);";
+            $body = $this->makeBodyValidation('queryData', $queryType);
         }
 
         $method = $this->class
@@ -225,9 +241,10 @@ class ClientRestGenerator
     {
         $paramVariables = $this->makeParamTypes($params);
 
-        $queryType = $this->getQueryType($apiClass, 'DELETEQueryData');
+        $queryType = $this->makeQueryType($apiClass, 'DELETEQueryData');
         //$queryType = "\\$this->title\\OpenAPI\\V$this->version\\DTO\\" . str_replace('Api', '', $row['className']) . "DELETEQueryData";
-        $body = "// validation of \$queryData\n\$queryDataObject = \$this->transfer((array)\$queryData, $queryType::class);\n\n";
+        //$body = "// validation of \$queryData\n\$queryDataObject = \$this->transfer((array)\$queryData, $queryType::class);";
+        $body = $this->makeBodyValidation('queryData', $queryType);
 
         $method = $this->class
             ->addMethod('delete')
@@ -250,7 +267,8 @@ class ClientRestGenerator
     protected function idPatchMethod($methodName, $template, $params = [])
     {
         $bodyType = str_replace("Client\Model", "DTO", $params[0]['paramType']);
-        $body = "// validation of \$bodyData\n\$bodyDataObject = \$this->transfer((array)\$bodyData, '$bodyType');\n\n";
+        //$body = "// validation of \$bodyData\n\$bodyDataObject = \$this->transfer((array)\$bodyData, '$bodyType');";
+        $body = $this->makeBodyValidation('bodyData', $bodyType);
 
         $method = $this->class
             ->addMethod('patchById')
@@ -265,7 +283,8 @@ class ClientRestGenerator
     protected function idPutMethod($methodName, $template, $params = [])
     {
         $bodyType = str_replace("Client\Model", "DTO", $params[0]['paramType']);
-        $body = "// validation of \$bodyData\n\$bodyDataObject = \$this->transfer((array)\$bodyData, '$bodyType');\n\n";
+        //$body = "// validation of \$bodyData\n\$bodyDataObject = \$this->transfer((array)\$bodyData, '$bodyType');";
+        $body = $this->makeBodyValidation('bodyData', $bodyType);
 
         $method = $this->class
             ->addMethod('putById')
@@ -297,8 +316,9 @@ class ClientRestGenerator
         foreach ($params as $param) {
             if (!empty($param['paramType']) && !in_array($param['paramType'], ['null','boolean','object','array','number','string'])) {
                 $paramType = str_replace("Client\Model", "DTO", $param['paramType']);
-                $body .= "// validation of \${$param['paramName']}\n";
-                $body .= "\${$param['paramName']} = \$this->transfer((array)\${$param['paramName']}, $paramType::class);\n\n";
+                //$body .= "// validation of \${$param['paramName']}\n";
+                //$body .= "\${$param['paramName']} = \$this->transfer((array)\${$param['paramName']}, $paramType::class);";
+                $body .= $this->makeBodyValidation($param['paramName'], $paramType);
             }
             $paramVariables[] = "\${$param['paramName']}";
             if ($param['required']) {

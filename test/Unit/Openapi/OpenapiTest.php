@@ -25,9 +25,9 @@ class OpenapiTest extends TestCase
     public static function tearDownAfterClass()
     {
         exec('kill -9 ' . self::$pid);
-        exec('rm -rf src/Test');
-        exec('rm -rf public/openapi/docs/Test');
-        unlink('config/autoload/test_v1_0_1_path_handler.global.php');
+        //exec('rm -rf src/Test');
+        //exec('rm -rf public/openapi/docs/Test');
+        //unlink('config/autoload/test_v1_0_1_path_handler.global.php');
     }
 
     public function testGenerateServer()
@@ -77,7 +77,7 @@ class OpenapiTest extends TestCase
     /**
      * @depends testGenerateClient
      */
-    public function tesGet()
+    public function tesGetById()
     {
         $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Test';
         $dtoClass = '\Test\\OpenAPI\\V1_0_1\\DTO\\Test';
@@ -91,6 +91,26 @@ class OpenapiTest extends TestCase
             'name' => 'Test',
         ]);
         $this->assertInstanceOf($dtoClass, $response);
+    }
+
+    /**
+     * @dependss testGenerateClient
+     */
+    public function testGet()
+    {
+        $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Test';
+        $collectionClass = '\\Test\\OpenAPI\\V1_0_1\\DTO\\Collection';
+        $dtoClass = '\\Test\\OpenAPI\\V1_0_1\\DTO\\Test';
+
+        $client = self::$container->get($clientClass);
+
+        $request = [
+            'name' => 'Test',
+        ];
+        $response = $client->get($request);
+        $this->assertInstanceOf($collectionClass, $response);
+        $this->assertIsArray($response->data);
+        $this->assertEquals($request['name'], $response->data[0]->name);
     }
 
     /**
@@ -121,6 +141,42 @@ class OpenapiTest extends TestCase
         $response = $client->post();
 
         $this->assertNull($response);
+    }
+
+    /**
+     * @dependss testGenerateClient
+     */
+    public function testPostWithValidDtoParam()
+    {
+        $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Test';
+        $dtoClass = '\Test\\OpenAPI\\V1_0_1\\DTO\\Test';
+
+        $client = self::$container->get($clientClass);
+
+        $request = new $dtoClass();
+        $request->id = '12345';
+        $request->name = 'Test';
+        $response = $client->post($request);
+        $this->assertInstanceOf($dtoClass, $response);
+    }
+
+    /**
+     * @dependss testGenerateClient
+     */
+    public function testPostWithInvalidDtoParam()
+    {
+        $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Test';
+        $dtoClass = '\Test\\OpenAPI\\V1_0_1\\DTO\\Test';
+
+        $client = self::$container->get($clientClass);
+
+        $request = new $dtoClass();
+        $request->name = 'Test';
+
+        $this->expectExceptionMessageRegExp('/objectInvalidInner/');
+        $this->expectExceptionMessageRegExp('/Value should not be null./');
+
+        $client->post($request);
     }
 
     /*public function testResponseWithError()

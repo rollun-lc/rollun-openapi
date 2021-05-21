@@ -117,9 +117,10 @@ abstract class BaseAbstract extends \OpenAPI\Server\Rest\BaseAbstract implements
             $errors = [];
             foreach ($data as $item) {
                 $object = new $dto();
-                $errors = array_merge($errors, $this->dataTransfer->transferToTypedData($item, $object));
+                $errors = $this->dataTransfer->transferToTypedData($item, $object);
                 $result[] = $object;
             }
+            $errors = array_merge(...$errors);
         } else {
             $result = new $dto();
             $errors = $this->dataTransfer->transferToTypedData($data, $result);
@@ -130,6 +131,19 @@ abstract class BaseAbstract extends \OpenAPI\Server\Rest\BaseAbstract implements
         }
 
         return $result;
+    }
+
+    protected function toArray(object $dto)
+    {
+        $array = [];
+        $errors = $this->dataTransfer->transferFromTypedData($dto, $array);
+
+        if (!empty($errors)) {
+            throw new Exception('Can not transfer ' . get_class($dto)
+                . ' object to array. Details: ' . json_encode($errors));
+        }
+
+        return $array;
     }
 
     /**
