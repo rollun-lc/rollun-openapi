@@ -7,6 +7,16 @@ use Psr\Log\LogLevel;
 
 class Message
 {
+    // Levels
+    public const EMERGENCY = LogLevel::EMERGENCY;
+    public const ALERT = LogLevel::ALERT;
+    public const CRITICAL = LogLevel::CRITICAL;
+    public const ERROR = LogLevel::ERROR;
+    public const WARNING = LogLevel::WARNING;
+    public const NOTICE = LogLevel::NOTICE;
+    public const INFO = LogLevel::INFO;
+    
+    // Types
     public const UNDEFINED_TYPE = 'UNDEFINED';
     public const INVALID_RESPONSE_TYPE = 'INVALID_RESPONSE';
 
@@ -41,14 +51,13 @@ class Message
     private static function getLevels(): array
     {
         return [
-            LogLevel::DEBUG,
-            LogLevel::INFO,
-            LogLevel::NOTICE,
-            LogLevel::WARNING,
-            LogLevel::ERROR,
-            LogLevel::CRITICAL,
-            LogLevel::ALERT,
-            LogLevel::EMERGENCY
+            static::INFO,
+            static::NOTICE,
+            static::WARNING,
+            static::ERROR,
+            static::CRITICAL,
+            static::ALERT,
+            static::EMERGENCY
         ];
     }
 
