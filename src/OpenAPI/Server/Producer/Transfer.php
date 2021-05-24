@@ -7,8 +7,8 @@ use Articus\DataTransfer\Service as DTService;
 use Articus\PathHandler\Exception\HttpCode;
 use Articus\PathHandler\Producer\Transfer as Base;
 use InvalidArgumentException;
-use OpenAPI\Server\Writer\Messages;
-use Psr\Log\LoggerInterface;
+use OpenAPI\Server\Response\Message;
+use OpenAPI\Server\Response\MessageReaderInterface;
 use Psr\Log\LogLevel;
 
 /**
@@ -27,9 +27,8 @@ class Transfer extends Base
 
     const LEVEL_ERROR = LogLevel::ERROR;
 
-    const TYPE_UNDEFINED_ERROR = "UNDEFINED";
-    const TYPE_LOGGER_ERROR = "LOGGER_MESSAGE";
-    const TYPE_VALIDATION_ERROR = "INVALID_RESPONSE";
+    const TYPE_UNDEFINED_ERROR = Message::UNDEFINED_TYPE;
+    const TYPE_VALIDATION_ERROR = Message::INVALID_RESPONSE_TYPE;
 
     /**
      * @var string|null
@@ -37,25 +36,31 @@ class Transfer extends Base
     protected $responseType;
 
     /**
-     * @var LoggerInterface
+     * @var MessageReaderInterface
      */
-    protected $logger;
+    private $messageReader;
 
     /**
      * Transfer constructor.
      *
      * @param callable $streamFactory
      * @param DTService $dtService
-     * @param LoggerInterface $logger
+     * @param MessageReaderInterface $messageReader
      * @param string $subset
      * @param string|null $responseType
      */
-    public function __construct(callable $streamFactory, DTService $dtService, LoggerInterface $logger, string $subset, $responseType = null)
+    public function __construct(
+        callable $streamFactory,
+        DTService $dtService,
+        MessageReaderInterface $messageReader,
+        string $subset,
+        ?string $responseType = null
+    )
     {
         parent::__construct($streamFactory, $dtService, $subset);
 
         $this->responseType = $responseType;
-        $this->logger = $logger;
+        $this->messageReader = $messageReader;
     }
 
     /**
@@ -82,11 +87,13 @@ class Transfer extends Base
      */
     public static function getSingleErrorMessages(string $value, string $type = self::TYPE_UNDEFINED_ERROR): array
     {
-        return self::getErrorMessages([[
-            self::KEY_LEVEL => self::LEVEL_ERROR,
-            self::KEY_MESSAGE => $value,
-            self::KEY_TYPE => $type
-        ]]);
+        return self::getErrorMessages([
+            [
+                self::KEY_LEVEL => self::LEVEL_ERROR,
+                self::KEY_MESSAGE => $value,
+                self::KEY_TYPE => $type
+            ]
+        ]);
     }
 
     /**
@@ -138,22 +145,12 @@ class Transfer extends Base
         $result = [];
         $this->transferUnknownType($responseObj, $result);
 
-        // get logger writers
-        $loggerWriters = $this->logger->getWriters();
-
-        // push logger messages
-        if ($loggerWriters->count() > 0) {
-            foreach ($loggerWriters->toArray() as $writer) {
-                if ($writer instanceof Messages) {
-                    foreach ($writer->getMessages() as $row) {
-                        $result[self::KEY_MESSAGES][] = [
-                            self::KEY_LEVEL => $row[Messages::KEY_LEVEL],
-                            self::KEY_MESSAGE => $row[Messages::KEY_MESSAGE],
-                            self::KEY_TYPE => $row[Messages::KEY_TYPE] ?? self::TYPE_LOGGER_ERROR
-                        ];
-                    }
-                }
-            }
+        foreach ($this->messageReader->read() as $message) {
+            $result[self::KEY_MESSAGES][] = [
+                self::KEY_LEVEL => $message->getLevel(),
+                self::KEY_MESSAGE => $message->getText(),
+                self::KEY_TYPE => $message->getType()
+            ];
         }
 
         return parent::stringify($result);
@@ -161,8 +158,8 @@ class Transfer extends Base
 
     /**
      * @param string|array $data
-     * @param array        $res
-     * @param string       $name
+     * @param array $res
+     * @param string $name
      */
     protected static function collectValidatorMessages($data, array &$res, $name = '')
     {

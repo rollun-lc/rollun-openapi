@@ -7,9 +7,10 @@ use OpenAPI\Client\Factory\ApiInstanceAbstractFactory;
 use OpenAPI\Client\Factory\ConfigurationAbstractFactory;
 use OpenAPI\Config\DataTransferConfig;
 use OpenAPI\Config\PathHandlerConfig;
+use OpenAPI\Server\Response\MessageCollector;
+use OpenAPI\Server\Response\MessageReaderInterface;
+use OpenAPI\Server\Response\MessageWriterInterface;
 use OpenAPI\Server\Validator;
-use OpenAPI\Server\Writer\Messages;
-use Psr\Log\LoggerInterface;
 use Zend\Validator\ValidatorPluginManager;
 use Zend\Validator\ValidatorPluginManagerFactory;
 
@@ -27,51 +28,30 @@ class ConfigProvider
     {
         $config = [
             'dependencies' => [
+                'aliases' => [
+                    MessageWriterInterface::class => MessageCollector::class,
+                    MessageReaderInterface::class => MessageCollector::class
+                ],
                 'abstract_factories' => [
                     ApiInstanceAbstractFactory::class,
                     ConfigurationAbstractFactory::class,
+                ],
+                'invokables' => [
+                    MessageCollector::class
                 ]
             ],
         ];
 
-        $logConfig = $this->getLogConfig();
         $zendValidatorsConfig = $this->getZendValidatorsPluginManagerConfig();
         $dataTransferConfig = DataTransferConfig::getConfig();
         $pathHandlerConfig = PathHandlerConfig::getConfig();
 
         return array_merge_recursive(
-            $logConfig,
             $zendValidatorsConfig,
             $dataTransferConfig,
             $pathHandlerConfig,
             $config
         );
-    }
-
-    public function getLogConfig(): array
-    {
-        return [
-            'log' => [
-                LoggerInterface::class => [
-                    'writers' => [
-                        [
-                            'name' => Messages::class,
-                            'options' => [
-                                'filters' => [
-                                    [
-                                        'name' => 'priority',
-                                        'options' => [
-                                            'operator' => '<',
-                                            'priority' => 4,
-                                        ],
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ]
-                ]
-            ]
-        ];
     }
 
     public function getZendValidatorsPluginManagerConfig(): array
