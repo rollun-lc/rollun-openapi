@@ -5,7 +5,7 @@ namespace OpenAPI\Client\Factory;
 
 use Interop\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use rollun\logger\LifeCycleToken;
+use Zend\ServiceManager\Exception\ServiceNotCreatedException;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 
 /**
@@ -18,6 +18,8 @@ class ApiInstanceAbstractFactory implements AbstractFactoryInterface
     public const KEY = self::class;
 
     public const KEY_CONFIGURATION = 'configuration';
+
+    protected const LIFECYCLE_TOKEN = 'rollun\logger\LifeCycleToken';
 
     /**
      * @inheritDoc
@@ -34,7 +36,7 @@ class ApiInstanceAbstractFactory implements AbstractFactoryInterface
     {
         $config = $container->get('config')[self::KEY][$requestedName] ?? null;
 
-        $lifeCycleToken = $configuration = null;
+        $configuration = null;
 
         // define configuration
         if (isset($config[self::KEY_CONFIGURATION])) {
@@ -45,8 +47,10 @@ class ApiInstanceAbstractFactory implements AbstractFactoryInterface
         }
 
         // set life cycle token
-        if ($container->has(LifeCycleToken::class)) {
-            $lifeCycleToken = (string)$container->get(LifeCycleToken::class);
+        if ($container->has(static::LIFECYCLE_TOKEN)) {
+            $lifeCycleToken = (string)$container->get(static::LIFECYCLE_TOKEN);
+        } else {
+            throw new ServiceNotCreatedException(static::LIFECYCLE_TOKEN . ' not found in container.');
         }
 
         return new $requestedName(

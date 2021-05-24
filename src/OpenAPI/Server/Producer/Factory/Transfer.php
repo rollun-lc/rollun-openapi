@@ -7,8 +7,8 @@ use Articus\DataTransfer\Service as DTService;
 use Articus\PathHandler\Producer\Factory\Transfer as Base;
 use Interop\Container\ContainerInterface;
 use OpenAPI\Server\Producer\Transfer as TransferInstance;
+use OpenAPI\Server\Response\MessageReaderInterface;
 use Psr\Http\Message\StreamInterface;
-use Psr\Log\LoggerInterface;
 
 /**
  * Class Transfer
@@ -26,6 +26,12 @@ class Transfer extends Base
         $subset = $options['subset'] ?? '';
         $responseType = !empty($options['responseType']) ? $options['responseType'] : null;
 
-        return new TransferInstance($container->get(StreamInterface::class), $container->get(DTService::class), $container->get(LoggerInterface::class), $subset, $responseType);
+        return new TransferInstance(
+            $container->get(StreamInterface::class),
+            $container->get(DTService::class),
+            $container->get(MessageReaderInterface::class),
+            $subset,
+            $responseType
+        );
     }
 }
