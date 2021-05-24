@@ -25,13 +25,13 @@
 дополнительную полезную информацию: предупреждения, сообщения об ошибках.
 
 Так как необходимость записать сообщение может возникнуть в любой момент выполнения программы, то был создан специальный
-интерфейс [`OpenAPI\Server\Response\MessageWriterInterface`](src/OpenAPI/Server/Response/MessageWriterInterface.php) с
+интерфейс [`OpenAPI\Server\Response\MessageWriterInterface`](../src/OpenAPI/Server/Response/MessageWriterInterface.php) с
 помощью которого это можно делать.
 
 Достаточно просто указать этот интерфейс как один из параметров конструктора. По умолчанию реализацией этого интерфейса
-является объект [`OpenAPI\Server\Response\MessageCollector`](src/OpenAPI/Server/Response/MessageCollector.php), который
+является объект [`OpenAPI\Server\Response\MessageCollector`](../src/OpenAPI/Server/Response/MessageCollector.php), который
 будет записывать все сообщения себе в массив. Этот объект так же имплементирует интерфейс
-[`OpenAPI\Server\Response\MessageReaderInterface`](src/OpenAPI/Server/Response/MessageReaderInterface.php), с помощью
+[`OpenAPI\Server\Response\MessageReaderInterface`](../src/OpenAPI/Server/Response/MessageReaderInterface.php), с помощью
 которого считываются все сообщения и добавляются к ответу.
 
 Пример:
