@@ -10,27 +10,30 @@
    **ВЕРСИЯ ГЕНЕРАТОРА ДОЛЖНА БЫТЬ НИЖЕ ПЯТОЙ.** Связанно это с тем что в 5й версии [убрали](https://github.com/OpenAPITools/openapi-generator/pull/8145/commits) 
    генератор которым мы пользуемся, ему изменили имя и переделали для Laminas вместо Zend.
    
+
 2. Установите библиотеку, для этого выполните команду 
 
    ```composer require rollun-com/rollun-openapi```
    * **!!!ВАЖНО!!!** После того как композер отработает, проверьте чтобы в файле `/config/config.php` конфиг провайдер `\OpenAPI\ConfigProvider::class` загружался после `\Zend\Expressive\Router\FastRouteRouter\ConfigProvider::class` в ином случаем работать не будет.
-   
-   * **!!!ВАЖНО!!!** Для того чтобы не было проблем с инъекцией зависимостей вам нужно проверить чтобы LifeCycleToken был добавлен в контейнер до создания app. Проверьте это в /public/index.php. Пример правильного добавления LifeCycleToken:  
-      ```php
-      // Init lifecycle token
-      $lifeCycleToken = LifeCycleToken::generateToken();
-      if (LifeCycleToken::getAllHeaders() && array_key_exists("LifeCycleToken", LifeCycleToken::getAllHeaders())) {
-          $lifeCycleToken->unserialize(LifeCycleToken::getAllHeaders()["LifeCycleToken"]);
-      }
-      $container->setService(LifeCycleToken::class, $lifeCycleToken);
-      
-      /** @var Application $app */
-      $app = $container->get(Application::class); 
-      ```     
-3. Подготовьте openapi манифест. Детали [здесь](docs/manifest.md).       
-4. Скачайте openapi манифест. Для этого перейдите на https://app.swaggerhub.com/home?type=API, откройте нужный вам манифест и сделайте экспорт в виде yaml файла. При скачивании, рекомендуется называть документ **openapi.yaml** так, как такое имя используется генератором по умолчанию.
+ 
+  
+3. Проверить что в контейнере есть `rollun\logger\LifeCycleToken`.
+
+   Под этим именем в контейнере должна находиться строка с идентификатором текущего жизненного цикла приложения.
+
+   Рекомендованный способ это установить библиотеку rollun-com/rollun-logger. В комплекте с которой идет LifeCycleToken.
+   Почитать о том как установить его в контейнер можно в [документации](https://github.com/rollun-com/rollun-logger/blob/master/docs/index.md#lifecycletoken)
+   библиотеки.
+ 
+
+4. Подготовьте openapi манифест. Детали [здесь](docs/manifest.md).       
+
+
+5. Скачайте openapi манифест. Для этого перейдите на https://app.swaggerhub.com/home?type=API, откройте нужный вам манифест и сделайте экспорт в виде yaml файла. При скачивании, рекомендуется называть документ **openapi.yaml** так, как такое имя используется генератором по умолчанию.
    ![alt text](docs/assets/img/openapi.png)
-5. Для генерации кода выполните команду:
+
+
+6. Для генерации кода выполните команду:
 
    ```php vendor/bin/openapi-server-generate```
    
@@ -38,7 +41,8 @@
    
    ```php vendor/bin/openapi-client-generate```
 
-6. Обязательно добавьте сгенерированные классы в аутолоадер композера.
+
+7. Обязательно добавьте сгенерированные классы в аутолоадер композера.
    ```
      "autoload": {
        "psr-4": {
