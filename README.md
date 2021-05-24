@@ -70,6 +70,9 @@
 Для генерации кода используются только команды из ./bin директории, шаблоны из template, а так же пакет ```nette/php-generator```.
 Пока что эти зависимости остаются в пакете и подтягиваются в продакшн.
 
+## Документация по реализации серверной части
+[Документация по реализации серверной части](docs/server.md)
+
 ## Переключение между хостами
 С версии 3.1.0 Rest классы реализуют интерфейс [`OpenAPI\Client\Rest\ClientInterface`](src/OpenAPI/Client/Rest/ClientInterface.php),
 который включает в себя интерфейс [`OpenAPI\Client\Rest\HostSelectionInterface`](src/OpenAPI/Client/Rest/HostSelectionInterface.php),
