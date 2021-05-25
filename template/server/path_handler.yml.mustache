@@ -1,7 +1,7 @@
 Articus\PathHandler\RouteInjection\Factory:
   paths:
 {{#apiInfo}}
-    '/openapi/{{{appName}}}/v{{{version}}}':
+    '/openapi/{{{appName}}}/v{{currentVersion}}':
     {{#apis}}{{#operations}}
       - {{package}}\{{classname}}
     {{/operations}}{{/apis}}

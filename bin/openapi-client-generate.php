@@ -10,10 +10,24 @@ if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
 
 require 'vendor/autoload.php';
 
-echo "Please set path to openapi manifest (openapi.yaml by default): ";
-$manifest = trim(fgets(fopen('php://stdin', 'rw+')));
-if (empty($manifest)) {
-    $manifest = 'openapi.yaml';
+$params = [];
+if (!empty($argv)) {
+    foreach ($argv as $arg) {
+        if (strpos($arg, '--') === 0) {
+            $item = explode('=', ltrim($arg, '-'));
+            $params[$item[0]] = $item[1];
+        }
+    }
+}
+
+if (isset($params['manifest'])) {
+    $manifest = $params['manifest'];
+} else {
+    echo "Please set path to openapi manifest (openapi.yaml by default): ";
+    $manifest = trim(fgets(fopen('php://stdin', 'rw+')));
+    if (empty($manifest)) {
+        $manifest = 'openapi.yaml';
+    }
 }
 
 if (!file_exists($manifest)) {
@@ -40,7 +54,7 @@ if (!isset($manifestData['info']['title'])) {
 $title = preg_replace("/[^a-zA-Z0-9]/", '', $manifestData['info']['title']);
 
 // prepare version
-$version = preg_replace("/[^0-9]/", '', $manifestData['info']['version']);
+$version = preg_replace("/([0-9]+)\./", '$1_', ltrim($manifestData['info']['version'], 'v'));
 
 // prepare tags
 $tags = [];
