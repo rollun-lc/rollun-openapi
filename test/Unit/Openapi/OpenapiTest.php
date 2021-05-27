@@ -40,23 +40,6 @@ class OpenapiTest extends TestCase
         $this->assertFileExists('src/Test/src/OpenAPI/V1_0_1/DTO/Test.php');
         $this->assertFileExists('src/Test/src/OpenAPI/V1_0_1/Server/Handler/Test.php');
         $this->assertFileExists('src/Test/src/OpenAPI/V1_0_1/Server/Rest/Test.php');
-
-        // TODO
-        $content = file_get_contents('src/Test/src/OpenAPI/V1_0_1/Server/Rest/Test.php');
-        $content = str_replace(
-            "'Name of service which implements OpenApi logic'",
-            '\\' . TestControllerObject::class . '::class',
-            $content
-        );
-        file_put_contents('src/Test/src/OpenAPI/V1_0_1/Server/Rest/Test.php', $content);
-
-        $content = file_get_contents('src/Test/src/OpenAPI/V1_0_1/Server/Rest/Bla.php');
-        $content = str_replace(
-            "'Name of service which implements OpenApi logic'",
-            '\\' . BlaControllerObject::class . '::class',
-            $content
-        );
-        file_put_contents('src/Test/src/OpenAPI/V1_0_1/Server/Rest/Bla.php', $content);
     }
 
     /**
