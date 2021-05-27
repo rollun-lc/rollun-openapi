@@ -8,6 +8,10 @@ return [
         'invokables' => [
             \rollun\test\OpenAPI\Unit\Openapi\TestControllerObject::class,
             \rollun\test\OpenAPI\Unit\Openapi\BlaControllerObject::class,
+        ],
+        'aliases' => [
+            'BlaController' => \rollun\test\OpenAPI\Unit\Openapi\BlaControllerObject::class,
+            'TestController' => \rollun\test\OpenAPI\Unit\Openapi\TestControllerObject::class,
         ]
     ],
     /*AbstractServiceAbstractFactory::KEY => [
