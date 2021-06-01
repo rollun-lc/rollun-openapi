@@ -163,7 +163,7 @@ class GenerateServerCommand extends GenerateCommandAbstract
             // create class
             $class = $namespace->addClass($tag);
             $class->setExtends('OpenAPI\Server\Rest\Base7Abstract');
-            $class->addConstant('CONTROLLER_OBJECT', $tag . 'Controller');
+            $class->addConstant('CONTROLLER_OBJECT', $tag . 'Controller')->setPublic();
             $class->addComment("Class $tag");
             $class->addProperty('controllerObject')->setProtected()->addComment('@var object');
             $class->addProperty('logger')->setProtected()->addComment('@var LoggerInterface');

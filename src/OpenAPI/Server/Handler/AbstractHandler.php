@@ -26,7 +26,7 @@ abstract class AbstractHandler
      *
      * @return array
      */
-    protected function runAction(ServerRequestInterface $request, string $method): array
+    protected function runAction(ServerRequestInterface $request, string $method)
     {
         // get errors
         $errors = $request->getAttribute('errors');
