@@ -51,7 +51,9 @@
    Например
    
    ```php vendor/bin/openapi-generator generate:client --manifest=openapy.yaml```
-
+   
+   Используется пакет [symfony/console](https://github.com/symfony/console).
+   
 7. Обязательно добавьте сгенерированные классы в аутолоадер композера.
    ```
      "autoload": {

@@ -60,19 +60,13 @@ class OpenapiTest extends TestCase
     /**
      * @depends testGenerateClient
      */
-    public function tesGetById()
+    public function testGetById()
     {
         $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Test';
         $dtoClass = '\Test\\OpenAPI\\V1_0_1\\DTO\\Test';
 
         $client = self::$container->get($clientClass);
         $response = $client->getById(1);
-        $this->assertInstanceOf($dtoClass, $response);
-
-        $response = $client->post([
-            'id' => '12345',
-            'name' => 'Test',
-        ]);
         $this->assertInstanceOf($dtoClass, $response);
     }
 
