@@ -115,7 +115,7 @@ class GenerateClientCommand extends GenerateCommandAbstract
             $generator = new ClientRestGenerator($this->title, $this->version, $tag, $configurationClass);
             $namespace = $generator->generate($tag);
 
-            file_put_contents("$restDir/$tag.php", "<?php\n\n" . (string)$namespace);
+            file_put_contents("$restDir/$tag.php", "<?php\n\n" . $namespace);
         }
     }
 }

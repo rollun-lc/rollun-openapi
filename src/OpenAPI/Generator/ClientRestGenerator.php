@@ -44,6 +44,11 @@ class ClientRestGenerator
         ];
     }
 
+    /**
+     * @param $className
+     * @return PhpNamespace
+     * @throws \ReflectionException
+     */
     public function generate($className)
     {
         $this->namespace = (new PhpNamespace("$this->title\OpenAPI\V$this->version\Client\Rest"))

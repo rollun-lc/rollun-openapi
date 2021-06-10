@@ -10,8 +10,8 @@ return [
             \rollun\test\OpenAPI\Unit\Openapi\BlaControllerObject::class,
         ],
         'aliases' => [
-            'BlaController' => \rollun\test\OpenAPI\Unit\Openapi\BlaControllerObject::class,
-            'TestController' => \rollun\test\OpenAPI\Unit\Openapi\TestControllerObject::class,
+            'Bla1_0_1Controller' => \rollun\test\OpenAPI\Unit\Openapi\BlaControllerObject::class,
+            'Test1_0_1Controller' => \rollun\test\OpenAPI\Unit\Openapi\TestControllerObject::class,
         ]
     ],
     /*AbstractServiceAbstractFactory::KEY => [
