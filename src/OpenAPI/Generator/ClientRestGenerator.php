@@ -114,7 +114,7 @@ class ClientRestGenerator
     protected function makeBodyValidation($paramName, $className)
     {
         $objectName = $paramName . 'Object';
-        $result = "// validation of \$$$paramName\n";
+        $result = "// validation of \$$paramName\n";
         $result .= "if (\$$paramName instanceof $className) {\n";
             $result .= "    \$$paramName = \$this->toArray(\$$paramName);\n";
         $result .= "}\n";
