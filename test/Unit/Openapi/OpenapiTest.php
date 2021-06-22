@@ -156,19 +156,62 @@ class OpenapiTest extends TestCase
         $client->post($request);
     }
 
-    /*public function testResponseWithError()
+    /**
+     * @depends testGenerateClient
+     */
+    public function testGetWithDtoResponse()
     {
-        $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Test';
-        $dtoClass = '\Test\\OpenAPI\\V1_0_1\\DTO\\Test';
+        $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Bla';
+        $collectionClass = '\\Test\\OpenAPI\\V1_0_1\\DTO\\BlaResult';
 
         $client = self::$container->get($clientClass);
-        $response = $client->getById(1);
-        $this->assertInstanceOf($dtoClass, $response);
 
-        $response = $client->post([
-            'id' => '12345',
-            'name' => 'Test',
-        ]);
-        $this->assertInstanceOf($dtoClass, $response);
-    }*/
+        $request = [
+            'name' => 'OK',
+        ];
+        $response = $client->get($request);
+        $this->assertInstanceOf($collectionClass, $response);
+        $this->assertIsArray($response->data);
+        $this->assertNotEmpty($response->data);
+    }
+
+    /**
+     * @depends testGenerateClient
+     */
+    public function testGetWithValidationError()
+    {
+        $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Bla';
+        $collectionClass = '\\Test\\OpenAPI\\V1_0_1\\DTO\\BlaResult';
+
+        $client = self::$container->get($clientClass);
+
+        $request = [
+            'name' => 'Error',
+        ];
+        $response = $client->get($request);
+        $this->assertInstanceOf($collectionClass, $response);
+        $this->assertNull($response->data);
+        $this->assertNotEmpty($response->messages);
+        $this->assertEquals('name => Value should not be null.', $response->messages[0]->text);
+    }
+
+    /**
+     * @depends testGenerateClient
+     */
+    public function testGetWithException()
+    {
+        $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Bla';
+        $collectionClass = '\\Test\\OpenAPI\\V1_0_1\\DTO\\BlaResult';
+
+        $client = self::$container->get($clientClass);
+
+        $request = [
+            'name' => 'Exception',
+        ];
+        $response = $client->get($request);
+        $this->assertInstanceOf($collectionClass, $response);
+        $this->assertNull($response->data);
+        $this->assertNotEmpty($response->messages);
+        $this->assertEquals('Test exception', $response->messages[0]->text);
+    }
 }
