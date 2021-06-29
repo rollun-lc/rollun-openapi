@@ -175,4 +175,11 @@ abstract class BaseAbstract extends \OpenAPI\Server\Rest\BaseAbstract implements
             $config->{$setter}($value);
         }
     }
+
+    public function __clone()
+    {
+        // Принудительно копируем $this->api, иначе
+        // он будет указывать на один и тот же объект.
+        $this->api = clone $this->api;
+    }
 }
