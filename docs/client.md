@@ -11,7 +11,7 @@
 - in: query
   name: "filters"
   required: false
-  explode: false
+  explode: true
   style: form
   explpde: true
   schema:
