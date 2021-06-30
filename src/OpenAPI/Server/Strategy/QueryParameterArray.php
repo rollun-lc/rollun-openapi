@@ -73,8 +73,8 @@ class QueryParameterArray extends QueryParameter
                 $list = \explode($this->delimiter, $from);
             }
             $to = [];
-            foreach ($list as $item) {
-                $to[] = $this->parentHydrate($item);
+            foreach ($list as $key => $item) {
+                $to[$key] = $this->parentHydrate($item);
             }
         }
     }
