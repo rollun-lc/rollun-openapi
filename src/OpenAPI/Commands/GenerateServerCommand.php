@@ -23,6 +23,14 @@ class GenerateServerCommand extends GenerateCommandAbstract
             InputOption::VALUE_OPTIONAL,
             'Location of the OpenAPI spec, as URL or file'
         );
+
+        $this->addOption(
+            'arrayConverting',
+            null,
+            InputOption::VALUE_OPTIONAL,
+            'Mode for array converting in server rest object: base -> by php (array), dataTransfer -> by dataTransferService (recommended) ',
+            'base'
+        );
     }
 
     /**
@@ -49,7 +57,7 @@ class GenerateServerCommand extends GenerateCommandAbstract
 
         $this->copyDocs();
 
-        $this->generateRests();
+        $this->generateRests($input, $output);
 
         $output->writeln('<info>Done</info>');
 
@@ -141,7 +149,7 @@ class GenerateServerCommand extends GenerateCommandAbstract
     /**
      * @todo
      */
-    public function generateRests()
+    public function generateRests(InputInterface $input, OutputInterface $output)
     {
         // TODO Дублируется
         $configFile = $this->getTempGeneratedDirPath('application/config/path_handler.yml');
@@ -153,10 +161,18 @@ class GenerateServerCommand extends GenerateCommandAbstract
         $restDir = $this->getSourceVersionedWithSectionDirPath('Rest');
         $this->makeDirectory($restDir);
 
+        $options = [
+            'arrayConverting' => $input->getOption('arrayConverting')
+        ];
+
+        if ($options['arrayConverting'] === 'base') {
+            $output->writeln('<comment>base array converting is deprecated. Please use `--arrayConverting=dataTransfer`</comment>');
+        }
+
         // TODO
         foreach ($this->tags as $tag) {
             $generator = new ServerRestGenerator($this->title, $this->version, $tag, $pathHandlerData);
-            $namespace = $generator->generate($tag);
+            $namespace = $generator->generate($tag, $options);
 
             file_put_contents("$restDir/$tag.php", "<?php\n\n" . $namespace);
         }

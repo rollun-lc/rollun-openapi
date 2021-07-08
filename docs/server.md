@@ -2,6 +2,36 @@
 
 Информация для тех кто будет реализоваывать серверную часть манифеста.
 
+## Генерация манифеста
+Серверный контроллер генерирует примерно такие методы:
+
+```php
+public function putById($id, $bodyData)
+{
+    if (method_exists($this->controllerObject, 'putById')) {
+        $bodyDataArray = (array) $bodyData;
+
+        return $this->controllerObject->putById($id, $bodyDataArray);
+    }
+
+    throw new \Exception('Not implemented method');
+}
+```
+Проблема в `$bodyDataArray = (array) $bodyData;`, при такой конвертации могут неправильно конвертироваться ключи массива 
+(отличаться от тех что в манифесте) и конвертируются только ключи верхнего уровня, т.е. если под ключем 
+$bodyData->receiver находиться объект, то в bodyDataArray['receiver'] тоже будет объект.
+
+Чтобы это исправить нужно выполнять конвертацию через DataTransferObject. Для этого с версии 8.2 в генератор добавлена
+опция `arrayConverting`, которая может принимать два значения: base -> для конвертации как в примере выше (через (array)),
+или dataTransfer для конвертации с помощью DataTransferObject. Значение base используется по умолчанию и нужно для обратной
+совместимости, но объеявлено устаревшим. Рекомендованный способ - использовать --arrayConverting=dataTransfer при генерации.
+
+Пример: 
+
+```bash
+php bin/openapi-generator generate:server --arrayConverting=dataTransfer
+```
+
 ## Запись сообщений в messages
 
 Структура ответа принятая в rollun выглядит следующим образом.
@@ -81,7 +111,7 @@ class Buyer {
 }
 ```
 
-###Информация по контроллерам rest обьектов (controller object)
+## Конфигурация контроллера rest объектов (controller object)
 С версии 8 в константу CONTROLLER_OBJECT при генерации пишется строковый ключ, по которому можно добавить конфигурацию в DI контейнер.
 Название ключа формируется по схеме [TAG] + [VERSION] + 'Controller'. Например, для тега Order с версией API 1 будет генерироваться ключ `Order1Controller`
 
