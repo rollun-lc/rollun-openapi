@@ -271,7 +271,7 @@ class ClientRestGenerator
 
     protected function idPatchMethod($methodName, $template, $params = [])
     {
-        $bodyType = str_replace("Client\Model", "DTO", $params[0]['paramType']);
+        $bodyType = str_replace("Client\Model", "DTO", $params[1]['paramType']);
         //$body = "// validation of \$bodyData\n\$bodyDataObject = \$this->transfer((array)\$bodyData, '$bodyType');";
         $body = $this->makeBodyValidation('bodyData', $bodyType);
 
@@ -287,7 +287,7 @@ class ClientRestGenerator
 
     protected function idPutMethod($methodName, $template, $params = [])
     {
-        $bodyType = str_replace("Client\Model", "DTO", $params[0]['paramType']);
+        $bodyType = str_replace("Client\Model", "DTO", $params[1]['paramType']);
         //$body = "// validation of \$bodyData\n\$bodyDataObject = \$this->transfer((array)\$bodyData, '$bodyType');";
         $body = $this->makeBodyValidation('bodyData', $bodyType);
 
