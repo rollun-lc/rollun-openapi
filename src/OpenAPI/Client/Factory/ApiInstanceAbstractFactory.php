@@ -21,12 +21,16 @@ class ApiInstanceAbstractFactory implements AbstractFactoryInterface
 
     protected const LIFECYCLE_TOKEN = 'rollun\logger\LifeCycleToken';
 
+    public const KEY_CLASS = 'class';
+
     /**
      * @inheritDoc
      */
     public function canCreate(ContainerInterface $container, $requestedName)
     {
-        return defined($requestedName . '::IS_API_CLIENT');
+        $config = $container->get('config')[self::KEY][$requestedName] ?? null;
+        $className = $config[self::KEY_CLASS] ?? $requestedName;
+        return defined($className . '::IS_API_CLIENT');
     }
 
     /**
@@ -35,14 +39,15 @@ class ApiInstanceAbstractFactory implements AbstractFactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         $config = $container->get('config')[self::KEY][$requestedName] ?? null;
+        $className = $config[self::KEY_CLASS] ?? $requestedName;
 
         $configuration = null;
 
         // define configuration
         if (isset($config[self::KEY_CONFIGURATION])) {
             $configuration = $container->get($config[self::KEY_CONFIGURATION]);
-        } elseif (defined($requestedName . '::CONFIGURATION_CLASS')) {
-            $configurationClass = $requestedName::CONFIGURATION_CLASS;
+        } elseif (defined($className . '::CONFIGURATION_CLASS')) {
+            $configurationClass = $className::CONFIGURATION_CLASS;
             $configuration = $container->get($configurationClass);
         }
 
@@ -53,7 +58,7 @@ class ApiInstanceAbstractFactory implements AbstractFactoryInterface
             throw new ServiceNotCreatedException(static::LIFECYCLE_TOKEN . ' not found in container.');
         }
 
-        return new $requestedName(
+        return new $className(
             $container->get(\Articus\DataTransfer\Service::class),
             $container->get(LoggerInterface::class),
             $lifeCycleToken,
