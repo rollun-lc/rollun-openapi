@@ -23,7 +23,7 @@ abstract class BaseAbstract extends \OpenAPI\Server\Rest\BaseAbstract implements
     /**
      * @var string
      */
-    protected $apiName = '';
+    public const API_NAME = '';
 
     /**
      * @var ApiInterface
@@ -49,49 +49,13 @@ abstract class BaseAbstract extends \OpenAPI\Server\Rest\BaseAbstract implements
      * @param ConfigurationInterface|null $config
      */
     public function __construct(
+        ApiInterface $api,
         DataTransferService $dataTransfer,
-        LoggerInterface $logger,
-        string $lifeCycleToken,
-        ?ConfigurationInterface $config = null
+        LoggerInterface $logger
     ) {
-        // prepare api name
-        $apiName = $this->apiName;
-        if (empty($this->apiName)) {
-            throw new InvalidArgumentException('Param $apiName is required!');
-        }
-
+        $this->api = $api;
         $this->dataTransfer = $dataTransfer;
         $this->logger = $logger;
-        $this->api = $this->createApi($apiName, $lifeCycleToken, $config);
-    }
-
-    /**
-     * @param string $apiName
-     * @param string $lifeCycleToken
-     * @param ConfigurationInterface|null $config
-     *
-     * @return ApiInterface
-     */
-    protected function createApi(
-        string $apiName,
-        string $lifeCycleToken,
-        ?ConfigurationInterface $config = null
-    ): ApiInterface {
-        $api = new $apiName(
-            new Client([
-                'headers' => [
-                    'LifeCycleToken' => $lifeCycleToken
-                ],
-                'timeout' => 120,
-            ]),
-            $config
-        );
-
-        if (method_exists($api, 'setLogger')) {
-            $api->setLogger($this->logger);
-        }
-
-        return $api;
     }
 
     /**

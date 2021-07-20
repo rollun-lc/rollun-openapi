@@ -13,13 +13,11 @@ use Zend\ServiceManager\Factory\AbstractFactoryInterface;
  *
  * @author r.ratsun <r.ratsun.rollun@gmail.com>
  */
-class ApiInstanceAbstractFactory implements AbstractFactoryInterface
+class RestAbstractFactory implements AbstractFactoryInterface
 {
     public const KEY = self::class;
 
     public const KEY_CONFIGURATION = 'configuration';
-
-    protected const LIFECYCLE_TOKEN = 'rollun\logger\LifeCycleToken';
 
     public const KEY_CLASS = 'class';
 
@@ -45,25 +43,23 @@ class ApiInstanceAbstractFactory implements AbstractFactoryInterface
 
         // define configuration
         if (isset($config[self::KEY_CONFIGURATION])) {
-            $configuration = $container->get($config[self::KEY_CONFIGURATION]);
+            $configurationClass = $config[self::KEY_CONFIGURATION];
+            $configuration = $container->get($configurationClass);
         } elseif (defined($className . '::CONFIGURATION_CLASS')) {
             $configurationClass = $className::CONFIGURATION_CLASS;
             $configuration = $container->get($configurationClass);
         }
 
-        // set life cycle token
-        if ($container->has(static::LIFECYCLE_TOKEN)) {
-            $lifeCycleToken = (string)$container->get(static::LIFECYCLE_TOKEN);
-        } else {
-            throw new ServiceNotCreatedException(static::LIFECYCLE_TOKEN . ' not found in container.');
-        }
+        $apiName = $className::API_NAME;
+        $api = $container->build($apiName, [
+            'configuration' => $configuration,
+        ]);
 
-        return new $className(
-            $container->get(\Articus\DataTransfer\Service::class),
-            $container->get(LoggerInterface::class),
-            $lifeCycleToken,
-            $configuration
-        );
+        $transfer = $container->get(\Articus\DataTransfer\Service::class);
+        $logger = $container->get(LoggerInterface::class);
+
+
+        return new $className($api, $transfer, $logger, $configuration);
     }
 }
 

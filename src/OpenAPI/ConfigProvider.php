@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 namespace OpenAPI;
 
-use OpenAPI\Client\Factory\ApiInstanceAbstractFactory;
+use OpenAPI\Client\Factory\ApiAbstractFactory;
+use OpenAPI\Client\Factory\RestAbstractFactory;
 use OpenAPI\Client\Factory\ConfigurationAbstractFactory;
 use OpenAPI\Config\DataTransferConfig;
 use OpenAPI\Config\PathHandlerConfig;
@@ -33,7 +34,8 @@ class ConfigProvider
                     MessageReaderInterface::class => MessageCollector::class
                 ],
                 'abstract_factories' => [
-                    ApiInstanceAbstractFactory::class,
+                    RestAbstractFactory::class,
+                    ApiAbstractFactory::class,
                     ConfigurationAbstractFactory::class,
                 ],
                 'invokables' => [

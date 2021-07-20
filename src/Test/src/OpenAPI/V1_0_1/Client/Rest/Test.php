@@ -9,11 +9,8 @@ use OpenAPI\Client\Rest\BaseAbstract;
  */
 class Test extends BaseAbstract
 {
+	public const API_NAME = '\Test\OpenAPI\V1_0_1\Client\Api\TestApi';
 	public const CONFIGURATION_CLASS = 'Test\OpenAPI\V1_0_1\Client\Configuration';
-
-	/** @var string */
-	protected $apiName = '\Test\OpenAPI\V1_0_1\Client\Api\TestApi';
-
 
 	/**
 	 * @inheritDoc

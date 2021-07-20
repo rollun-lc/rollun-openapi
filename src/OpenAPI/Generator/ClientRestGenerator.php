@@ -60,7 +60,8 @@ class ClientRestGenerator
         $this->class = $this->namespace->addClass($className);
         $this->class->setExtends('OpenAPI\Client\Rest\BaseAbstract');
         $this->class->addComment("Class $className");
-        $this->class->addProperty('apiName', $apiName)->setProtected()->addComment("@var string");
+        //$this->class->addProperty('apiName', $apiName)->setProtected()->addComment("@var string");
+        $this->class->addConstant('API_NAME', $apiName)->setPublic();
 
         $this->class->addConstant('CONFIGURATION_CLASS', $this->configuration)->setPublic();
         $actions = (new \ReflectionProperty($this->configuration, 'additionalData'))->getValue();
