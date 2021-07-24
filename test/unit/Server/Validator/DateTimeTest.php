@@ -1,6 +1,6 @@
 <?php
 
-namespace rollun\test\OpenAPI\Unit\Server\Validator;
+namespace rollun\test\OpenAPI\unit\Server\Validator;
 
 use OpenAPI\Server\Validator\DateTime;
 use PHPUnit\Framework\TestCase;

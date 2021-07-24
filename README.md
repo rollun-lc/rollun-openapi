@@ -85,6 +85,9 @@
 ## Документация по реализации серверной части
 [Документация по реализации серверной части](docs/server.md)
 
+## Документация по реализации клиентской части
+[Документация по реализации серверной части](docs/client.md)
+
 ## Переключение между хостами
 С версии 3.1.0 Rest классы реализуют интерфейс [`OpenAPI\Client\Rest\ClientInterface`](src/OpenAPI/Client/Rest/ClientInterface.php),
 который включает в себя интерфейс [`OpenAPI\Client\Rest\HostSelectionInterface`](src/OpenAPI/Client/Rest/HostSelectionInterface.php),

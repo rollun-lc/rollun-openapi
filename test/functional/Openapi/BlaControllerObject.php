@@ -1,7 +1,7 @@
 <?php
 
 
-namespace rollun\test\OpenAPI\Unit\Openapi;
+namespace rollun\test\OpenAPI\functional\Openapi;
 
 
 use Test\OpenAPI\V1_0_1\DTO\Bla;

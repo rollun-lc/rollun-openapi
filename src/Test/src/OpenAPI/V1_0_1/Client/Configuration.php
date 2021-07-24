@@ -140,6 +140,10 @@ class Configuration extends ConfigurationAbstract
             [
                 "url" => "http://localhost:8001/openapi/Test/v1_0_1",
                 "description" => "No description provided",
+            ],
+            [
+                "url" => "http://localhost:8082/openapi/Test/v1_0_1",
+                "description" => "No description provided",
             ]
         ];
     }

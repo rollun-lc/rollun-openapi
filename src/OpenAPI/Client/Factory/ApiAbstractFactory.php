@@ -5,68 +5,72 @@ namespace OpenAPI\Client\Factory;
 
 
 use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use OpenAPI\Client\Api\ApiInterface;
 use Psr\Log\LoggerInterface;
-use Zend\ServiceManager\Exception\ServiceNotCreatedException;
-use Zend\ServiceManager\Exception\ServiceNotFoundException;
+use rollun\logger\LifeCycleToken;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 
 class ApiAbstractFactory implements AbstractFactoryInterface
 {
-    protected const KEY = self::class;
+    public const KEY = self::class;
 
-    protected const LIFECYCLE_TOKEN = 'rollun\logger\LifeCycleToken';
+    public const KEY_CLASS = 'class';
 
-    protected const KEY_CLIENT = 'client';
+    public const KEY_CLIENT = 'client';
 
-    protected const KEY_CONFIGURATION = 'configuration';
+    public const KEY_CONFIGURATION = 'configuration';
 
-    protected const KEY_HEADER_SELECTOR = 'headerSelector';
+    public const KEY_HEADER_SELECTOR = 'headerSelector';
 
-    protected const KEY_HOST_INDEX = 'hostIndex';
+    public const KEY_HOST_INDEX = 'hostIndex';
+
+    public const KEY_HOST_URL = 'hostUrl';
 
     public function canCreate(ContainerInterface $container, $requestedName)
     {
-        return is_a($requestedName, ApiInterface::class, true);
+        $config = $container->get('config')[self::KEY][$requestedName] ?? null;
+        $className = $config[self::KEY_CLASS] ?? $requestedName;
+        return is_a($className, ApiInterface::class, true);
     }
 
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $config = $container->get('config')[$requestedName] ?? null;
+        $config = $container->get('config')[self::KEY][$requestedName] ?? null;
 
         // set life cycle token
-        if ($container->has(static::LIFECYCLE_TOKEN)) {
-            $lifeCycleToken = (string)$container->get(static::LIFECYCLE_TOKEN);
-        } else {
-            throw new ServiceNotCreatedException(static::LIFECYCLE_TOKEN . ' not found in container.');
-        }
+        $lifeCycleToken = (string) $container->get(LifeCycleToken::class);
 
+        // TODO
+        $clientConfig = [];
         $client = $options[self::KEY_CLIENT] ?? $config[self::KEY_CLIENT] ?? null;
         if (is_string($client)) {
             $client = $container->get($client);
+            if (!$client instanceof ClientInterface) {
+                throw new \Exception('Client must implement ' . ClientInterface::class);
+            }
+            $clientConfig = $client->getConfig();
         }
-        $clientConfig = $client && $client instanceof Client ? $client->getConfig() : [];
-        $clientConfig = array_merge([
+        $clientConfig = array_merge_recursive([
             'headers' => [
                 'LifeCycleToken' => $lifeCycleToken
             ],
-            'timeout' => 120
         ], $clientConfig);
         $client = new Client($clientConfig);
 
-        $configuration = $options[self::KEY_CONFIGURATION] ?? null;
+        $configuration = $options[self::KEY_CONFIGURATION] ?? $config[self::KEY_CONFIGURATION] ?? null;
         if (is_string($configuration)) {
             $configuration = $container->get($configuration);
         }
 
-        $headerSelector = $config[self::KEY_HEADER_SELECTOR] ?? null;
-        $hostIndex = $config[self::KEY_HOST_INDEX] ?? 0;
+        $headerSelector = $options[self::KEY_HEADER_SELECTOR] ?? $config[self::KEY_HEADER_SELECTOR] ?? null;
+        $hostIndex = $options[self::KEY_HOST_INDEX] ?? $config[self::KEY_HOST_INDEX] ?? 0;
 
         $logger = $container->get(LoggerInterface::class);
 
-        $instance = new $requestedName(
+        $className = $config[self::KEY_CLASS] ?? $requestedName;
+        $instance = new $className(
             $client,
             $configuration,
             $headerSelector,

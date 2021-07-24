@@ -1,7 +1,7 @@
 <?php
 
 
-namespace rollun\test\OpenAPI\Unit\Openapi;
+namespace rollun\test\OpenAPI\functional\Openapi;
 
 
 use PHPUnit\Framework\TestCase;
@@ -71,7 +71,7 @@ class OpenapiTest extends TestCase
     }
 
     /**
-     * @dependss testGenerateClient
+     * @depends testGenerateClient
      */
     public function testGet()
     {
@@ -91,7 +91,7 @@ class OpenapiTest extends TestCase
     }
 
     /**
-     * @dependss testGenerateClient
+     * @depends testGenerateClient
      */
     public function testPost()
     {
@@ -108,7 +108,7 @@ class OpenapiTest extends TestCase
     }
 
     /**
-     * @dependss testGenerateClient
+     * @depends testGenerateClient
      */
     public function testPostWithoutBody()
     {
@@ -121,7 +121,7 @@ class OpenapiTest extends TestCase
     }
 
     /**
-     * @dependss testGenerateClient
+     * @depends testGenerateClient
      */
     public function testPostWithValidDtoParam()
     {
@@ -138,7 +138,7 @@ class OpenapiTest extends TestCase
     }
 
     /**
-     * @dependss testGenerateClient
+     * @depends testGenerateClient
      */
     public function testPostWithInvalidDtoParam()
     {
