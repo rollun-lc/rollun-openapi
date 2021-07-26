@@ -9,7 +9,7 @@ use OpenAPI\Client\Rest\BaseAbstract;
  */
 class Bla extends BaseAbstract
 {
-	public const API_NAME = '\Test\OpenAPI\V1_0_1\Client\Api\BlaApi';
+	public const API_NAME = 'Test\OpenAPI\V1_0_1\Client\Api\BlaApi';
 	public const CONFIGURATION_CLASS = 'Test\OpenAPI\V1_0_1\Client\Configuration';
 
 	/**
@@ -38,7 +38,7 @@ class Bla extends BaseAbstract
 
 
 	/**
-	 * @return \Test\OpenAPI\V1_0_1\Client\Api\BlaApi
+	 * @return Test\OpenAPI\V1_0_1\Client\Api\BlaApi
 	 */
 	protected function getApi(): \OpenAPI\Client\Api\ApiInterface
 	{

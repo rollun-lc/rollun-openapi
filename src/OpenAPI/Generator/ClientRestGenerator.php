@@ -55,7 +55,7 @@ class ClientRestGenerator
             ->addUse('OpenAPI\Client\Rest\BaseAbstract');
 
         // prepare api name
-        $apiName = "\\$this->title\\OpenAPI\\V$this->version\\Client\\Api\\{$className}Api";
+        $apiName = "$this->title\\OpenAPI\\V$this->version\\Client\\Api\\{$className}Api";
 
         $this->class = $this->namespace->addClass($className);
         $this->class->setExtends('OpenAPI\Client\Rest\BaseAbstract');
