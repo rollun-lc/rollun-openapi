@@ -4,7 +4,8 @@
 
 ## Массивы в query при style = form, explode = true
 
-**!!! На данный момент этот вид сериализации не работает, проблема описана в [PR #26](https://github.com/rollun-com/rollun-openapi/issues/26)**
+**!!! На данный момент этот вид сериализации не работает, проблема описана в [PR #26](https://github.com/rollun-com/rollun-openapi/issues/26).**
+**Вместо этого рекомендуется использовать style = form с explode = false**
 
 Сериализация следующего вида:
 
