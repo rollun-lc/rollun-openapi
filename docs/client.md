@@ -4,6 +4,8 @@
 
 ## Массивы в query при style = form, explode = true
 
+**!!! На данный момент этот вид сериализации не работает, проблема описана в [PR #26](https://github.com/rollun-com/rollun-openapi/issues/26)**
+
 Сериализация следующего вида:
 
 | URI template | Primitive value id = 5 | Array id = [3, 4, 5] | Object id = {"role": "admin", "firstName": "Alex"} |
