@@ -477,7 +477,7 @@ use Psr\Log\LoggerInterface;
         {{#style}}
             if('form' === '{{style}}' && is_array(${{paramName}})) {
                 foreach(${{paramName}} as $key => $value) {
-                    $queryParams[$key] = $value;
+                    $queryParams['{{paramName}}'][$key] = $value;
                 }
             }
             else {

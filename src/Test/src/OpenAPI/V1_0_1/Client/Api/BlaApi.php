@@ -316,7 +316,7 @@ class BlaApi implements ApiInterface
         if ($name !== null) {
             if('form' === 'form' && is_array($name)) {
                 foreach($name as $key => $value) {
-                    $queryParams[$key] = $value;
+                    $queryParams['name'][$key] = $value;
                 }
             }
             else {

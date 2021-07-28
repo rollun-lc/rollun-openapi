@@ -28,7 +28,7 @@ class Test extends BaseAbstract
 
 
 		// send request
-		$data = $this->getApi()->testGet($queryDataObject->name);
+		$data = $this->getApi()->testGet($queryDataObject->name, $queryDataObject->id);
 
 		// validation of response
 		$result = $this->transfer((array)$data, \Test\OpenAPI\V1_0_1\DTO\Collection::class);

@@ -214,4 +214,22 @@ class OpenapiTest extends TestCase
         $this->assertNotEmpty($response->messages);
         $this->assertEquals('Test exception', $response->messages[0]->text);
     }
+
+    public function testArrayQueryParam()
+    {
+        $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Test';
+        $collectionClass = '\\Test\\OpenAPI\\V1_0_1\\DTO\\Collection';
+
+        $client = self::$container->get($clientClass);
+
+        $request = [
+            'id' => [
+                '1', '2', '3'
+            ],
+        ];
+        $response = $client->get($request);
+        $this->assertInstanceOf($collectionClass, $response);
+        $this->assertIsArray($response->data);
+        $this->assertEquals(3, count($response->data));
+    }
 }

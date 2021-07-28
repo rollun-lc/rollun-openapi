@@ -73,6 +73,11 @@ class Configuration extends ConfigurationAbstract
                     'paramType' => 'string',
                     'required' => false,
                 ],
+                [
+                    'paramName' => 'id',
+                    'paramType' => 'string[]',
+                    'required' => false,
+                ],
             ]
         ],
         'testIdGet' => [

@@ -23,13 +23,15 @@ class TestControllerObject
 
     public function get($query)
     {
+        $limit = $query['id'] ? count($query['id']) : 1;
+        for ($i = 1; $i <= $limit; $i++) {
+            $data[] = [
+                'id' => (string) $i,
+                'name' => $query['name'] ?? uniqid('', false)
+            ];
+        }
         return [
-            'data' => [
-                [
-                    'id' => '1',
-                    'name' => $query['name']
-                ]
-            ]
+            'data' => $data
         ];
     }
 }

@@ -55,4 +55,33 @@ class Transfer extends \Articus\PathHandler\Attribute\Transfer
 
         return $request;
     }
+
+    /**
+     * @param Request $request
+     * @return array
+     * @throws Exception\BadRequest
+     */
+    public function getData(Request $request): array
+    {
+        if ($this->options->getSource() === self::SOURCE_GET) {
+            $data = [];
+            $queryString = $request->getUri()->getQuery();
+            if ($queryString) {
+                $queryParams = explode('&', $queryString);
+                foreach ($queryParams as $param) {
+                    list($key, $value) = explode('=', $param);
+                    $data[$key][] = $value;
+                }
+            }
+
+            return array_map(function ($param) {
+                if (count($param) === 1) {
+                    return $param[0];
+                }
+                return $param;
+            }, $data);
+        }
+
+        return parent::getData($request);
+    }
 }

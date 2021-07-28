@@ -233,7 +233,7 @@ class ClientRestGenerator
 
         $method = $this->class
             ->addMethod('get')
-            ->setBody(sprintf($template, $body, "\$this->getApi()->{$methodName}(" . implode(',', $paramVariables) . ")"))
+            ->setBody(sprintf($template, $body, "\$this->getApi()->{$methodName}(" . implode(', ', $paramVariables) . ")"))
             ->addComment('@inheritDoc');
 
         if ($paramVariables) {
@@ -254,7 +254,7 @@ class ClientRestGenerator
 
         $method = $this->class
             ->addMethod('delete')
-            ->setBody(sprintf($template, $body, "\$this->getApi()->{$methodName}(" . implode(',', $paramVariables) . ")"))
+            ->setBody(sprintf($template, $body, "\$this->getApi()->{$methodName}(" . implode(', ', $paramVariables) . ")"))
             ->addComment('@inheritDoc')
             ->addComment('')
             ->addComment('@param array $queryData');

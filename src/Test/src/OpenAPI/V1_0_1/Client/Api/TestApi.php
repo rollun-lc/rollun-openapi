@@ -142,14 +142,15 @@ class TestApi implements ApiInterface
      * Operation testGet
      *
      * @param mixed $name name (optional)
+     * @param mixed $id id (optional)
      *
      * @throws ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array
      */
-    public function testGet($name = null)
+    public function testGet($name = null, $id = null)
     {
-        list($response) = $this->testGetWithHttpInfo($name);
+        list($response) = $this->testGetWithHttpInfo($name, $id);
         return $response;
     }
 
@@ -157,14 +158,15 @@ class TestApi implements ApiInterface
      * Operation testGetWithHttpInfo
      *
      * @param mixed $name (optional)
+     * @param mixed $id (optional)
      *
      * @throws ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array
      */
-    public function testGetWithHttpInfo($name = null)
+    public function testGetWithHttpInfo($name = null, $id = null)
     {
-        $request = $this->testGetRequest($name);
+        $request = $this->testGetRequest($name, $id);
 
         $this->log('info', 'Openapi send request.', [
             'requestBody' => (string)$request->getBody(),
@@ -229,13 +231,14 @@ class TestApi implements ApiInterface
      * 
      *
      * @param mixed $name (optional)
+     * @param mixed $id (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function testGetAsync($name = null)
+    public function testGetAsync($name = null, $id = null)
     {
-        return $this->testGetAsyncWithHttpInfo($name)
+        return $this->testGetAsyncWithHttpInfo($name, $id)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -249,13 +252,14 @@ class TestApi implements ApiInterface
      * 
      *
      * @param mixed $name (optional)
+     * @param mixed $id (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function testGetAsyncWithHttpInfo($name = null)
+    public function testGetAsyncWithHttpInfo($name = null, $id = null)
     {
-        $request = $this->testGetRequest($name);
+        $request = $this->testGetRequest($name, $id);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -288,11 +292,12 @@ class TestApi implements ApiInterface
      * Create request for operation 'testGet'
      *
      * @param mixed $name (optional)
+     * @param mixed $id (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    protected function testGetRequest($name = null)
+    protected function testGetRequest($name = null, $id = null)
     {
 
         $resourcePath = '/Test';
@@ -306,11 +311,22 @@ class TestApi implements ApiInterface
         if ($name !== null) {
             if('form' === 'form' && is_array($name)) {
                 foreach($name as $key => $value) {
-                    $queryParams[$key] = $value;
+                    $queryParams['name'][$key] = $value;
                 }
             }
             else {
                 $queryParams['name'] = $name;
+            }
+        }
+        // query params
+        if ($id !== null) {
+            if('form' === 'form' && is_array($id)) {
+                foreach($id as $key => $value) {
+                    $queryParams['id'][$key] = $value;
+                }
+            }
+            else {
+                $queryParams['id'] = $id;
             }
         }
 
