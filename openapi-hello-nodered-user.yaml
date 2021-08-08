@@ -4,6 +4,7 @@ info:
   title: HelloUser
 servers:
   - url: http://cto-nred/openapi/HelloUser/v1
+  - url: http://127.0.0.1:80/openapi/HelloUser/v1
 tags:
   - name: User
   - name: Hello
