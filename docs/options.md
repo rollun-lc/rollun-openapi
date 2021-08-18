@@ -18,3 +18,5 @@ additionalProperties:
     type: string
 ```
 Чтобы в файлах `.mustache` проверить, задан ли `additionalProperties: true`, можно использовать переменную `isFreeFormObject`.
+
+Список всех доступных переменных в `.mustache` файлах можно посмотреть [тут](https://github.com/OpenAPITools/openapi-generator/blob/master/modules/openapi-generator/src/main/java/org/openapitools/codegen/CodegenProperty.java).
