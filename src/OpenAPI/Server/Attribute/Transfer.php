@@ -65,21 +65,32 @@ class Transfer extends \Articus\PathHandler\Attribute\Transfer
     {
         if ($this->options->getSource() === self::SOURCE_GET) {
             $data = [];
+            $queryParams = $request->getQueryParams();
+            $queryArrays = array_filter($queryParams, function ($item) {
+                return is_array($item);
+            });
             $queryString = $request->getUri()->getQuery();
             if ($queryString) {
-                $queryParams = explode('&', $queryString);
-                foreach ($queryParams as $param) {
+                $params = explode('&', $queryString);
+                foreach ($params as $param) {
                     list($key, $value) = explode('=', $param);
+                    $key = urldecode($key);
+                    if (preg_match('/[\w-_]+?\[.*?\]/', $key)) {
+                        continue;
+                    }
                     $data[$key][] = $value;
                 }
             }
 
-            return array_map(function ($param) {
-                if (count($param) === 1) {
-                    return $param[0];
-                }
-                return $param;
-            }, $data);
+            return array_merge(
+                array_map(function ($param) {
+                    if (count($param) === 1) {
+                        return $param[0];
+                    }
+                    return $param;
+                }, $data),
+                $queryArrays
+            );
         }
 
         return parent::getData($request);
