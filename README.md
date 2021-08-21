@@ -62,6 +62,7 @@
        }
      },
    ```
+8. При переходе на версии 9+, нужно перегенерировать всех клиентов
    
 ## Quick Start видео   
 Для просмотра видео перейдите по [ссылке](https://drive.google.com/file/d/1kzuJMICC5P4kxlkRZE5UmDD1PwBFVerp/view?usp=sharing).
