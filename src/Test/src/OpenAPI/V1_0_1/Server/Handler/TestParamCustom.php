@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 
-namespace Test\OpenAPI\V1_0_1\Server\Handler;
+namespace Test\OpenAPI\V1_0_1\Server\Server\Server\Server\Server\Server\Server\Server\Handler;
 
 use Articus\PathHandler\Annotation as PHA;
 use Articus\PathHandler\Consumer as PHConsumer;
@@ -16,17 +16,17 @@ use Psr\Http\Message\ServerRequestInterface;
 use rollun\dic\InsideConstruct;
 
 /**
- * @PHA\Route(pattern="/Bla")
+ * @PHA\Route(pattern="/test/{param}/custom")
  */
-class Bla extends AbstractHandler
+class TestParamCustom extends AbstractHandler
 {
     /**
      * ATTENTION! REST_OBJECT should be declared in service manager
      */
-    public const REST_OBJECT = \Test\OpenAPI\V1_0_1\Server\Rest\Bla::class;
+    public const REST_OBJECT = \Test\OpenAPI\V1_0_1\Server\Rest\Test::class;
 
     /**
-     * Bla constructor.
+     * TestParamCustom constructor.
      *
      * @param RestInterface|null $restObject
      *
@@ -39,26 +39,13 @@ class Bla extends AbstractHandler
 
     /**
      * @PHA\Get()
-     * @PHA\Attribute(name=PHAttribute\Transfer::class, options={
-     *     "type":\Test\OpenAPI\V1_0_1\DTO\BlaGETQueryData::class,
-     *     "objectAttr":"queryData",
-     *     "source": PHAttribute\Transfer::SOURCE_GET
-     * })
-     * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\Test\OpenAPI\V1_0_1\DTO\BlaResult::class})
+     * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\Test\OpenAPI\V1_0_1\DTO\Test::class})
      * @param ServerRequestInterface $request
      *
      * @return array
      */
-    public function blaGet(ServerRequestInterface $request)
+    public function testParamCustomGet(ServerRequestInterface $request)
     {
-        return $this->runAction($request, 'Get()', 'blaGet');
-    }
-    /**
-     * @PHA\Post()
-     * @param ServerRequestInterface $request
-     */
-    public function blaPost(ServerRequestInterface $request)
-    {
-        return $this->runAction($request, 'Post()', 'blaPost');
+        return $this->runAction($request, 'Get()', 'testParamCustomGet');
     }
 }

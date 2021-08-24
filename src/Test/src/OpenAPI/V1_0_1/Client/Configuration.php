@@ -91,6 +91,22 @@ class Configuration extends ConfigurationAbstract
                 ],
             ]
         ],
+        'testPathParamCustomGet' => [
+            'className' => 'TestApi',
+            'returnType' => '\Test\OpenAPI\V1_0_1\Client\Model\TestCustomResponse',
+            'params' => [
+                [
+                    'paramName' => 'pathParam',
+                    'paramType' => 'string',
+                    'required' => true,
+                ],
+                [
+                    'paramName' => 'queryParam',
+                    'paramType' => 'string',
+                    'required' => false,
+                ],
+            ]
+        ],
         'testPost' => [
             'className' => 'TestApi',
             'returnType' => '\Test\OpenAPI\V1_0_1\Client\Model\Test',

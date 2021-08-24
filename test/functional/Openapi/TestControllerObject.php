@@ -34,4 +34,14 @@ class TestControllerObject
             'data' => $data
         ];
     }
+
+    public function testPathParamCustomGet($pathParam, $queryParams)
+    {
+        return [
+            'data' => [
+                'pathParam' => $pathParam,
+                'queryParam' => $queryParams->queryParam
+            ]
+        ];
+    }
 }

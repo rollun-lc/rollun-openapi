@@ -7,6 +7,7 @@ return [
                 \Test\OpenAPI\V1_0_1\Server\Handler\Bla::class,
                 \Test\OpenAPI\V1_0_1\Server\Handler\Test::class,
                 \Test\OpenAPI\V1_0_1\Server\Handler\TestId::class,
+                \Test\OpenAPI\V1_0_1\Server\Handler\TestPathParamCustom::class,
             ],
         ],
     ],

@@ -48,7 +48,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Collection'
-
   /Test/{id}:
     get:
       tags:
@@ -67,6 +66,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Test'
+  /test/{pathParam}/custom:
+    get:
+      tags:
+        - Test
+      parameters:
+        - name: pathParam
+          in: path
+          required: true
+          schema:
+            type: string
+            example: '5f51f78ccaa4c'
+        - name: queryParam
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/TestCustomResponse'
   /Bla:
     post:
       tags:
@@ -160,3 +182,17 @@ components:
           description: 'Message context (like in a logger)'
           items:
             type: string
+    TestCustomResponse:
+      allOf:
+        - $ref: '#/components/schemas/ErrorResult'
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/TestCustom"
+    TestCustom:
+      type: object
+      properties:
+        pathParam:
+          type: string
+        queryParam:
+          type: string

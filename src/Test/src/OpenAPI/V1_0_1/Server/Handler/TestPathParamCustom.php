@@ -16,17 +16,17 @@ use Psr\Http\Message\ServerRequestInterface;
 use rollun\dic\InsideConstruct;
 
 /**
- * @PHA\Route(pattern="/Bla")
+ * @PHA\Route(pattern="/test/{pathParam}/custom")
  */
-class Bla extends AbstractHandler
+class TestPathParamCustom extends AbstractHandler
 {
     /**
      * ATTENTION! REST_OBJECT should be declared in service manager
      */
-    public const REST_OBJECT = \Test\OpenAPI\V1_0_1\Server\Rest\Bla::class;
+    public const REST_OBJECT = \Test\OpenAPI\V1_0_1\Server\Rest\Test::class;
 
     /**
-     * Bla constructor.
+     * TestPathParamCustom constructor.
      *
      * @param RestInterface|null $restObject
      *
@@ -40,25 +40,17 @@ class Bla extends AbstractHandler
     /**
      * @PHA\Get()
      * @PHA\Attribute(name=PHAttribute\Transfer::class, options={
-     *     "type":\Test\OpenAPI\V1_0_1\DTO\BlaGETQueryData::class,
+     *     "type":\Test\OpenAPI\V1_0_1\DTO\TestPathParamCustomGETQueryData::class,
      *     "objectAttr":"queryData",
      *     "source": PHAttribute\Transfer::SOURCE_GET
      * })
-     * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\Test\OpenAPI\V1_0_1\DTO\BlaResult::class})
+     * @PHA\Producer(name=Transfer::class, mediaType="text/plain", options={"responseType":\Test\OpenAPI\V1_0_1\DTO\TestCustomResponse::class})
      * @param ServerRequestInterface $request
      *
      * @return array
      */
-    public function blaGet(ServerRequestInterface $request)
+    public function testPathParamCustomGet(ServerRequestInterface $request)
     {
-        return $this->runAction($request, 'Get()', 'blaGet');
-    }
-    /**
-     * @PHA\Post()
-     * @param ServerRequestInterface $request
-     */
-    public function blaPost(ServerRequestInterface $request)
-    {
-        return $this->runAction($request, 'Post()', 'blaPost');
+        return $this->runAction($request, 'Get()', 'testPathParamCustomGet');
     }
 }

@@ -63,6 +63,21 @@ class Test extends BaseAbstract
 
 	/**
 	 * @inheritDoc
+	 */
+	public function testPathParamCustomGet($pathParam, $queryParam = null)
+	{
+		// send request
+		$data = $this->getApi()->testPathParamCustomGet($pathParam, $queryParam);
+
+		// validation of response
+		$result = $this->transfer((array)$data, \Test\OpenAPI\V1_0_1\DTO\TestCustomResponse::class);
+
+		return $result;
+	}
+
+
+	/**
+	 * @inheritDoc
 	 *
 	 * @param array $bodyData
 	 */

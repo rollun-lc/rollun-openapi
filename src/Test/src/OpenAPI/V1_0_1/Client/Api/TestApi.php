@@ -642,6 +642,267 @@ class TestApi implements ApiInterface
     }
 
     /**
+     * Operation testPathParamCustomGet
+     *
+     * @param mixed $pathParam pathParam (required)
+     * @param mixed $queryParam queryParam (optional)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array
+     */
+    public function testPathParamCustomGet($pathParam, $queryParam = null)
+    {
+        list($response) = $this->testPathParamCustomGetWithHttpInfo($pathParam, $queryParam);
+        return $response;
+    }
+
+    /**
+     * Operation testPathParamCustomGetWithHttpInfo
+     *
+     * @param mixed $pathParam (required)
+     * @param mixed $queryParam (optional)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array
+     */
+    public function testPathParamCustomGetWithHttpInfo($pathParam, $queryParam = null)
+    {
+        $request = $this->testPathParamCustomGetRequest($pathParam, $queryParam);
+
+        $this->log('info', 'Openapi send request.', [
+            'requestBody' => (string)$request->getBody(),
+            'requestUri' => (string)$request->getUri()
+        ]);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+
+                $this->log('info', 'Openapi response successfully received.', [
+                    'class' => self::class,
+                    'responseBody' => (string)$response->getBody(),
+                    'responseStatusCode' => $response->getStatusCode()
+                ]);
+            } catch (RequestException $e) {
+                if (!$e->hasResponse()) {
+                    throw $e;
+                }
+                $response = $e->getResponse();
+
+                $this->log('info', 'Openapi not 2xx response received.', [
+                    'class' => self::class,
+                    'responseBody' => (string)$response->getBody(),
+                    'responseStatusCode' => $response->getStatusCode()
+                ]);
+            }
+
+            $statusCode = $response->getStatusCode();
+
+            $responseBody = $response->getBody();
+            switch($statusCode) {
+                case 200:
+                    return [
+                        $this->deserialize((string) $responseBody),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            return [
+                $this->deserialize((string) $responseBody),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
+
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = $this->deserialize((string) $e->getResponseBody());
+                    $e->setResponseObject($data);
+                    break;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation testPathParamCustomGetAsync
+     *
+     * 
+     *
+     * @param mixed $pathParam (required)
+     * @param mixed $queryParam (optional)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function testPathParamCustomGetAsync($pathParam, $queryParam = null)
+    {
+        return $this->testPathParamCustomGetAsyncWithHttpInfo($pathParam, $queryParam)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation testPathParamCustomGetAsyncWithHttpInfo
+     *
+     * 
+     *
+     * @param mixed $pathParam (required)
+     * @param mixed $queryParam (optional)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function testPathParamCustomGetAsyncWithHttpInfo($pathParam, $queryParam = null)
+    {
+        $request = $this->testPathParamCustomGetRequest($pathParam, $queryParam);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) {
+                    return [
+                        $this->deserialize((string) $response->getBody()),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'testPathParamCustomGet'
+     *
+     * @param mixed $pathParam (required)
+     * @param mixed $queryParam (optional)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    protected function testPathParamCustomGetRequest($pathParam, $queryParam = null)
+    {
+        // verify the required parameter 'pathParam' is set
+        if ($pathParam === null || (is_array($pathParam) && count($pathParam) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $pathParam when calling testPathParamCustomGet'
+            );
+        }
+
+        $resourcePath = '/test/{pathParam}/custom';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+        // query params
+        if ($queryParam !== null) {
+            if('form' === 'form' && is_array($queryParam)) {
+                foreach($queryParam as $key => $value) {
+                    $queryParams['queryParam'][$key] = $value;
+                }
+            }
+            else {
+                $queryParams['queryParam'] = $queryParam;
+            }
+        }
+
+
+        // path params
+        if ($pathParam !== null) {
+            $resourcePath = str_replace(
+                '{' . 'pathParam' . '}',
+                ObjectSerializer::toPathValue($pathParam),
+                $resourcePath
+            );
+        }
+
+        // body params
+        $_tempBody = null;
+
+        if ($multipart) {
+            $headers = $this->headerSelector->selectHeadersForMultipart(
+                ['text/plain']
+            );
+        } else {
+            $headers = $this->headerSelector->selectHeaders(
+                ['text/plain'],
+                []
+            );
+        }
+
+        // for model (json/xml)
+        if (isset($_tempBody)) {
+            // $_tempBody is the method argument, if present
+            if ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp\json_encode($_tempBody);
+            } else {
+                $httpBody = $_tempBody;
+            }
+        } elseif (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $multipartContents[] = [
+                        'name' => $formParamName,
+                        'contents' => $formParamValue
+                    ];
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp\json_encode($formParams);
+
+            } else {
+                // for HTTP post (form)
+                $httpBody = Query::build($formParams);
+            }
+        }
+
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $query = Query::build($queryParams);
+        return new Request(
+            'GET',
+            $this->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
      * Operation testPost
      *
      * @param mixed $test test (required)

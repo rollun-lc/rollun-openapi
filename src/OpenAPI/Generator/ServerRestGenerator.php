@@ -204,6 +204,38 @@ class ServerRestGenerator
                             ->addComment('@inheritDoc');
                         $method->addParameter('id');
                         break;
+                    default:
+                        $body = 'if (method_exists($this->controllerObject, \'' . $action . '\')) {' . "\n"
+                            . '    return $this->controllerObject->' . $action . '(';
+                        $params = [];
+
+                        $method = $class->addMethod($action);
+
+                        foreach ($row['pathParams'] as $param) {
+                            $method->addComment('@param $' . $param);
+                            $method->addParameter($param);
+                            $params[] = '$' . $param;
+                        }
+
+                        if (isset($row['queryData'])) {
+                            $method->addComment('@param ' . $row['queryData'] . ' $queryData');
+                            $method->addParameter('queryData')->setType($row['queryData']);
+                            $params[] = '$queryData';
+                        }
+
+                        if (isset($row['bodyData'])) {
+                            $method->addComment('@param ' . $row['bodyData'] . ' $bodyData');
+                            $method->addParameter('bodyData')->setType($row['bodyData']);
+                            $params[] = '$bodyData';
+                        }
+
+                        $body .= implode(', ', $params);
+
+                        $body .= ');' . "\n"
+                            . '}' . "\n\n"
+                            . $defaultMethodBody;
+
+                        $method->setBody($body);
                 }
             }
         }

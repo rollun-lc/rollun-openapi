@@ -85,7 +85,7 @@ class {{classname}} extends AbstractHandler
      */
     public function {{operationId}}(ServerRequestInterface $request)
     {
-        return $this->runAction($request, '{{httpMethod}}');
+        return $this->runAction($request, '{{httpMethod}}', '{{operationId}}');
     }
 {{/operation}}
 }

@@ -155,6 +155,21 @@ class GenerateServerCommand extends GenerateCommandAbstract
         $configFile = $this->getTempGeneratedDirPath('application/config/path_handler.yml');
         $pathHandlerData = yaml_parse(file_get_contents($configFile));
 
+        foreach ($this->manifestData['paths'] as $path => $item) {
+            if (preg_match_all('/\{(.+?)\}/', $path, $matches)) {
+                $path = str_replace($matches[0], $matches[1], $path);
+                $path = lcfirst(
+                    str_replace(' ', '', ucwords(str_replace('/', ' ', $path)))
+                );
+                foreach ($item as $method => $data) {
+                    $action = $path . ucfirst($method);
+                    if (isset($pathHandlerData['httpMethods'][$action])) {
+                        $pathHandlerData['httpMethods'][$action]['pathParams'] = $matches[1];
+                    }
+                }
+            }
+        }
+
         /**
          * Generate REST classes
          */

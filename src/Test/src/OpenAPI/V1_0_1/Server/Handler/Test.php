@@ -51,7 +51,7 @@ class Test extends AbstractHandler
      */
     public function testGet(ServerRequestInterface $request)
     {
-        return $this->runAction($request, 'Get()');
+        return $this->runAction($request, 'Get()', 'testGet');
     }
     /**
      * @PHA\Post()
@@ -65,6 +65,6 @@ class Test extends AbstractHandler
      */
     public function testPost(ServerRequestInterface $request)
     {
-        return $this->runAction($request, 'Post()');
+        return $this->runAction($request, 'Post()', 'testPost');
     }
 }

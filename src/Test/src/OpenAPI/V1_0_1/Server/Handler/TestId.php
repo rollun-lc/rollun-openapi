@@ -46,6 +46,6 @@ class TestId extends AbstractHandler
      */
     public function testIdGet(ServerRequestInterface $request)
     {
-        return $this->runAction($request, 'Get()');
+        return $this->runAction($request, 'Get()', 'testIdGet');
     }
 }

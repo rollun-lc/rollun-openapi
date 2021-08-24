@@ -79,4 +79,18 @@ class Test extends Base7Abstract
 
 		throw new \Exception('Not implemented method');
 	}
+
+
+	/**
+	 * @param $pathParam
+	 * @param \Test\OpenAPI\V1_0_1\DTO\TestPathParamCustomGETQueryData $queryData
+	 */
+	public function testPathParamCustomGet($pathParam, \Test\OpenAPI\V1_0_1\DTO\TestPathParamCustomGETQueryData $queryData)
+	{
+		if (method_exists($this->controllerObject, 'testPathParamCustomGet')) {
+		    return $this->controllerObject->testPathParamCustomGet($pathParam, $queryData);
+		}
+
+		throw new \Exception('Not implemented method');
+	}
 }

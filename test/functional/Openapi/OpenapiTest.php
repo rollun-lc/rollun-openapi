@@ -232,4 +232,17 @@ class OpenapiTest extends TestCase
         $this->assertIsArray($response->data);
         $this->assertEquals(3, count($response->data));
     }
+
+    public function testCustomServer()
+    {
+        $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Test';
+        $client = self::$container->get($clientClass);
+        $pathParam = 'testPathParam';
+        $queryParam = 'testQueryParam';
+
+        $response = $client->testPathParamCustomGet($pathParam, $queryParam);
+
+        $this->assertEquals($pathParam, $response->data->pathParam);
+        $this->assertEquals($queryParam, $response->data->queryParam);
+    }
 }

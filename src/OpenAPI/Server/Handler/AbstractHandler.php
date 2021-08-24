@@ -7,6 +7,7 @@ use Articus\PathHandler\Exception\HttpCode;
 use OpenAPI\Server\Producer\Transfer;
 use OpenAPI\Server\Rest\RestInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Zend\Expressive\Router\RouteResult;
 
 /**
  * Class AbstractHandler
@@ -26,7 +27,7 @@ abstract class AbstractHandler
      *
      * @return array
      */
-    protected function runAction(ServerRequestInterface $request, string $method)
+    protected function runAction(ServerRequestInterface $request, string $method, $operationId = null)
     {
         // get errors
         $errors = $request->getAttribute('errors');
@@ -41,6 +42,14 @@ abstract class AbstractHandler
         $bodyData = empty($request->getAttribute('bodyData')) ? null : $request->getAttribute('bodyData');
 
         $restObject = $this->restObject;
+
+        if ($operationId && method_exists($restObject, $operationId)) {
+            $pathData = array_intersect_key(
+                $request->getAttributes(),
+                $request->getAttribute(RouteResult::class)->getMatchedParams()
+            );
+            return $this->runCustomAction($operationId, $pathData, $queryData, $bodyData);
+        }
 
         switch ($method) {
             case 'Post()':
@@ -75,5 +84,21 @@ abstract class AbstractHandler
         }
 
         return $result;
+    }
+
+    protected function runCustomAction($operationId, $pathData, $queryData, $bodyData)
+    {
+        $params = [];
+        if ($pathData) {
+            $params = array_merge($params, $pathData);
+        }
+        if ($queryData) {
+            $params['queryData'] = $queryData;
+        }
+        if ($bodyData) {
+            $params['bodyData'] = $bodyData;
+        }
+
+        return call_user_func_array([$this->restObject, $operationId], $params);
     }
 }
