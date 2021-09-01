@@ -32,6 +32,9 @@
      *     {"name":"Type", "options":{"type":"{{dataType}}"}}
      * }})
 {{/isFreeFormObject}}
+{{#isFreeFormObject}}
+     * @DTA\Validator(name="Collection")
+{{/isFreeFormObject}}
 {{/items}}
 {{/isContainer}}
 {{^isContainer}}
