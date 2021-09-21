@@ -359,7 +359,7 @@ abstract class ConfigurationAbstract implements ConfigurationInterface
     public static function getDefaultConfiguration(): ConfigurationInterface
     {
         if (self::$defaultConfiguration === null) {
-            self::$defaultConfiguration = new static();
+            return new static();
         }
 
         return self::$defaultConfiguration;
