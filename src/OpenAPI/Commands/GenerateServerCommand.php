@@ -96,7 +96,7 @@ class GenerateServerCommand extends GenerateCommandAbstract
         // update namespace for handlers
         foreach (scandir($handlerTempDir) as $handler) {
             if (!in_array($handler, ['.', '..'])) {
-                $content = file_get_contents("$handlerDir/$handler");
+                $content = file_get_contents("$handlerTempDir/$handler");
                 $content = str_replace("\Handler;", "\Server\Handler;",
                     $content
                 );
