@@ -93,11 +93,8 @@ class GenerateServerCommand extends GenerateCommandAbstract
         $this->makeDirectory($handlerDir);
         $handlerTempDir = $this->getTempSourceDirPath('Handler/.');
 
-        $this->copy($handlerTempDir, $handlerDir);
-
         // update namespace for handlers
-        // TODO Возможно надо менять в темп директории, а потом копировать
-        foreach (scandir($handlerDir) as $handler) {
+        foreach (scandir($handlerTempDir) as $handler) {
             if (!in_array($handler, ['.', '..'])) {
                 $content = file_get_contents("$handlerDir/$handler");
                 $content = str_replace("\Handler;", "\Server\Handler;",
@@ -105,11 +102,13 @@ class GenerateServerCommand extends GenerateCommandAbstract
                 );
 
                 file_put_contents(
-                    "$handlerDir/$handler",
+                    "$handlerTempDir/$handler",
                     $content
                 );
             }
         }
+
+        $this->copy($handlerTempDir, $handlerDir);
     }
 
     protected function crateAutoloadFile()
