@@ -7,58 +7,45 @@ namespace HelloUser\User\Controller\V1;
 use HelloUser\OpenAPI\V1\DTO\User;
 use HelloUser\OpenAPI\V1\DTO\UserResult;
 use HelloUser\OpenAPI\V1\Server\Rest\UserInterface;
+use HelloUser\User\Repository\FileRepository;
 
 class UserControllerV2 implements UserInterface
 {
-    const DIR = 'data/examples/user';
-
     /**
-     * @param $id
-     *
-     * @return string
+     * @var FileRepository
      */
-    protected function getFilePath($id): string
+    private $userRepository;
+
+    public function __construct(FileRepository $userRepository)
     {
-        return self::DIR . '/' . $id . '.json';
+        $this->userRepository = $userRepository;
     }
 
     public function post(User $bodyData): UserResult
     {
-        if (!file_exists(self::DIR)) {
-            mkdir(self::DIR, 0777, true);
-            sleep(1);
-        }
-
-        // prepare fileName
-        $fileName = $this->getFilePath($bodyData->id);
-
-        if (file_exists($fileName)) {
-            throw new \InvalidArgumentException('Such user already exists');
-        }
-
-        // save data to file
-        file_put_contents($fileName, json_encode(['id' => $bodyData->id, 'name' => $bodyData->name]));
-        sleep(1);
-
+        $user = new \HelloUser\User\Struct\User($bodyData->id, $bodyData->name);
+        $this->userRepository->save($user);
         return $this->getById($bodyData->id);
     }
 
     public function getById(string $id): UserResult
     {
-        // prepare fileName
-        $fileName = $this->getFilePath($id);
+        $user = $this->userRepository->getById($id);
+        return $this->makeResult($user);
+    }
 
-        if (!file_exists($fileName)) {
-            throw new \InvalidArgumentException('No such user');
-        }
-
-        $userArray = json_decode(file_get_contents($fileName), true);
-
-        $user = new User();
-        $user->id = $userArray['id'];
-        $user->name = $userArray['name'];
+    private function makeResult(\HelloUser\User\Struct\User $user): UserResult
+    {
         $result = new UserResult();
-        $result->data = $user;
+        $result->data = $this->transferToResource($user);
         return $result;
+    }
+
+    private function transferToResource(\HelloUser\User\Struct\User $object)
+    {
+        $user = new User();
+        $user->id = $object->getId();
+        $user->name = $object->getName();
+        return $user;
     }
 }
