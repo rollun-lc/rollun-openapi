@@ -9,7 +9,6 @@ use Articus\PathHandler\Consumer as PHConsumer;
 use Articus\PathHandler\Producer as PHProducer;
 use Articus\PathHandler\Attribute as PHAttribute;
 use Articus\PathHandler\Exception as PHException;
-use HelloUser\OpenAPI\V1\Server\Rest\HelloInterface;
 use OpenAPI\Server\Producer\Transfer;
 use OpenAPI\Server\Handler\AbstractHandler;
 use OpenAPI\Server\Rest\RestInterface;
@@ -19,18 +18,23 @@ use rollun\dic\InsideConstruct;
 /**
  * @PHA\Route(pattern="/Hello/{id}")
  */
-class HelloId extends AbstractHandler
+class OldHelloId extends AbstractHandler
 {
+    /**
+     * ATTENTION! REST_OBJECT should be declared in service manager
+     */
+    public const REST_OBJECT = \HelloUser\OpenAPI\V1\Server\Rest\Hello::class;
+
     /**
      * HelloId constructor.
      *
-     * @param HelloInterface|null $restObject
+     * @param RestInterface|null $restObject
      *
      * @throws \ReflectionException
      */
-    public function __construct(HelloInterface $restObject = null)
+    public function __construct(RestInterface $restObject = null)
     {
-        InsideConstruct::init(['restObject' => HelloInterface::class]);
+        InsideConstruct::init(['restObject' => self::REST_OBJECT]);
     }
 
     /**
