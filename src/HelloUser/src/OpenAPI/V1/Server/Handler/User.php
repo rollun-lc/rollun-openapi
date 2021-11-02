@@ -9,9 +9,8 @@ use Articus\PathHandler\Consumer as PHConsumer;
 use Articus\PathHandler\Producer as PHProducer;
 use Articus\PathHandler\Attribute as PHAttribute;
 use Articus\PathHandler\Exception as PHException;
-use OpenAPI\Server\Producer\Transfer;
+use HelloUser\OpenAPI\V1\Server\Rest\UserInterface;
 use OpenAPI\Server\Handler\AbstractHandler;
-use OpenAPI\Server\Rest\RestInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use rollun\dic\InsideConstruct;
 
@@ -21,20 +20,15 @@ use rollun\dic\InsideConstruct;
 class User extends AbstractHandler
 {
     /**
-     * ATTENTION! REST_OBJECT should be declared in service manager
-     */
-    public const REST_OBJECT = \HelloUser\OpenAPI\V1\Server\Rest\User::class;
-
-    /**
      * User constructor.
      *
-     * @param RestInterface|null $restObject
+     * @param UserInterface|null $restObject
      *
      * @throws \ReflectionException
      */
-    public function __construct(RestInterface $restObject = null)
+    public function __construct(UserInterface $restObject = null)
     {
-        InsideConstruct::init(['restObject' => self::REST_OBJECT]);
+        InsideConstruct::init(['restObject' => UserInterface::class]);
     }
 
     /**

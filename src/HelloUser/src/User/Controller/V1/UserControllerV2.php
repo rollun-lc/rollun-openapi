@@ -4,23 +4,13 @@ declare(strict_types=1);
 
 namespace HelloUser\User\Controller\V1;
 
-use Articus\DataTransfer\Service as DataTransferService;
 use HelloUser\OpenAPI\V1\DTO\User;
 use HelloUser\OpenAPI\V1\DTO\UserResult;
-use HelloUser\OpenAPI\V1\UserInterface;
+use HelloUser\OpenAPI\V1\Server\Rest\UserInterface;
 
-class UserController implements UserInterface
+class UserControllerV2 implements UserInterface
 {
     const DIR = 'data/examples/user';
-    /**
-     * @var DataTransferService
-     */
-    private $dataTransfer;
-
-    public function __construct(DataTransferService $dataTransfer)
-    {
-        $this->dataTransfer = $dataTransfer;
-    }
 
     /**
      * @param $id
@@ -62,15 +52,13 @@ class UserController implements UserInterface
             throw new \InvalidArgumentException('No such user');
         }
 
-        return $this->transfer([
-            'data' => json_decode(file_get_contents($fileName), true)
-        ]);
-    }
+        $userArray = json_decode(file_get_contents($fileName), true);
 
-    private function transfer(array $array): UserResult
-    {
+        $user = new User();
+        $user->id = $userArray['id'];
+        $user->name = $userArray['name'];
         $result = new UserResult();
-        $this->dataTransfer->transferToTypedData($array, $result);
+        $result->data = $user;
         return $result;
     }
 }
