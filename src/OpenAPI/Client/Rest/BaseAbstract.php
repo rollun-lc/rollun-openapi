@@ -16,7 +16,7 @@ use Psr\Log\LoggerInterface;
  *
  * @author r.ratsun <r.ratsun.rollun@gmail.com>
  */
-abstract class BaseAbstract extends \OpenAPI\Server\Rest\BaseAbstract implements ClientInterface
+abstract class BaseAbstract implements ClientInterface
 {
     public const IS_API_CLIENT = true;
 
