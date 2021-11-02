@@ -2,63 +2,73 @@
 
 namespace HelloUser\OpenAPI\V1\Server\Rest;
 
-use OpenAPI\Server\Rest\BaseAbstract;
+use Articus\DataTransfer\Service as DataTransferService;
+use OpenAPI\Server\Rest\Base7Abstract;
+use Psr\Log\LoggerInterface;
+use rollun\dic\InsideConstruct;
 
 /**
  * Class User
  */
-class User extends BaseAbstract
+class User extends Base7Abstract
 {
-    const DIR = 'data/examples/user';
+	public const CONTROLLER_OBJECT = 'User1Controller';
 
-    /**
-     * @inheritDoc
-     */
-    public function post($bodyData)
-    {
-        if (!file_exists(self::DIR)) {
-            mkdir(self::DIR, 0777, true);
-            sleep(1);
-        }
+	/** @var object */
+	protected $controllerObject;
 
-        // prepare fileName
-        $fileName = $this->getFilePath($bodyData->id);
+	/** @var LoggerInterface */
+	protected $logger;
 
-        if (file_exists($fileName)) {
-            throw new \InvalidArgumentException('Such user already exists');
-        }
+	/** @var DataTransferService */
+	protected $dataTransfer;
 
-        // save data to file
-        file_put_contents($fileName, json_encode(['id' => $bodyData->id, 'name' => $bodyData->name]));
-        sleep(1);
 
-        return $this->getById($bodyData->id);
-    }
+	/**
+	 * User constructor.
+	 *
+	 * @param mixed $controllerObject
+	 * @param LoggerInterface|null logger
+	 * @param DataTransferService|null dataTransfer
+	 *
+	 * @throws \ReflectionException
+	 */
+	public function __construct($controllerObject = null, $logger = null, $dataTransfer = null)
+	{
+		InsideConstruct::init([
+		    'controllerObject' => static::CONTROLLER_OBJECT,
+		    'logger' => LoggerInterface::class,
+		    'dataTransfer' => DataTransferService::class
+		]);
+	}
 
-    /**
-     * @inheritDoc
-     */
-    public function getById($id)
-    {
-        // prepare fileName
-        $fileName = $this->getFilePath($id);
 
-        if (!file_exists($fileName)) {
-            throw new \InvalidArgumentException('No such user');
-        }
+	/**
+	 * @inheritDoc
+	 *
+	 * @param \HelloUser\OpenAPI\V1\DTO\User $bodyData
+	 */
+	public function post($bodyData = null)
+	{
+		if (method_exists($this->controllerObject, 'post')) {
+		    $this->dataTransfer->transferFromTypedData($bodyData, $bodyDataArray);
 
-        return [
-            'data' => json_decode(file_get_contents($fileName), true)
-        ];
-    }
+		    return $this->controllerObject->post($bodyDataArray);
+		}
 
-    /**
-     * @param $id
-     *
-     * @return string
-     */
-    protected function getFilePath($id): string
-    {
-        return self::DIR . '/' . $id . '.json';
-    }
+		throw new \Exception('Not implemented method');
+	}
+
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getById($id)
+	{
+		if (method_exists($this->controllerObject, 'getById')) {
+		    return $this->controllerObject->getById($id);
+		}
+
+		throw new \Exception('Not implemented method');
+	}
 }

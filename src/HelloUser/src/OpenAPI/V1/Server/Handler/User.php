@@ -23,7 +23,7 @@ class User extends AbstractHandler
     /**
      * ATTENTION! REST_OBJECT should be declared in service manager
      */
-    const REST_OBJECT = \HelloUser\OpenAPI\V1\Server\Rest\User::class;
+    public const REST_OBJECT = \HelloUser\OpenAPI\V1\Server\Rest\User::class;
 
     /**
      * User constructor.
@@ -47,7 +47,7 @@ class User extends AbstractHandler
      *
      * @return array
      */
-    public function userPost(ServerRequestInterface $request): array
+    public function userPost(ServerRequestInterface $request)
     {
         return $this->runAction($request, 'Post()');
     }

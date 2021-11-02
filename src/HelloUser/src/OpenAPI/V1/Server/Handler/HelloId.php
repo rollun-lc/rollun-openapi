@@ -23,7 +23,7 @@ class HelloId extends AbstractHandler
     /**
      * ATTENTION! REST_OBJECT should be declared in service manager
      */
-    const REST_OBJECT = \HelloUser\OpenAPI\V1\Server\Rest\Hello::class;
+    public const REST_OBJECT = \HelloUser\OpenAPI\V1\Server\Rest\Hello::class;
 
     /**
      * HelloId constructor.
@@ -44,7 +44,7 @@ class HelloId extends AbstractHandler
      *
      * @return array
      */
-    public function helloIdGet(ServerRequestInterface $request): array
+    public function helloIdGet(ServerRequestInterface $request)
     {
         return $this->runAction($request, 'Get()');
     }
