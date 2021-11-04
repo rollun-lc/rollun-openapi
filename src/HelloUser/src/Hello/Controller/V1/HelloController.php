@@ -7,15 +7,14 @@ namespace HelloUser\Hello\Controller\V1;
 use Articus\DataTransfer\Service as DataTransferService;
 use HelloUser\OpenAPI\V1\DTO\HelloResult;
 use HelloUser\OpenAPI\V1\Server\Rest\HelloInterface;
-use HelloUser\OpenAPI\V1\Server\Rest\User;
-use rollun\dic\InsideConstruct;
+use HelloUser\User\Repository\FileRepository;
 
 class HelloController implements HelloInterface
 {
     /**
-     * @var User
+     * @var FileRepository
      */
-    protected $userObject;
+    private $userRepository;
 
     /**
      * @var DataTransferService
@@ -25,13 +24,13 @@ class HelloController implements HelloInterface
     /**
      * Hello constructor.
      *
-     * @param User|null $userObject
-     *
-     * @throws \ReflectionException
+     * @param FileRepository $userRepository
+     * @param DataTransferService $dataTransfer
      */
-    public function __construct(User $userObject = null, DataTransferService $dataTransfer = null)
+    public function __construct(FileRepository $userRepository, DataTransferService $dataTransfer)
     {
-        InsideConstruct::init(['userObject' => User::class, 'dataTransfer' => DataTransferService::class]);
+        $this->userRepository = $userRepository;
+        $this->dataTransfer = $dataTransfer;
     }
 
     /**
@@ -40,11 +39,11 @@ class HelloController implements HelloInterface
     public function getById(string $id): HelloResult
     {
         // get user
-        $user = $this->userObject->getById($id);
+        $user = $this->userRepository->getById($id);
 
         return $this->transfer([
             'data' => [
-                'message' => "Hello, {$user['data']['name']}!"
+                'message' => "Hello, {$user->getName()}!"
             ]
         ]);
     }

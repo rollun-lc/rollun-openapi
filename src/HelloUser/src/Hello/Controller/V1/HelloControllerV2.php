@@ -5,34 +5,26 @@ declare(strict_types=1);
 namespace HelloUser\Hello\Controller\V1;
 
 use HelloUser\OpenAPI\V1\DTO\HelloResult;
-use HelloUser\OpenAPI\V1\Server\Rest\User;
-use rollun\dic\InsideConstruct;
+use HelloUser\User\Repository\FileRepository;
 
 class HelloControllerV2
 {
     /**
-     * @var User
+     * @var FileRepository|null
      */
-    protected $userObject;
+    private $userRepository;
 
-    /**
-     * Hello constructor.
-     *
-     * @param User|null $userObject
-     *
-     * @throws \ReflectionException
-     */
-    public function __construct(User $userObject = null)
+    public function __construct(FileRepository $userRepository = null)
     {
-        InsideConstruct::init(['userObject' => User::class]);
+        $this->userRepository = $userRepository;
     }
 
     public function getById(string $id): HelloResult
     {
-        $user = $this->userObject->getById($id);
+        $user = $this->userRepository->getById($id);
 
         $result = new HelloResult();
-        $result->data = "Hello, {$user['data']['name']}";
+        $result->data = "Hello, {$user->getName()}";
         return $result;
     }
 }
