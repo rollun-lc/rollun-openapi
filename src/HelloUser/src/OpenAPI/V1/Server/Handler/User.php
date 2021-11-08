@@ -32,6 +32,22 @@ class User extends AbstractHandler
     }
 
     /**
+     * @PHA\Get()
+     * @PHA\Attribute(name=PHAttribute\Transfer::class, options={
+     *     "type":\HelloUser\OpenAPI\V1\DTO\UserGETQueryData::class,
+     *     "objectAttr":"queryData",
+     *     "source": PHAttribute\Transfer::SOURCE_GET
+     * })
+     * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\HelloUser\OpenAPI\V1\DTO\UserListResult::class})
+     * @param ServerRequestInterface $request
+     *
+     * @return array
+     */
+    public function userGet(ServerRequestInterface $request)
+    {
+        return $this->runAction($request, 'Get()');
+    }
+    /**
      * @PHA\Post()
      * TODO check if consumer is valid, if it has correct priority and if it can be moved to class annotation
      * @PHA\Consumer(name=PHConsumer\Json::class, mediaType="application/json")

@@ -6,18 +6,14 @@ namespace HelloUser\OpenAPI\V1\DTO;
 use Articus\DataTransfer\Annotation as DTA;
 
 /**
+ * Query parameters for userGET
  */
-class User
+class UserGETQueryData
 {
     /**
-     * @DTA\Data(field="id")
-     * @DTA\Validator(name="Type", options={"type":"string"})
-     * @var string
-     */
-    public $id;
-    /**
      * @DTA\Data(field="name", nullable=true)
-     * @DTA\Validator(name="Type", options={"type":"string"})
+     * @DTA\Strategy(name="QueryParameter", options={"type":"string"})
+     * @DTA\Validator(name="QueryParameterType", options={"type":"string"})
      * @var string
      */
     public $name;

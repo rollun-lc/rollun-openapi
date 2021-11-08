@@ -10,6 +10,23 @@ tags:
   - name: Hello
 paths:
   /User:
+    get:
+      tags:
+        - User
+      parameters:
+        -   name: name
+            in: query
+            required: false
+            schema:
+              nullable: true
+              type: string
+      responses:
+        '200':
+          description: Result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserListResult'
     post:
       tags:
         - User
@@ -133,6 +150,15 @@ components:
       properties:
         data:
           type: object
+    UserListResult:
+      allOf:
+        - $ref: '#/components/schemas/Result'
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
     UserResult:
       allOf:
         - $ref: '#/components/schemas/Result'
@@ -144,13 +170,13 @@ components:
       type: object
       required:
         - id
-        - name
       properties:
         id:
           type: string
           example: '5f51f78ccaa4c'
         name:
           type: string
+          nullable: true
           example: 'Roman'
     HelloResult:
       allOf:

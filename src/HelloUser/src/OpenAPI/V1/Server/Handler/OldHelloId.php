@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 
-namespace HelloUser\OpenAPI\V1\Server\Handler;
+namespace HelloUser\OpenAPI\V1\Server\Server\Server\Server\Handler;
 
 use Articus\PathHandler\Annotation as PHA;
 use Articus\PathHandler\Consumer as PHConsumer;

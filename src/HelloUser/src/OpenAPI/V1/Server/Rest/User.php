@@ -46,6 +46,23 @@ class User extends Base7Abstract
 	/**
 	 * @inheritDoc
 	 *
+	 * @param \HelloUser\OpenAPI\V1\DTO\UserGETQueryData $queryData
+	 */
+	public function get($queryData = [])
+	{
+		if (method_exists($this->controllerObject, 'get')) {
+		    $this->dataTransfer->transferFromTypedData($queryData, $queryDataArray);
+
+		    return $this->controllerObject->get($queryDataArray);
+		}
+
+		throw new \Exception('Not implemented method');
+	}
+
+
+	/**
+	 * @inheritDoc
+	 *
 	 * @param \HelloUser\OpenAPI\V1\DTO\User $bodyData
 	 */
 	public function post($bodyData = null)

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace HelloUser\User\Controller\V1;
 
 use HelloUser\OpenAPI\V1\DTO\User;
+use HelloUser\OpenAPI\V1\DTO\UserGETQueryData;
+use HelloUser\OpenAPI\V1\DTO\UserListResult;
 use HelloUser\OpenAPI\V1\DTO\UserResult;
 use HelloUser\OpenAPI\V1\Server\Rest\UserInterface;
 use HelloUser\User\Repository\FileRepository;
@@ -47,5 +49,11 @@ class UserControllerV2 implements UserInterface
         $user->id = $object->getId();
         $user->name = $object->getName();
         return $user;
+    }
+
+    public function get(UserGETQueryData $queryData): UserListResult
+    {
+        // Как проверить фильтр name равен null или не задан?
+        $name = $queryData->name;
     }
 }
