@@ -7,8 +7,6 @@ namespace OpenAPI\Config;
 use Articus\DataTransfer\ClassMetadataProviderInterface;
 use Articus\DataTransfer\Factory as DataTransferServiceFactory;
 use Articus\DataTransfer\FieldMetadataProviderInterface;
-use Articus\DataTransfer\MetadataProvider\Annotation as DataTransferAnnotation;
-use Articus\DataTransfer\MetadataProvider\Factory\Annotation as DataTransferAnnotationFactory;
 use Articus\DataTransfer\Service as DataTransferService;
 use Articus\DataTransfer\Strategy\Factory\PluginManager as StrategyPluginManagerFactory;
 use Articus\DataTransfer\Strategy\PluginManager as StrategyPluginManager;
@@ -17,6 +15,10 @@ use Articus\DataTransfer\Validator\Factory as ValidatorFactory;
 use Articus\DataTransfer\Validator\Factory\PluginManager as ValidatorPluginManagerFactory;
 use Articus\DataTransfer\Validator\PluginManager as ValidatorPluginManager;
 use Articus\DataTransfer\Validator\TypeCompliant;
+use OpenAPI\DataTransfer\MetadataProvider\Annotation;
+use OpenAPI\DataTransfer\MetadataProvider\Factory\AnnotationFactory;
+use OpenAPI\DataTransfer\Strategy\Factory\FieldDataFactory;
+use OpenAPI\DataTransfer\Strategy\FieldData;
 use OpenAPI\Server\Strategy;
 
 class DataTransferConfig
@@ -27,21 +29,24 @@ class DataTransferConfig
             'dependencies' => [
                 'factories' => [
                     DataTransferService::class => DataTransferServiceFactory::class,
-                    DataTransferAnnotation::class => DataTransferAnnotationFactory::class,
+                    Annotation::class => AnnotationFactory::class,
                     StrategyPluginManager::class => StrategyPluginManagerFactory::class,
                     ValidatorPluginManager::class => ValidatorPluginManagerFactory::class,
                 ],
                 'aliases' => [
-                    ClassMetadataProviderInterface::class => DataTransferAnnotation::class,
-                    FieldMetadataProviderInterface::class => DataTransferAnnotation::class
+                    ClassMetadataProviderInterface::class => Annotation::class,
+                    FieldMetadataProviderInterface::class => Annotation::class
                 ],
             ],
-            DataTransferAnnotation::class => [
+            Annotation::class => [
                 'cache' => [
                     'adapter' => 'blackhole'
                 ],
             ],
             StrategyPluginManager::class => [
+                'factories' => [
+                    FieldData::class => FieldDataFactory::class,
+                ],
                 'invokables' => [
                     Strategy\Date::class => Strategy\Date::class,
                     Strategy\DateTime::class => Strategy\DateTime::class,
