@@ -25,7 +25,7 @@ class User extends ArrayObject
     private $id;
 
     /**
-     * @ODTA\Data(field="user_name", nullable=true, required=false)
+     * @ODTA\Data(field="user_name", nullable=false, required=false)
      * @DTA\Validator(name="Type", options={"type":"string"})
      * @var string
      */
@@ -52,7 +52,7 @@ class User extends ArrayObject
 
     public function getId()
     {
-        return $this['id'] ?? null;
+        return $this['id'];
     }
 
     public function setUserName($name)
@@ -62,7 +62,7 @@ class User extends ArrayObject
 
     public function getUserName()
     {
-        return $this['userName'] ?? null;
+        return $this['userName'];
     }
 
     public function hasId(): bool
@@ -70,24 +70,30 @@ class User extends ArrayObject
         return array_key_exists('id', $this);
     }
 
-    public function hasName(): bool
+    public function hasUserName(): bool
     {
-        return array_key_exists('name', $this);
+        return array_key_exists('userName', $this);
     }
 }
 
 $userArray = [
     'id' => 'foo',
+    'user_name' => 'bar'
 ];
 
 $user = new User();
 
-$dataTransfer->transferToTypedData($userArray, $user);
+$arr = [];
+$errors = $dataTransfer->transferToTypedData($userArray, $user);
+var_dump($errors);
+$errors = $dataTransfer->transferFromTypedData($user, $arr);
 //$array = [];
 //$dataTransfer->transferFromTypedData($user, $array);
 //var_dump($array);
 
-var_dump($user->id);
+var_dump($errors);
+var_dump($arr);
+//var_dump($user->hasId() ? $user->id : 'User has not id.');
 //var_dump($user->hasName() ? $user->name : 'User has not name.');
-var_dump($user->hasId());
-var_dump($user->hasName());
+//var_dump($user->hasId());
+//var_dump($user->hasName());

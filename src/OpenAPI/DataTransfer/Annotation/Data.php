@@ -16,4 +16,12 @@ class Data extends \Articus\DataTransfer\Annotation\Data
      * @var bool
      */
     public $required = true;
+
+    /**
+     * Name of the method that allows to check property exists.
+     * If null and property ("has" . <property name in camel case>) is used.
+     * If empty string, there is no way to check property exists.
+     * @var string | null
+     */
+    public $hasser = null;
 }

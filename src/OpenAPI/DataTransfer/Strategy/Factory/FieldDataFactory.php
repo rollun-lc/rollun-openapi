@@ -26,11 +26,12 @@ class FieldDataFactory extends BaseFieldDataGactory
         $metadataProvider = $this->getMetadataProvider($container);
         $strategyManager = $this->getStrategyManager($container);
         $typeFields = [];
+        $hassers = $options['hassers'];
         foreach ($metadataProvider->getClassFields($type, $subset) as [$fieldName, $getter, $setter])
         {
             $strategy = $strategyManager->get(...$metadataProvider->getFieldStrategy($type, $subset, $fieldName));
-            $typeFields[] = [$fieldName, $getter, $setter, $strategy];
+            $typeFields[] = [$fieldName, $getter, $setter, $strategy, $hassers[$fieldName] ?? null];
         }
-        return new FieldData($type, $typeFields, $extractStdClass, $options['requiredFields']);
+        return new FieldData($type, $typeFields, $extractStdClass);
     }
 }

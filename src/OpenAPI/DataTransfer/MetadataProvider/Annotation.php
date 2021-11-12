@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace OpenAPI\DataTransfer\MetadataProvider;
 
-use Doctrine\Common\Annotations\AnnotationReader;
-use OpenAPI\DataTransfer\Strategy\FieldData;
-use Zend\Stdlib\FastPriorityQueue;
 use Articus\DataTransfer\Annotation as DTA;
-use Articus\DataTransfer\Validator;
 use Articus\DataTransfer\Strategy;
+use Articus\DataTransfer\Validator;
+use Doctrine\Common\Annotations\AnnotationReader;
 use OpenAPI\DataTransfer\Annotation as ODTA;
+use OpenAPI\DataTransfer\Strategy\FieldData as FieldDataStrategy;
+use OpenAPI\DataTransfer\Validator\FieldData as FieldDataValidator;
+use Zend\Stdlib\FastPriorityQueue;
 
 class Annotation extends \Articus\DataTransfer\MetadataProvider\Annotation
 {
@@ -33,32 +34,26 @@ class Annotation extends \Articus\DataTransfer\MetadataProvider\Annotation
         $reader = new AnnotationReader();
         //Read property annotations
         $propertyFilter = \ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED | \ReflectionProperty::IS_PRIVATE;
-        $requiredFields = [];
-        foreach ($classReflection->getProperties($propertyFilter) as $propertyReflection)
-        {
-            foreach ($this->processPropertyAnnotations($classReflection, $propertyReflection, $reader->getPropertyAnnotations($propertyReflection)) as [$subset, $field, $strategy, $validator, $isRequired])
-            {
+        $hassers = [];
+        foreach ($classReflection->getProperties($propertyFilter) as $propertyReflection) {
+            foreach ($this->processPropertyAnnotations($classReflection, $propertyReflection, $reader->getPropertyAnnotations($propertyReflection)) as [$subset, $field, $strategy, $validator, $isRequired, $hasser]) {
                 $fieldName = $field[0];
-                if (!empty($classFields[$subset][$fieldName]))
-                {
+                if (!empty($classFields[$subset][$fieldName])) {
                     throw new \LogicException(\sprintf('Duplicate field "%s" declaration for subset %s of class %s', $fieldName, $subset, $className));
                 }
                 $classFields[$subset][$fieldName] = $field;
                 $fieldStrategies[$subset][$fieldName] = $strategy;
                 $fieldValidators[$subset][$fieldName] = $validator;
-                if ($isRequired) {
-                    $requiredFields = [$fieldName];
-                }
+                $hassers[$subset][$fieldName] = $hasser;
             }
         }
         //Read class annotations
         $propertySubsets = \array_keys($classFields);
-        foreach ($this->processClassAnnotations($className, $reader->getClassAnnotations($classReflection), $propertySubsets) as [$subset, $strategy, $validator])
-        {
-            // Немного костыльный способ добавить в options ключ requiredFields,
+        foreach ($this->processClassAnnotations($className, $reader->getClassAnnotations($classReflection), $propertySubsets) as [$subset, $strategy, $validator]) {
+            // Немного костыльный способ добавить в options ключ hassers,
             // но требует наименьшее количество изменений базового класса
-            if (!array_key_exists('requiredFields', $strategy[1])) {
-                $strategy[1]['requiredFields'] = $requiredFields;
+            if (!array_key_exists('hassers', $strategy[1])) {
+                $strategy[1]['hassers'] = $hassers[$subset];
             }
             $classStrategies[$subset] = $strategy;
             $classValidators[$subset] = $validator;
@@ -80,19 +75,17 @@ class Annotation extends \Articus\DataTransfer\MetadataProvider\Annotation
         /** @psalm-var array<string, array{0: array{0: string, 1: null|array{0: string, 2: bool}, 2: null|array{0: string, 2: bool}}, 1: array{0: string, 1: null|array}, 2: FastPriorityQueue }}> $subsets */
         /** @var array|array[][]|FastPriorityQueue[][] $subsets */
         $subsets = [];
-        $emptySubset = function()
-        {
+        $emptySubset = function () {
             return [null, null, new FastPriorityQueue()];
         };
         //Gather annotation data
-        foreach ($annotations as $annotation)
-        {
-            switch (true)
-            {
+        foreach ($annotations as $annotation) {
+            switch (true) {
                 case ($annotation instanceof DTA\Data):
+                    //TODO: конвертация DTA\Data в ODTA\Data
+                    /** @var ODTA\Data $subset */
                     $subset = $subsets[$annotation->subset] ?? $emptySubset();
-                    if ($subset[0] !== null)
-                    {
+                    if ($subset[0] !== null) {
                         throw new \LogicException(\sprintf(
                             'Duplicate data annotation for property %s in metadata subset "%s" of class %s',
                             $propertyReflection->getName(), $annotation->subset, $classReflection->getName()
@@ -103,17 +96,16 @@ class Annotation extends \Articus\DataTransfer\MetadataProvider\Annotation
                         $this->calculatePropertyGetter($classReflection, $propertyReflection, $annotation),
                         $this->calculatePropertySetter($classReflection, $propertyReflection, $annotation),
                     ];
-                    if (!$annotation->nullable)
-                    {
+                    if (!$annotation->nullable) {
                         $subset[2]->insert([Validator\NotNull::class, null, true], self::MAX_VALIDATOR_PRIORITY);
                     }
-                    $subset[3] = $annotation instanceof ODTA\Data ? $annotation->required : true;
+                    $subset[3] = $annotation->required;
+                    $subset[4] = $this->calculatePropertyHasser($classReflection, $propertyReflection, $annotation);
                     $subsets[$annotation->subset] = $subset;
                     break;
                 case ($annotation instanceof DTA\Strategy):
                     $subset = $subsets[$annotation->subset] ?? $emptySubset();
-                    if ($subset[1] !== null)
-                    {
+                    if ($subset[1] !== null) {
                         throw new \LogicException(\sprintf(
                             'Duplicate strategy annotation for property %s in metadata subset "%s" of class %s',
                             $propertyReflection->getName(), $annotation->subset, $classReflection->getName()
@@ -130,10 +122,8 @@ class Annotation extends \Articus\DataTransfer\MetadataProvider\Annotation
             }
         }
         //Fulfil and emit gathered annotation data
-        foreach ($subsets as $subset => [$field, $strategy, $validatorQueue, $required])
-        {
-            if ($field === null)
-            {
+        foreach ($subsets as $subset => [$field, $strategy, $validatorQueue, $required, $hasser]) {
+            if ($field === null) {
                 throw new \LogicException(\sprintf(
                     'No data annotation for property %s in metadata subset "%s" of class %s',
                     $propertyReflection->getName(), $subset, $classReflection->getName()
@@ -141,7 +131,7 @@ class Annotation extends \Articus\DataTransfer\MetadataProvider\Annotation
             }
             $strategy = $strategy ?? [Strategy\Whatever::class, null];
             $validator = [Validator\Chain::class, ['links' => $validatorQueue->toArray()]];
-            yield [$subset, $field, $strategy, $validator, $required];
+            yield [$subset, $field, $strategy, $validator, $required ?? true, $hasser ?? null];
         }
     }
 
@@ -157,19 +147,15 @@ class Annotation extends \Articus\DataTransfer\MetadataProvider\Annotation
         /** @psalm-var array<string, array{0: array{0: string, 1: null|array}, 1: FastPriorityQueue<array{0: string, 1: array, 2: bool}>}> $subsets */
         /** @var array|array[][]|FastPriorityQueue[][] $subsets */
         $subsets = [];
-        $emptySubset = function()
-        {
+        $emptySubset = function () {
             return [null, new FastPriorityQueue()];
         };
         //Gather annotation data
-        foreach ($annotations as $annotation)
-        {
-            switch (true)
-            {
+        foreach ($annotations as $annotation) {
+            switch (true) {
                 case ($annotation instanceof DTA\Strategy):
                     $subset = $subsets[$annotation->subset] ?? $emptySubset();
-                    if ($subset[0] !== null)
-                    {
+                    if ($subset[0] !== null) {
                         throw new \LogicException(\sprintf('Duplicate strategy annotation for metadata subset "%s" of class %s', $annotation->subset, $className));
                     }
                     $subset[0] = [$annotation->name, $annotation->options];
@@ -183,26 +169,60 @@ class Annotation extends \Articus\DataTransfer\MetadataProvider\Annotation
             }
         }
         //Create class subsets required by property annotations
-        foreach ($propertySubsetNames as $propertySubsetName)
-        {
+        foreach ($propertySubsetNames as $propertySubsetName) {
             $subset = $subsets[$propertySubsetName] ?? $emptySubset();
-            if ($subset[0] !== null)
-            {
+            if ($subset[0] !== null) {
                 throw new \LogicException(\sprintf('Excessive strategy annotation for metadata subset "%s" of class %s', $annotation->subset, $className));
             }
-            $subset[0] = [FieldData::class, ['type' => $className, 'subset' => $propertySubsetName]];
-            $subset[1]->insert([Validator\FieldData::class, ['type' => $className, 'subset' => $propertySubsetName], false], self::MAX_VALIDATOR_PRIORITY);
+            $subset[0] = [FieldDataStrategy::class, ['type' => $className, 'subset' => $propertySubsetName]];
+            $subset[1]->insert([FieldDataValidator::class, ['type' => $className, 'subset' => $propertySubsetName], false], self::MAX_VALIDATOR_PRIORITY);
             $subsets[$propertySubsetName] = $subset;
         }
         //Fulfil and emit gathered annotation data
-        foreach ($subsets as $subset => [$strategy, $validatorQueue])
-        {
-            if ($strategy === null)
-            {
+        foreach ($subsets as $subset => [$strategy, $validatorQueue]) {
+            if ($strategy === null) {
                 throw new \LogicException(\sprintf('No strategy annotation for metadata subset "%s" of class %s', $subset, $className));
             }
             $validator = [Validator\Chain::class, ['links' => $validatorQueue->toArray()]];
             yield [$subset, $strategy, $validator];
         }
+    }
+
+    /**
+     * @param \ReflectionClass $classReflection
+     * @param \ReflectionProperty $propertyReflection
+     * @param DTA\Data $annotation
+     * @return null|string name of has method
+     * @psalm-return null|string
+     * @throws \ReflectionException
+     */
+    protected function calculatePropertyHasser(\ReflectionClass $classReflection, \ReflectionProperty $propertyReflection, ODTA\Data $annotation): ?string
+    {
+        $result = null;
+        if ($annotation->setter !== '') {
+            $name = $annotation->hasser;
+            if ($name === null) {
+                $name = 'has' . \str_replace('_', '', \ucwords($propertyReflection->getName(), '_'));
+            }
+            //Validate method
+            if (!$classReflection->hasMethod($name)) {
+                throw new \LogicException(
+                    \sprintf('Invalid metadata for %s: no hasser %s.', $classReflection->getName(), $name)
+                );
+            }
+            $hasserReflection = $classReflection->getMethod($name);
+            if (!$hasserReflection->isPublic()) {
+                throw new \LogicException(
+                    \sprintf('Invalid metadata for %s: hasser %s is not public.', $classReflection->getName(), $name)
+                );
+            }
+            if ($hasserReflection->getNumberOfRequiredParameters() > 0) {
+                throw new \LogicException(
+                    \sprintf('Invalid metadata for %s: hasser %s should not require parameters.', $classReflection->getName(), $name)
+                );
+            }
+            $result = $name;
+        }
+        return $result;
     }
 }

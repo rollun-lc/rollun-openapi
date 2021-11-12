@@ -17,8 +17,10 @@ use Articus\DataTransfer\Validator\PluginManager as ValidatorPluginManager;
 use Articus\DataTransfer\Validator\TypeCompliant;
 use OpenAPI\DataTransfer\MetadataProvider\Annotation;
 use OpenAPI\DataTransfer\MetadataProvider\Factory\AnnotationFactory;
-use OpenAPI\DataTransfer\Strategy\Factory\FieldDataFactory;
-use OpenAPI\DataTransfer\Strategy\FieldData;
+use OpenAPI\DataTransfer\Strategy\Factory\FieldDataFactory as FieldDataStrategyFactory;
+use OpenAPI\DataTransfer\Strategy\FieldData as FieldDataStrategy;
+use OpenAPI\DataTransfer\Validator\Factory\FieldDataFactory as FieldDataValidatorFactory;
+use OpenAPI\DataTransfer\Validator\FieldData as FieldDataValidator;
 use OpenAPI\Server\Strategy;
 
 class DataTransferConfig
@@ -45,7 +47,7 @@ class DataTransferConfig
             ],
             StrategyPluginManager::class => [
                 'factories' => [
-                    FieldData::class => FieldDataFactory::class,
+                    FieldDataStrategy::class => FieldDataStrategyFactory::class,
                 ],
                 'invokables' => [
                     Strategy\Date::class => Strategy\Date::class,
@@ -64,6 +66,7 @@ class DataTransferConfig
                 'factories' => [
                     TypeCompliant::class => ValidatorFactory\TypeCompliant::class,
                     Collection::class => ValidatorFactory\Collection::class,
+                    FieldDataValidator::class => FieldDataValidatorFactory::class
                 ],
                 'aliases' => [
                     'Dictionary' => TypeCompliant::class,

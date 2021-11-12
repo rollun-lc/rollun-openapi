@@ -6,20 +6,43 @@ namespace OpenAPI\DataTransfer\Strategy;
 
 use Articus\DataTransfer\Exception\InvalidData;
 use Articus\DataTransfer\Strategy\StrategyInterface;
-use Articus\DataTransfer\Utility;
+use Articus\DataTransfer\Utility\MapAccessor;
 use Articus\DataTransfer\Validator;
+use OpenAPI\DataTransfer\Utility\PropertyAccessor;
 
-class FieldData extends \Articus\DataTransfer\Strategy\FieldData
+/**
+ * Переделанная оригинальная FieldData стратегия для поддержки не инициализированных свойств.
+ *
+ * @see \Articus\DataTransfer\Strategy\FieldData
+ */
+class FieldData implements StrategyInterface
 {
     /**
-     * @var array
+     * @var string
      */
-    private $requiredFields;
+    protected $type;
 
-    public function __construct(string $type, iterable $typeFields, bool $extractStdClass, array $requiredFields)
+    /**
+     * @psalm-var iterable<array{0: string, 1: null|array{0: string, 1: bool}, 2: null|array{0: string, 1: bool}, 3: StrategyInterface}>
+     * @var iterable
+     */
+    protected $typeFields;
+
+    /**
+     * @var bool
+     */
+    protected $extractStdClass = false;
+
+    /**
+     * @param string $type
+     * @param iterable $typeFields list of tuples (<field name>, (<name of property or method to get field value>, <flag if getter is method>), (<name of property or method to set field value>, <flag if setter is method>), <strategy>, <hasMethod>)
+     * @param bool $extractStdClass
+     */
+    public function __construct(string $type, iterable $typeFields, bool $extractStdClass)
     {
-        parent::__construct($type, $typeFields, $extractStdClass);
-        $this->requiredFields = $requiredFields;
+        $this->type = $type;
+        $this->typeFields = $typeFields;
+        $this->extractStdClass = $extractStdClass;
     }
 
     /**
@@ -36,21 +59,18 @@ class FieldData extends \Articus\DataTransfer\Strategy\FieldData
         }
 
         $result = ($this->extractStdClass) ? new \stdClass() : [];
-        $map = new Utility\MapAccessor($result);
-        $object = new Utility\PropertyAccessor($from);
-        foreach ($this->typeFields as [$fieldName, $getter, $setter, $strategy])
+        $map = new MapAccessor($result);
+        $object = new PropertyAccessor($from);
+        foreach ($this->typeFields as [$fieldName, $getter, $setter, $strategy, $hasser])
         {
             /** @var StrategyInterface $strategy */
             try
             {
-//                if (array_key_exists($fieldName, (array)$from)) {
+                if ($object->has($hasser, true)) {
                     $rawValue = $object->get($getter);
                     $fieldValue = $strategy->extract($rawValue);
                     $map->set($fieldName, $fieldValue);
-//                } elseif ($this->isRequired($fieldName)) {
-//                    throw new InvalidData(['Field is required.']);
-//                    $map->set($fieldName, null);
-//                }
+                }
             }
             catch (InvalidData $e)
             {
@@ -61,8 +81,45 @@ class FieldData extends \Articus\DataTransfer\Strategy\FieldData
         return $result;
     }
 
-    private function isRequired(string $fieldName): bool
+    /**
+     * @inheritDoc
+     */
+    public function hydrate($from, &$to): void
     {
-        return in_array($fieldName, $this->requiredFields);
+        $map = new MapAccessor($from);
+        if (!$map->accessible())
+        {
+            throw new \LogicException(\sprintf(
+                'Hydration can be done only from key-value map, not %s.',
+                \is_object($from) ? \get_class($from) : \gettype($from)
+            ));
+        }
+        if (!($to instanceof $this->type))
+        {
+            throw new \LogicException(\sprintf(
+                'Hydration can be done only to %s, not %s',
+                $this->type, \is_object($to) ? \get_class($to) : \gettype($to)
+            ));
+        }
+        $object = new PropertyAccessor($to);
+        foreach ($this->typeFields as [$fieldName, $getter, $setter, $strategy, $hasser])
+        {
+            /** @var StrategyInterface $strategy */
+            if ($map->has($fieldName))
+            {
+                try
+                {
+                    $rawValue = $object->has($hasser, true) ? $object->get($getter) : null;
+                    $fieldValue = $map->get($fieldName);
+                    $strategy->hydrate($fieldValue, $rawValue);
+                    $object->set($setter, $rawValue);
+                }
+                catch (InvalidData $e)
+                {
+                    $violations = [Validator\FieldData::INVALID_INNER => [$fieldName => $e->getViolations()]];
+                    throw new InvalidData($violations, $e);
+                }
+            }
+        }
     }
 }
