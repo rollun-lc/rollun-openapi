@@ -17,9 +17,9 @@ class {{classname}}
 {{#description}}
      * {{description}}
 {{/description}}
-{{#vendorExtensions}}{{#internal.ze-ph.fromQuery}}{{>model_query_var}}{{/internal.ze-ph.fromQuery
-}}{{/vendorExtensions}}{{#vendorExtensions}}{{^internal.ze-ph.fromQuery}}{{>model_normal_var
-}}{{/internal.ze-ph.fromQuery}}{{/vendorExtensions}}{{^vendorExtensions}}
+     * @DTA\Data(field="{{baseName}}"{{#isNullable}}, nullable=true{{/isNullable}}){{#vendorExtensions}}{{#internal.ze-ph.fromQuery}}
+{{>model_query_var}}{{/internal.ze-ph.fromQuery}}{{/vendorExtensions}}{{#vendorExtensions}}{{^internal.ze-ph.fromQuery}}
+{{>model_normal_var}}{{/internal.ze-ph.fromQuery}}{{/vendorExtensions}}{{^vendorExtensions}}
 {{>model_normal_var}}{{/vendorExtensions}}     * @var {{dataType}}
      */
     public ${{name}};
