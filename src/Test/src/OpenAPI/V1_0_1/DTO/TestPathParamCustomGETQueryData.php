@@ -17,4 +17,12 @@ class TestPathParamCustomGETQueryData
      * @var string
      */
     public $queryParam;
+    /**
+     * @DTA\Data(field="arrayParam", nullable=true)
+     * TODO check validator and strategy are correct and can handle container item type
+     * @DTA\Strategy(name="QueryParameterArray", options={"type":"string", "format":"csv"})
+     * @DTA\Validator(name="QueryParameterArrayType", options={"type":"string", "format":"csv"})
+     * @var string[]
+     */
+    public $arrayParam;
 }

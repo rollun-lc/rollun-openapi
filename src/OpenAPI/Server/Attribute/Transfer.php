@@ -71,7 +71,7 @@ class Transfer extends \Articus\PathHandler\Attribute\Transfer
             });
             $queryString = $request->getUri()->getQuery();
             if ($queryString) {
-                $params = explode('&', $queryString);
+                $params = explode('&', urldecode($queryString));
                 foreach ($params as $param) {
                     list($key, $value) = explode('=', $param);
                     $key = urldecode($key);

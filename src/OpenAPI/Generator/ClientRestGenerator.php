@@ -55,7 +55,7 @@ class ClientRestGenerator
             ->addUse('OpenAPI\Client\Rest\BaseAbstract');
 
         // prepare api name
-        $apiName = "$this->title\\OpenAPI\\V$this->version\\Client\\Api\\{$className}Api";
+        $apiName = "\\$this->title\\OpenAPI\\V$this->version\\Client\\Api\\{$className}Api";
 
         $this->class = $this->namespace->addClass($className);
         $this->class->setExtends('OpenAPI\Client\Rest\BaseAbstract');
@@ -63,7 +63,7 @@ class ClientRestGenerator
         //$this->class->addProperty('apiName', $apiName)->setProtected()->addComment("@var string");
         $this->class->addConstant('API_NAME', $apiName)->setPublic();
 
-        $this->class->addConstant('CONFIGURATION_CLASS', $this->configuration)->setPublic();
+        //$this->class->addConstant('CONFIGURATION_CLASS', $this->configuration)->setPublic();
         $actions = (new \ReflectionProperty($this->configuration, 'additionalData'))->getValue();
 
         foreach ($actions as $methodName => $data) {
@@ -112,16 +112,20 @@ class ClientRestGenerator
         return "\\$this->title\\OpenAPI\\V$this->version\\DTO\\" . str_replace('Api', '', $apiClass) . $queryType;
     }
 
-    protected function makeBodyValidation($paramName, $className)
+    protected function makeBodyValidation($paramName, $className, callable $callback = null)
     {
         $objectName = $paramName . 'Object';
-        $result = "// validation of \$$paramName\n";
-        $result .= "if (\$$paramName instanceof $className) {\n";
-            $result .= "    \$$paramName = \$this->toArray(\$$paramName);\n";
-        $result .= "}\n";
-        $result .= "\$$objectName = \$this->transfer((array)\$$paramName, '$className');\n\n";
+        $result[] = "// validation of \$$paramName";
+        $result[] .= "if (\$$paramName instanceof $className) {\n"
+            . "    \$$paramName = \$this->toArray(\$$paramName);\n"
+        . "}";
+        $result[] .= "\$$objectName = \$this->transfer((array)\$$paramName, '$className');\n";
 
-        return $result;
+        if ($callback) {
+            $result = $callback($result);
+        }
+
+        return implode("\n", $result);
     }
 
     protected function addMethod($methodName, $apiClass, $returnType = null, $params = [])
@@ -169,7 +173,7 @@ class ClientRestGenerator
                 $this->idDeleteMethod($methodName, $template, $params);
                 break;
             default:
-                $this->custromMethod($methodName, $template, $params);
+                $this->customMethod($methodName, $template, $params);
         }
     }
 
@@ -228,7 +232,18 @@ class ClientRestGenerator
             $queryType = $this->makeQueryType($apiClass, "GETQueryData");
             //$queryType = "\\$this->title\\OpenAPI\\V$this->version\\DTO\\" . str_replace('Api', '', $apiName) . "GETQueryData";
             //$body = "// validation of \$queryData\n\$queryDataObject = \$this->transfer((array)\$queryData, $queryType::class);";
-            $body = $this->makeBodyValidation('queryData', $queryType);
+
+            $body .= $this->makeBodyValidation('queryData', $queryType, function ($result) use ($params) {
+                foreach ($params as $param) {
+                    if ($param['style'] === 'form' && strpos($param['paramType'], '[]') && $param['explode'] === false) {
+                        $code = "if (isset(\$queryData['{$param['paramName']}']) && is_array(\$queryData['{$param['paramName']}'])) {\n"
+                            . "    \$queryData['{$param['paramName']}'] = implode(',', \$queryData['{$param['paramName']}']);\n"
+                            . "}";
+                        array_splice($result, 2, 0, $code);
+                    }
+                }
+                return $result;
+            });
         }
 
         $method = $this->class
@@ -311,7 +326,7 @@ class ClientRestGenerator
         $method->addParameter('id');
     }
 
-    protected function custromMethod($methodName, $template, $params = [])
+    protected function customMethod($methodName, $template, $params = [])
     {
         $body = '';
 
@@ -320,11 +335,15 @@ class ClientRestGenerator
 
         $paramVariables = [];
         foreach ($params as $param) {
-            if (!empty($param['paramType']) && !in_array($param['paramType'], ['null','boolean','object','array','number','string'])) {
+            if (!empty($param['paramType']) && !in_array($param['paramType'], ['null','boolean','object','number','string']) && strpos($param['paramType'], '[]') === false) {
                 $paramType = str_replace("Client\Model", "DTO", $param['paramType']);
                 //$body .= "// validation of \${$param['paramName']}\n";
                 //$body .= "\${$param['paramName']} = \$this->transfer((array)\${$param['paramName']}, $paramType::class);";
                 $body .= $this->makeBodyValidation($param['paramName'], $paramType);
+            } elseif ($param['style'] === 'form' && strpos($param['paramType'], '[]') && $param['explode'] === false) {
+                $body .= "if (is_array(\${$param['paramName']})) {\n"
+                    . "    \${$param['paramName']} = implode(',', \${$param['paramName']});\n"
+                    . "}\n";
             }
             $paramVariables[] = "\${$param['paramName']}";
             if ($param['required']) {

@@ -55,6 +55,15 @@ class Configuration extends ConfigurationAbstract
                     'paramName' => 'name',
                     'paramType' => 'string',
                     'required' => false,
+                    'style' => 'form',
+                    'explode' => true
+                ],
+                [
+                    'paramName' => 'id',
+                    'paramType' => 'string[]',
+                    'required' => false,
+                    'style' => 'form',
+                    'explode' => false
                 ],
             ]
         ],
@@ -72,11 +81,22 @@ class Configuration extends ConfigurationAbstract
                     'paramName' => 'name',
                     'paramType' => 'string',
                     'required' => false,
+                    'style' => 'form',
+                    'explode' => false
                 ],
                 [
                     'paramName' => 'id',
                     'paramType' => 'string[]',
                     'required' => false,
+                    'style' => 'form',
+                    'explode' => true
+                ],
+                [
+                    'paramName' => 'test',
+                    'paramType' => 'int[]',
+                    'required' => false,
+                    'style' => 'form',
+                    'explode' => true
                 ],
             ]
         ],
@@ -88,6 +108,8 @@ class Configuration extends ConfigurationAbstract
                     'paramName' => 'id',
                     'paramType' => 'string',
                     'required' => true,
+                    'style' => 'simple',
+                    'explode' => false
                 ],
             ]
         ],
@@ -99,11 +121,22 @@ class Configuration extends ConfigurationAbstract
                     'paramName' => 'pathParam',
                     'paramType' => 'string',
                     'required' => true,
+                    'style' => 'simple',
+                    'explode' => false
                 ],
                 [
                     'paramName' => 'queryParam',
                     'paramType' => 'string',
                     'required' => false,
+                    'style' => 'form',
+                    'explode' => true
+                ],
+                [
+                    'paramName' => 'arrayParam',
+                    'paramType' => 'string[]',
+                    'required' => false,
+                    'style' => 'form',
+                    'explode' => false
                 ],
             ]
         ],
@@ -115,6 +148,8 @@ class Configuration extends ConfigurationAbstract
                     'paramName' => 'test',
                     'paramType' => '\Test\OpenAPI\V1_0_1\Client\Model\Test',
                     'required' => true,
+                    'style' => '',
+                    'explode' => false
                 ],
             ]
         ],

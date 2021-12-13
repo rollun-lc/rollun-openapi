@@ -9,8 +9,7 @@ use OpenAPI\Client\Rest\BaseAbstract;
  */
 class Bla extends BaseAbstract
 {
-	public const API_NAME = 'Test\OpenAPI\V1_0_1\Client\Api\BlaApi';
-	public const CONFIGURATION_CLASS = 'Test\OpenAPI\V1_0_1\Client\Configuration';
+	public const API_NAME = '\Test\OpenAPI\V1_0_1\Client\Api\BlaApi';
 
 	/**
 	 * @inheritDoc
@@ -23,12 +22,14 @@ class Bla extends BaseAbstract
 		if ($queryData instanceof \Test\OpenAPI\V1_0_1\DTO\BlaGETQueryData) {
 		    $queryData = $this->toArray($queryData);
 		}
+		if (isset($queryData['id']) && is_array($queryData['id'])) {
+		    $queryData['id'] = implode(',', $queryData['id']);
+		}
 		$queryDataObject = $this->transfer((array)$queryData, '\Test\OpenAPI\V1_0_1\DTO\BlaGETQueryData');
 
 
-
 		// send request
-		$data = $this->getApi()->blaGet($queryDataObject->name);
+		$data = $this->getApi()->blaGet($queryDataObject->name, $queryDataObject->id);
 
 		// validation of response
 		$result = $this->transfer((array)$data, \Test\OpenAPI\V1_0_1\DTO\BlaResult::class);
@@ -38,7 +39,7 @@ class Bla extends BaseAbstract
 
 
 	/**
-	 * @return Test\OpenAPI\V1_0_1\Client\Api\BlaApi
+	 * @return \Test\OpenAPI\V1_0_1\Client\Api\BlaApi
 	 */
 	protected function getApi(): \OpenAPI\Client\Api\ApiInterface
 	{

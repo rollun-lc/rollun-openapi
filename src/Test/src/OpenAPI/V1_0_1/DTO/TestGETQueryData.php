@@ -11,6 +11,14 @@ use Articus\DataTransfer\Annotation as DTA;
 class TestGETQueryData
 {
     /**
+     * @DTA\Data(field="test", nullable=true)
+     * TODO check validator and strategy are correct and can handle container item type
+     * @DTA\Strategy(name="QueryParameterArray", options={"type":"int", "format":"multi"})
+     * @DTA\Validator(name="QueryParameterArrayType", options={"type":"int", "format":"multi"})
+     * @var int[]
+     */
+    public $test;
+    /**
      * @DTA\Data(field="name", nullable=true)
      * @DTA\Strategy(name="QueryParameter", options={"type":"string"})
      * @DTA\Validator(name="QueryParameterType", options={"type":"string"})

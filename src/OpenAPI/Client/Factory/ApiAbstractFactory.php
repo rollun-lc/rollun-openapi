@@ -39,6 +39,8 @@ class ApiAbstractFactory implements AbstractFactoryInterface
     {
         $config = $container->get('config')[self::KEY][$requestedName] ?? null;
 
+        $className = $config[self::KEY_CLASS] ?? $requestedName;
+
         // set life cycle token
         $lifeCycleToken = (string) $container->get(LifeCycleToken::class);
 
@@ -59,7 +61,7 @@ class ApiAbstractFactory implements AbstractFactoryInterface
         ], $clientConfig);
         $client = new Client($clientConfig);
 
-        $configuration = $options[self::KEY_CONFIGURATION] ?? $config[self::KEY_CONFIGURATION] ?? null;
+        $configuration = $options[self::KEY_CONFIGURATION] ?? $config[self::KEY_CONFIGURATION] ?? $className::CONFIGURATION_CLASS;
         if (is_string($configuration)) {
             $configuration = $container->get($configuration);
         }
@@ -69,7 +71,6 @@ class ApiAbstractFactory implements AbstractFactoryInterface
 
         $logger = $container->get(LoggerInterface::class);
 
-        $className = $config[self::KEY_CLASS] ?? $requestedName;
         $instance = new $className(
             $client,
             $configuration,

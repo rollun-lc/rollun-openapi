@@ -215,7 +215,7 @@ class OpenapiTest extends TestCase
         $this->assertEquals('Test exception', $response->messages[0]->text);
     }
 
-    public function testArrayQueryParam()
+    public function testTrueExplodeArrayQueryParam()
     {
         $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Test';
         $collectionClass = '\\Test\\OpenAPI\\V1_0_1\\DTO\\Collection';
@@ -244,5 +244,41 @@ class OpenapiTest extends TestCase
 
         $this->assertEquals($pathParam, $response->data->pathParam);
         $this->assertEquals($queryParam, $response->data->queryParam);
+    }
+
+    public function testFalseExplodeArrayQueryParam()
+    {
+        $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Bla';
+        $collectionClass = '\\Test\\OpenAPI\\V1_0_1\\DTO\\BlaResult';
+
+        $client = self::$container->get($clientClass);
+
+        $request = [
+            'id' => [
+                '1', '3'
+            ],
+        ];
+        $response = $client->get($request);
+        $this->assertInstanceOf($collectionClass, $response);
+        $this->assertIsArray($response->data);
+        $this->assertEquals(2, count($response->data));
+    }
+
+    public function testFalseExplodeStringQueryParam()
+    {
+        $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Bla';
+        $collectionClass = '\\Test\\OpenAPI\\V1_0_1\\DTO\\BlaResult';
+
+        $client = self::$container->get($clientClass);
+
+        $request = [
+            'id' => implode(',', [
+                '1', '3'
+            ]),
+        ];
+        $response = $client->get($request);
+        $this->assertInstanceOf($collectionClass, $response);
+        $this->assertIsArray($response->data);
+        $this->assertEquals(2, count($response->data));
     }
 }

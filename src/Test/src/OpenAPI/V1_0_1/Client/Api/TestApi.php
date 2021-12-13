@@ -53,6 +53,8 @@ use Psr\Log\LoggerInterface;
  */
 class TestApi implements ApiInterface
 {
+    public const CONFIGURATION_CLASS = 'Test\OpenAPI\V1_0_1\Client\Configuration';
+
     /**
      * @var ClientInterface
      */
@@ -143,14 +145,15 @@ class TestApi implements ApiInterface
      *
      * @param mixed $name name (optional)
      * @param mixed $id id (optional)
+     * @param mixed $test test (optional)
      *
      * @throws ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array
      */
-    public function testGet($name = null, $id = null)
+    public function testGet($name = null, $id = null, $test = null)
     {
-        list($response) = $this->testGetWithHttpInfo($name, $id);
+        list($response) = $this->testGetWithHttpInfo($name, $id, $test);
         return $response;
     }
 
@@ -159,14 +162,15 @@ class TestApi implements ApiInterface
      *
      * @param mixed $name (optional)
      * @param mixed $id (optional)
+     * @param mixed $test (optional)
      *
      * @throws ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array
      */
-    public function testGetWithHttpInfo($name = null, $id = null)
+    public function testGetWithHttpInfo($name = null, $id = null, $test = null)
     {
-        $request = $this->testGetRequest($name, $id);
+        $request = $this->testGetRequest($name, $id, $test);
 
         $this->log('info', 'Openapi send request.', [
             'requestBody' => (string)$request->getBody(),
@@ -232,13 +236,14 @@ class TestApi implements ApiInterface
      *
      * @param mixed $name (optional)
      * @param mixed $id (optional)
+     * @param mixed $test (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function testGetAsync($name = null, $id = null)
+    public function testGetAsync($name = null, $id = null, $test = null)
     {
-        return $this->testGetAsyncWithHttpInfo($name, $id)
+        return $this->testGetAsyncWithHttpInfo($name, $id, $test)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -253,13 +258,14 @@ class TestApi implements ApiInterface
      *
      * @param mixed $name (optional)
      * @param mixed $id (optional)
+     * @param mixed $test (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function testGetAsyncWithHttpInfo($name = null, $id = null)
+    public function testGetAsyncWithHttpInfo($name = null, $id = null, $test = null)
     {
-        $request = $this->testGetRequest($name, $id);
+        $request = $this->testGetRequest($name, $id, $test);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -293,11 +299,12 @@ class TestApi implements ApiInterface
      *
      * @param mixed $name (optional)
      * @param mixed $id (optional)
+     * @param mixed $test (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    protected function testGetRequest($name = null, $id = null)
+    protected function testGetRequest($name = null, $id = null, $test = null)
     {
 
         $resourcePath = '/Test';
@@ -308,15 +315,11 @@ class TestApi implements ApiInterface
         $multipart = false;
 
         // query params
+        if (is_array($name)) {
+            $name = ObjectSerializer::serializeCollection($name, 'form', true);
+        }
         if ($name !== null) {
-            if('form' === 'form' && is_array($name)) {
-                foreach($name as $key => $value) {
-                    $queryParams['name'][$key] = $value;
-                }
-            }
-            else {
-                $queryParams['name'] = $name;
-            }
+            $queryParams['name'] = $name;
         }
         // query params
         if ($id !== null) {
@@ -327,6 +330,17 @@ class TestApi implements ApiInterface
             }
             else {
                 $queryParams['id'] = $id;
+            }
+        }
+        // query params
+        if ($test !== null) {
+            if('form' === 'form' && is_array($test)) {
+                foreach($test as $key => $value) {
+                    $queryParams['test'][$key] = $value;
+                }
+            }
+            else {
+                $queryParams['test'] = $test;
             }
         }
 
@@ -646,14 +660,15 @@ class TestApi implements ApiInterface
      *
      * @param mixed $pathParam pathParam (required)
      * @param mixed $queryParam queryParam (optional)
+     * @param mixed $arrayParam arrayParam (optional)
      *
      * @throws ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array
      */
-    public function testPathParamCustomGet($pathParam, $queryParam = null)
+    public function testPathParamCustomGet($pathParam, $queryParam = null, $arrayParam = null)
     {
-        list($response) = $this->testPathParamCustomGetWithHttpInfo($pathParam, $queryParam);
+        list($response) = $this->testPathParamCustomGetWithHttpInfo($pathParam, $queryParam, $arrayParam);
         return $response;
     }
 
@@ -662,14 +677,15 @@ class TestApi implements ApiInterface
      *
      * @param mixed $pathParam (required)
      * @param mixed $queryParam (optional)
+     * @param mixed $arrayParam (optional)
      *
      * @throws ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array
      */
-    public function testPathParamCustomGetWithHttpInfo($pathParam, $queryParam = null)
+    public function testPathParamCustomGetWithHttpInfo($pathParam, $queryParam = null, $arrayParam = null)
     {
-        $request = $this->testPathParamCustomGetRequest($pathParam, $queryParam);
+        $request = $this->testPathParamCustomGetRequest($pathParam, $queryParam, $arrayParam);
 
         $this->log('info', 'Openapi send request.', [
             'requestBody' => (string)$request->getBody(),
@@ -735,13 +751,14 @@ class TestApi implements ApiInterface
      *
      * @param mixed $pathParam (required)
      * @param mixed $queryParam (optional)
+     * @param mixed $arrayParam (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function testPathParamCustomGetAsync($pathParam, $queryParam = null)
+    public function testPathParamCustomGetAsync($pathParam, $queryParam = null, $arrayParam = null)
     {
-        return $this->testPathParamCustomGetAsyncWithHttpInfo($pathParam, $queryParam)
+        return $this->testPathParamCustomGetAsyncWithHttpInfo($pathParam, $queryParam, $arrayParam)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -756,13 +773,14 @@ class TestApi implements ApiInterface
      *
      * @param mixed $pathParam (required)
      * @param mixed $queryParam (optional)
+     * @param mixed $arrayParam (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function testPathParamCustomGetAsyncWithHttpInfo($pathParam, $queryParam = null)
+    public function testPathParamCustomGetAsyncWithHttpInfo($pathParam, $queryParam = null, $arrayParam = null)
     {
-        $request = $this->testPathParamCustomGetRequest($pathParam, $queryParam);
+        $request = $this->testPathParamCustomGetRequest($pathParam, $queryParam, $arrayParam);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -796,11 +814,12 @@ class TestApi implements ApiInterface
      *
      * @param mixed $pathParam (required)
      * @param mixed $queryParam (optional)
+     * @param mixed $arrayParam (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    protected function testPathParamCustomGetRequest($pathParam, $queryParam = null)
+    protected function testPathParamCustomGetRequest($pathParam, $queryParam = null, $arrayParam = null)
     {
         // verify the required parameter 'pathParam' is set
         if ($pathParam === null || (is_array($pathParam) && count($pathParam) === 0)) {
@@ -826,6 +845,13 @@ class TestApi implements ApiInterface
             else {
                 $queryParams['queryParam'] = $queryParam;
             }
+        }
+        // query params
+        if (is_array($arrayParam)) {
+            $arrayParam = ObjectSerializer::serializeCollection($arrayParam, 'form', true);
+        }
+        if ($arrayParam !== null) {
+            $queryParams['arrayParam'] = $arrayParam;
         }
 
 

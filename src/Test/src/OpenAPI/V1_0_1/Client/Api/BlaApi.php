@@ -53,6 +53,8 @@ use Psr\Log\LoggerInterface;
  */
 class BlaApi implements ApiInterface
 {
+    public const CONFIGURATION_CLASS = 'Test\OpenAPI\V1_0_1\Client\Configuration';
+
     /**
      * @var ClientInterface
      */
@@ -142,14 +144,15 @@ class BlaApi implements ApiInterface
      * Operation blaGet
      *
      * @param mixed $name name (optional)
+     * @param mixed $id id (optional)
      *
      * @throws ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array
      */
-    public function blaGet($name = null)
+    public function blaGet($name = null, $id = null)
     {
-        list($response) = $this->blaGetWithHttpInfo($name);
+        list($response) = $this->blaGetWithHttpInfo($name, $id);
         return $response;
     }
 
@@ -157,14 +160,15 @@ class BlaApi implements ApiInterface
      * Operation blaGetWithHttpInfo
      *
      * @param mixed $name (optional)
+     * @param mixed $id (optional)
      *
      * @throws ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array
      */
-    public function blaGetWithHttpInfo($name = null)
+    public function blaGetWithHttpInfo($name = null, $id = null)
     {
-        $request = $this->blaGetRequest($name);
+        $request = $this->blaGetRequest($name, $id);
 
         $this->log('info', 'Openapi send request.', [
             'requestBody' => (string)$request->getBody(),
@@ -239,13 +243,14 @@ class BlaApi implements ApiInterface
      * 
      *
      * @param mixed $name (optional)
+     * @param mixed $id (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function blaGetAsync($name = null)
+    public function blaGetAsync($name = null, $id = null)
     {
-        return $this->blaGetAsyncWithHttpInfo($name)
+        return $this->blaGetAsyncWithHttpInfo($name, $id)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -259,13 +264,14 @@ class BlaApi implements ApiInterface
      * 
      *
      * @param mixed $name (optional)
+     * @param mixed $id (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function blaGetAsyncWithHttpInfo($name = null)
+    public function blaGetAsyncWithHttpInfo($name = null, $id = null)
     {
-        $request = $this->blaGetRequest($name);
+        $request = $this->blaGetRequest($name, $id);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -298,11 +304,12 @@ class BlaApi implements ApiInterface
      * Create request for operation 'blaGet'
      *
      * @param mixed $name (optional)
+     * @param mixed $id (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    protected function blaGetRequest($name = null)
+    protected function blaGetRequest($name = null, $id = null)
     {
 
         $resourcePath = '/Bla';
@@ -322,6 +329,13 @@ class BlaApi implements ApiInterface
             else {
                 $queryParams['name'] = $name;
             }
+        }
+        // query params
+        if (is_array($id)) {
+            $id = ObjectSerializer::serializeCollection($id, 'form', true);
+        }
+        if ($id !== null) {
+            $queryParams['id'] = $id;
         }
 
 

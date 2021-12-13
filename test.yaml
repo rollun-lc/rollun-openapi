@@ -30,6 +30,7 @@ paths:
         - name: name
           in: query
           required: false
+          explode: false
           schema:
             type: string
         - name: id
@@ -41,6 +42,13 @@ paths:
             type: array
             items:
               type: string
+        - name: test
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
       responses:
         200:
           description: List
@@ -82,6 +90,14 @@ paths:
           required: false
           schema:
             type: string
+        - name: arrayParam
+          in: query
+          required: false
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
       responses:
         '200':
           description: OK
@@ -104,6 +120,15 @@ paths:
           in: query
           schema:
             type: string
+        - name: id
+          in: query
+          required: false
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
       responses:
         200:
           description: OK

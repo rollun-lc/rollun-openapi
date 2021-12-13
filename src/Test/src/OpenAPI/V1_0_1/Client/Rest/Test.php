@@ -9,8 +9,7 @@ use OpenAPI\Client\Rest\BaseAbstract;
  */
 class Test extends BaseAbstract
 {
-	public const API_NAME = 'Test\OpenAPI\V1_0_1\Client\Api\TestApi';
-	public const CONFIGURATION_CLASS = 'Test\OpenAPI\V1_0_1\Client\Configuration';
+	public const API_NAME = '\Test\OpenAPI\V1_0_1\Client\Api\TestApi';
 
 	/**
 	 * @inheritDoc
@@ -26,9 +25,8 @@ class Test extends BaseAbstract
 		$queryDataObject = $this->transfer((array)$queryData, '\Test\OpenAPI\V1_0_1\DTO\TestGETQueryData');
 
 
-
 		// send request
-		$data = $this->getApi()->testGet($queryDataObject->name, $queryDataObject->id);
+		$data = $this->getApi()->testGet($queryDataObject->name, $queryDataObject->id, $queryDataObject->test);
 
 		// validation of response
 		$result = $this->transfer((array)$data, \Test\OpenAPI\V1_0_1\DTO\Collection::class);
@@ -38,7 +36,7 @@ class Test extends BaseAbstract
 
 
 	/**
-	 * @return Test\OpenAPI\V1_0_1\Client\Api\TestApi
+	 * @return \Test\OpenAPI\V1_0_1\Client\Api\TestApi
 	 */
 	protected function getApi(): \OpenAPI\Client\Api\ApiInterface
 	{
@@ -64,10 +62,15 @@ class Test extends BaseAbstract
 	/**
 	 * @inheritDoc
 	 */
-	public function testPathParamCustomGet($pathParam, $queryParam = null)
+	public function testPathParamCustomGet($pathParam, $queryParam = null, $arrayParam = null)
 	{
+		if (is_array($arrayParam)) {
+		    $arrayParam = implode(',', $arrayParam);
+		}
+
+
 		// send request
-		$data = $this->getApi()->testPathParamCustomGet($pathParam, $queryParam);
+		$data = $this->getApi()->testPathParamCustomGet($pathParam, $queryParam, $arrayParam);
 
 		// validation of response
 		$result = $this->transfer((array)$data, \Test\OpenAPI\V1_0_1\DTO\TestCustomResponse::class);
@@ -88,7 +91,6 @@ class Test extends BaseAbstract
 		    $bodyData = $this->toArray($bodyData);
 		}
 		$bodyDataObject = $this->transfer((array)$bodyData, '\Test\OpenAPI\V1_0_1\DTO\Test');
-
 
 
 		// send request

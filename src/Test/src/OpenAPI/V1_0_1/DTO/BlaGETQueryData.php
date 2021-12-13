@@ -17,4 +17,12 @@ class BlaGETQueryData
      * @var string
      */
     public $name;
+    /**
+     * @DTA\Data(field="id", nullable=true)
+     * TODO check validator and strategy are correct and can handle container item type
+     * @DTA\Strategy(name="QueryParameterArray", options={"type":"string", "format":"csv"})
+     * @DTA\Validator(name="QueryParameterArrayType", options={"type":"string", "format":"csv"})
+     * @var string[]
+     */
+    public $id;
 }

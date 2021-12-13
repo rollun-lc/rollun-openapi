@@ -43,6 +43,8 @@ use Psr\Log\LoggerInterface;
  */
 {{#operations}}class {{classname}} implements ApiInterface
 {
+    public const CONFIGURATION_CLASS = '{{invokerPackage}}\Configuration';
+
     /**
      * @var ClientInterface
      */

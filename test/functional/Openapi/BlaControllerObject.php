@@ -6,6 +6,7 @@ namespace rollun\test\OpenAPI\functional\Openapi;
 
 use Test\OpenAPI\V1_0_1\DTO\Bla;
 use Test\OpenAPI\V1_0_1\DTO\BlaCollection;
+use Test\OpenAPI\V1_0_1\DTO\BlaResult;
 
 class BlaControllerObject
 {
@@ -22,14 +23,22 @@ class BlaControllerObject
 
         for ($i = 0; $i < 3; $i++) {
             $bla = new Bla();
-            $bla->id = uniqid('', false);
-            if ($query['name'] === 'OK') {
+            $bla->id = (string) ($i + 1);
+            if ($query['name'] !== 'Error') {
                 $bla->name = 'Bla' . ($i + 1);
             }
             $items[] = $bla;
         }
 
-        $collection = new BlaCollection();
+        if (isset($query['id'])) {
+            $items = array_values(
+                array_filter($items, function ($item) use ($query) {
+                    return in_array($item->id, $query['id']);
+                })
+            );
+        }
+
+        $collection = new BlaResult();
         $collection->data = $items;
 
         return $collection;

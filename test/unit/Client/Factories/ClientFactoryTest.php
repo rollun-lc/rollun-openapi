@@ -5,7 +5,9 @@ namespace rollun\test\OpenAPI\unit\Client\Factories;
 
 
 use GuzzleHttp\Client;
+use OpenAPI\Client\Configuration\AuthenticatorInterface;
 use OpenAPI\Client\Factory\ApiAbstractFactory;
+use OpenAPI\Client\Factory\ConfigurationAbstractFactory;
 use OpenAPI\Client\Factory\RestAbstractFactory;
 use rollun\utils\Factory\AbstractServiceAbstractFactory;
 use Test\OpenAPI\V1_0_1\Client\Api\TestApi;
@@ -90,5 +92,29 @@ class ClientFactoryTest extends TestAbstract
                 ]
             ],
         ];
+    }
+
+    public function testConfigureDefaultConfiguration()
+    {
+        $config = array_merge_recursive($this->getDefaultConfig(), [
+            ConfigurationAbstractFactory::KEY => [
+                \Test\OpenAPI\V1_0_1\Client\Configuration::class => [
+                    ConfigurationAbstractFactory::KEY_AUTHENTICATOR => AuthenticatorInterface::class,
+                ]
+            ],
+        ]);
+        $this->configureContainer($config);
+
+        $accessToken = uniqid('', true);
+        $authenticator = $this->createMock(AuthenticatorInterface::class);
+        $authenticator->expects($this->any())->method('getAccessToken')->willReturn($accessToken);
+        $this->container->setService(AuthenticatorInterface::class, $authenticator);
+
+        $clientFactory = new ApiAbstractFactory();
+        $api = $clientFactory($this->container, 'TestClientApi');
+
+        $result = $api->getConfig()->getAccessToken();
+
+        $this->assertEquals($accessToken, $result);
     }
 }
