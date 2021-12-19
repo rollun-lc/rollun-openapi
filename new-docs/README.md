@@ -20,17 +20,19 @@ Right now we support 3 platforms:
 ## General workflow
 
 If there is a need for new service, workflow will be:
-- Create OpenAPI spec, using our custom **(LINK TO SWAGGER EDITOR DOCS)**
-- Generate code for server from OpenAPI spec (controllers, DTOs etc) **(LINK TO PHP/TS SERVER CODE GEN DOCS)**
-- Add openapi lint to your CI/CD pipeline. **(LINK TO OPENAPI LINT DOCS)**
+- Create OpenAPI spec, using our custom [Swagger Editor](#swagger-editor-docs)
+- Generate code for server from OpenAPI spec (controllers, DTOs etc) with [generator](#server-stub-generator)
+- Add [openapi lint](#openapi-lint) to your CI/CD pipeline.
 - Implement methods in service
 
 If you want to consume new service via defined OpenAPI:
-- Generate client from OpenAPI spec **(LINK TO PHP/TS OPENAPI CLIENT CODE GEN)**
+- Generate client from OpenAPI spec with [generator](#client-lib-generator)
 
 ## Tools
 
-### [Swagger Editor Docs](./tools/swagger-editor.md)
+### Swagger Editor Docs - [doc](./tools/swagger-editor.md)
+
+### OpenAPI lint - [doc](./tools/openapi-lint.md)
 
 ### Server stub generator
 
