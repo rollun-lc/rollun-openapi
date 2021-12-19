@@ -1,32 +1,37 @@
 # OpenAPI Rollun
 
-This document describes how to work with OpenAPI in our company -
-how to write manifests, generate code for both server side and client side.
+Этот документ описывает, как мы в компании работаем с OpenAPI
+технологией, какие у нас есть инструменты и правила.
 
 ## Overview
 
-The OpenAPI Specification is a community-driven open specification within
-the [OpenAPI Initiative](https://www.openapis.org/), a Linux Foundation Collaborative Project.
+The OpenAPI Specification - это открытая спецификация. Документацию проэкта можно
+посмотреть тут - [OpenAPI Initiative a Linux Foundation Collaborative Project.](https://www.openapis.org/).
 
-We use OpenAPI to:
-- follow API first approach
-- make self documented APIs
-- generate boilerplate code (api client, server stubs)
+Мы используем OpenAPI для:
+- того что бы следовать API first approach
+- разрабатывать самодокументируемые API
+- генерировать шаблонный код (api client, server stubs)
 
-Right now we support 3 platforms:
+Мы поддерживаем 2 платформы:
 - PHP (server + client)
 - TypeScript (server + client)
 
+## Contributing
+
+Для того, что бы предложить свои изменения, нужно открыть pull request и
+заполнить [специальный шаблон](./CONTRIBUTING.md).
+
 ## General workflow
 
-If there is a need for new service, workflow will be:
-- Create OpenAPI spec, using our custom [Swagger Editor](#swagger-editor-docs)
-- Generate code for server from OpenAPI spec (controllers, DTOs etc) with [generator](#server-stub-generator)
-- Add [openapi lint](#openapi-lint) to your CI/CD pipeline.
-- Implement methods in service
+Для того, что бы разрабоать новый сервер, нужно:
+- Создать OpenAPI spec, используя наш модифицированный [Swagger Editor](#swagger-editor-docs)
+- Сгенерировать код для сервера с OpenAPI spec (контроллеры, DTOs и тд.) с помощью [generator](#server-stub-generator)
+- Добавить [openapi lint](#openapi-lint) в ваш CI/CD pipeline.
+- Реализовать методы, в сгенерированом коде.
 
-If you want to consume new service via defined OpenAPI:
-- Generate client from OpenAPI spec with [generator](#client-lib-generator)
+Для того, что бы начать работу с сервисом через его API, нужно:
+- Сгенерировать с OpenAPI spec клиентскую библиотеку с помощью [generator](#client-lib-generator)
 
 ## Tools
 
@@ -44,6 +49,7 @@ If you want to consume new service via defined OpenAPI:
 - PHP - [docs](./client/php.md)
 - TypeScript - [docs](./client/ts.md)
 
-## Demo
+## Quick Start
 
-**TODO: link to demo repository with examples of OpenAPI specs + generated servers/clients with instructions for each language**
+Гайд с примерами кода/команд, которые нужны для ефективной работы
+с OpenAPI в нашей компании [link](./quick-start/README.md)
