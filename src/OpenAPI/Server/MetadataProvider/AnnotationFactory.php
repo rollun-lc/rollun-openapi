@@ -5,8 +5,12 @@ namespace OpenAPI\Server\MetadataProvider;
 
 use Articus\PathHandler\PluginManager as ArticusPluginManager;
 use Interop\Container\ContainerInterface;
+use Laminas\Cache\Psr\CacheItemPool\CacheItemPoolDecorator;
+use Laminas\Cache\Psr\SimpleCache\SimpleCacheDecorator;
+use Laminas\Cache\Service\StorageAdapterFactoryInterface;
+use Laminas\Cache\Storage\Adapter\BlackHole;
 use Zend\Cache\StorageFactory;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**
  * Class AnnotationFactory
@@ -22,6 +26,14 @@ class AnnotationFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        return new Annotation($container->get(ArticusPluginManager::class), StorageFactory::factory(['adapter' => self::CACHE_ADAPTER]));
+        $factory = $container->get(StorageAdapterFactoryInterface::class);
+        //$test = $factory->create('filesystem');
+        //$cache = $factory->createFromArrayConfiguration(['adapter' => self::CACHE_ADAPTER]);
+        $cache = new SimpleCacheDecorator(new BlackHole());
+        //$cache = new CacheItemPoolDecorator($cache);
+        return new Annotation(
+            $container->get(ArticusPluginManager::class),
+            $cache
+        );
     }
 }

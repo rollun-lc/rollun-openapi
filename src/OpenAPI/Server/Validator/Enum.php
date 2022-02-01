@@ -4,7 +4,7 @@
 namespace OpenAPI\Server\Validator;
 
 
-use Zend\Validator\AbstractValidator;
+use Laminas\Validator\AbstractValidator;
 
 class Enum extends AbstractValidator
 {

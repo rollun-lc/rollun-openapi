@@ -10,7 +10,7 @@ use Interop\Container\ContainerInterface;
 use OpenAPI\Client\Api\ApiInterface;
 use Psr\Log\LoggerInterface;
 use rollun\logger\LifeCycleToken;
-use Zend\ServiceManager\Factory\AbstractFactoryInterface;
+use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 
 class ApiAbstractFactory implements AbstractFactoryInterface
 {

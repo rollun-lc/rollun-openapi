@@ -2,43 +2,47 @@
 
 namespace HelloUser\OpenAPI\V1\Server\Rest;
 
-use OpenAPI\Server\Rest\BaseAbstract;
+use OpenAPI\Server\Rest\Base7Abstract;
+use Psr\Log\LoggerInterface;
 use rollun\dic\InsideConstruct;
 
 /**
  * Class Hello
  */
-class Hello extends BaseAbstract
+class Hello extends Base7Abstract
 {
-    /**
-     * @var User
-     */
-    protected $userObject;
+	public const CONTROLLER_OBJECT = 'Hello1Controller';
 
-    /**
-     * Hello constructor.
-     *
-     * @param User|null $userObject
-     *
-     * @throws \ReflectionException
-     */
-    public function __construct(User $userObject = null)
-    {
-        InsideConstruct::init(['userObject' => User::class]);
-    }
+	/** @var object */
+	protected $controllerObject;
 
-    /**
-     * @inheritDoc
-     */
-    public function getById($id)
-    {
-        // get user
-        $user = $this->userObject->getById($id);
+	/** @var LoggerInterface */
+	protected $logger;
 
-        return [
-            'data' => [
-                'message' => "Hello, {$user['data']['name']}!"
-            ]
-        ];
-    }
+
+	/**
+	 * Hello constructor.
+	 *
+	 * @param mixed $controllerObject
+	 * @param LoggerInterface|null logger
+	 *
+	 * @throws \ReflectionException
+	 */
+	public function __construct($controllerObject = null, $logger = null)
+	{
+		InsideConstruct::init(['controllerObject' => static::CONTROLLER_OBJECT, 'logger' => LoggerInterface::class]);
+	}
+
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getById($id)
+	{
+		if (method_exists($this->controllerObject, 'getById')) {
+		    return $this->controllerObject->getById($id);
+		}
+
+		throw new \Exception('Not implemented method');
+	}
 }

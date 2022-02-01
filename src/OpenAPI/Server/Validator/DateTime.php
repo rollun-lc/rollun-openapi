@@ -2,7 +2,7 @@
 
 namespace OpenAPI\Server\Validator;
 
-use Zend\Validator\Date;
+use Laminas\Validator\Date;
 
 class DateTime extends Date
 {

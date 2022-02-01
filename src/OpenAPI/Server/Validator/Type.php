@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace OpenAPI\Server\Validator;
 
-use Zend\Validator\AbstractValidator;
-use Zend\Validator\Exception;
+use Laminas\Validator\AbstractValidator;
+use Laminas\Validator\Exception;
 
 /**
  * Class Type

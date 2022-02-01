@@ -12,8 +12,8 @@ use OpenAPI\Server\Response\MessageCollector;
 use OpenAPI\Server\Response\MessageReaderInterface;
 use OpenAPI\Server\Response\MessageWriterInterface;
 use OpenAPI\Server\Validator;
-use Zend\Validator\ValidatorPluginManager;
-use Zend\Validator\ValidatorPluginManagerFactory;
+use Laminas\Validator\ValidatorPluginManager;
+use Laminas\Validator\ValidatorPluginManagerFactory;
 
 /**
  * Class ConfigProvider

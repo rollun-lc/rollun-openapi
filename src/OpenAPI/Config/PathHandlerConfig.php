@@ -15,8 +15,8 @@ use OpenAPI\Server\Middleware\InternalServerError;
 use OpenAPI\Server\Producer\Factory\Transfer as ProducerTransferFactory;
 use OpenAPI\Server\Producer\Transfer as ProducerTransfer;
 use Psr\Http\Message\ResponseInterface;
-use Zend\Expressive\Router\RouterInterface;
-use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
+use Mezzio\Router\RouterInterface;
+use Laminas\ServiceManager\AbstractFactory\ConfigAbstractFactory;
 
 class PathHandlerConfig
 {

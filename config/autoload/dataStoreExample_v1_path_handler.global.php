@@ -9,16 +9,9 @@ return [
             ],
         ],
     ],
-    'dependencies'                                     => [
+    'dependencies' => [
         'invokables' => [
             \DataStoreExample\OpenAPI\V1\Server\Rest\User::class => \DataStoreExample\OpenAPI\V1\Server\Rest\User::class,
         ],
     ],
-    'dataStore'                                        => [
-        'exampleUserDataStore' => [
-            'class'     => \rollun\datastore\DataStore\CsvBase::class,
-            'filename'  => 'data/example-user-datastore.csv',
-            'delimiter' => ','
-        ],
-    ]
 ];

@@ -8,6 +8,8 @@ use PHPUnit\Framework\TestCase;
 
 class OpenapiTest extends TestCase
 {
+    protected static $php;
+
     protected static $pid;
 
     protected static $container;
@@ -15,14 +17,15 @@ class OpenapiTest extends TestCase
     protected const MANIFEST = 'test.yaml';
     //protected const MANIFEST = 'https://raw.githubusercontent.com/rollun-com/openapi-manifests/ab8c5b5c3e6364be207473c17bbc647d62bf07d7/test__v1.0.1.yml';
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
+        self::$php = PHP_BINARY;
         global $container;
         self::$container = $container;
-        self::$pid = exec('php -S localhost:8001 public/index.php 1>/dev/null & echo $!');
+        self::$pid = exec(self::$php . ' -S localhost:8001 public/index.php 1>/dev/null & echo $!');
     }
 
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         exec('kill -9 ' . self::$pid);
         //exec('rm -rf src/Test');
@@ -32,7 +35,7 @@ class OpenapiTest extends TestCase
 
     public function testGenerateServer()
     {
-        $command = 'php bin/openapi-generator generate:server --manifest=' . self::MANIFEST;
+        $command = self::$php . ' bin/openapi-generator generate:server --manifest=' . self::MANIFEST;
         exec($command, $outputs);
 
         sleep(1);
@@ -47,7 +50,7 @@ class OpenapiTest extends TestCase
      */
     public function testGenerateClient()
     {
-        $command = 'php bin/openapi-generator generate:client  --debug=true --manifest=' . self::MANIFEST;
+        $command = self::$php . ' bin/openapi-generator generate:client  --debug=true --manifest=' . self::MANIFEST;
         exec($command);
 
         sleep(1);
@@ -150,8 +153,8 @@ class OpenapiTest extends TestCase
         $request = new $dtoClass();
         $request->name = 'Test';
 
-        $this->expectExceptionMessageRegExp('/objectInvalidInner/');
-        $this->expectExceptionMessageRegExp('/Value should not be null./');
+        $this->expectExceptionMessageMatches('/objectInvalidInner/');
+        $this->expectExceptionMessageMatches('/Value should not be null./');
 
         $client->post($request);
     }

@@ -97,15 +97,21 @@ abstract class BaseAbstract extends \OpenAPI\Server\Rest\BaseAbstract implements
         return $result;
     }
 
+    /**
+     * @param object $dto
+     * @return mixed
+     * @throws \Articus\DataTransfer\Exception\InvalidData
+     * @todo Разобраться с валидацией
+     */
     protected function toArray(object $dto)
     {
-        $array = [];
-        $errors = $this->dataTransfer->transferFromTypedData($dto, $array);
+        //$array = [];
+        $array = $this->dataTransfer->extractFromTypedData($dto);
 
-        if (!empty($errors)) {
+        /*if (!empty($errors)) {
             throw new Exception('Can not transfer ' . get_class($dto)
                 . ' object to array. Details: ' . json_encode($errors));
-        }
+        }*/
 
         return $array;
     }

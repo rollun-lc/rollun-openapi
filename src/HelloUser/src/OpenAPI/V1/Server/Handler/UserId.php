@@ -23,7 +23,7 @@ class UserId extends AbstractHandler
     /**
      * ATTENTION! REST_OBJECT should be declared in service manager
      */
-    const REST_OBJECT = \HelloUser\OpenAPI\V1\Server\Rest\User::class;
+    public const REST_OBJECT = \HelloUser\OpenAPI\V1\Server\Rest\User::class;
 
     /**
      * UserId constructor.
@@ -44,8 +44,8 @@ class UserId extends AbstractHandler
      *
      * @return array
      */
-    public function userIdGet(ServerRequestInterface $request): array
+    public function userIdGet(ServerRequestInterface $request)
     {
-        return $this->runAction($request, 'Get()');
+        return $this->runAction($request, 'Get()', 'userIdGet');
     }
 }

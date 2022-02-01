@@ -66,7 +66,8 @@ class DataTransferConfig
                 ],
                 'abstract_factories' => [
                     // Поддержка валидаторов из Zend validator plugin manager
-                    ValidatorFactory\Zend::class
+                    //ValidatorFactory\Zend::class
+                    ValidatorFactory\Laminas::class
                 ]
             ],
         ];

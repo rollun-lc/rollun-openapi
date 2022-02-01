@@ -23,7 +23,7 @@ class User extends AbstractHandler
     /**
      * ATTENTION! REST_OBJECT should be declared in service manager
      */
-    const REST_OBJECT = \HelloUser\OpenAPI\V1\Server\Rest\User::class;
+    public const REST_OBJECT = \HelloUser\OpenAPI\V1\Server\Rest\User::class;
 
     /**
      * User constructor.
@@ -40,15 +40,15 @@ class User extends AbstractHandler
     /**
      * @PHA\Post()
      * TODO check if consumer is valid, if it has correct priority and if it can be moved to class annotation
-     * @PHA\Consumer(name=PHConsumer\Json::class, mediaType="application/json")
+     * @PHA\Consumer(name=PHConsumer\Json::class, mediaRange="application/json")
      * @PHA\Attribute(name=PHAttribute\Transfer::class, options={"type":\HelloUser\OpenAPI\V1\DTO\User::class,"objectAttr":"bodyData", "errorAttr":"errors"})
      * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\HelloUser\OpenAPI\V1\DTO\UserResult::class})
      * @param ServerRequestInterface $request
      *
      * @return array
      */
-    public function userPost(ServerRequestInterface $request): array
+    public function userPost(ServerRequestInterface $request)
     {
-        return $this->runAction($request, 'Post()');
+        return $this->runAction($request, 'Post()', 'userPost');
     }
 }

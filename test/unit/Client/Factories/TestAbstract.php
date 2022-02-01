@@ -5,7 +5,7 @@ namespace rollun\test\OpenAPI\unit\Client\Factories;
 
 
 use PHPUnit\Framework\TestCase;
-use Zend\ServiceManager\ServiceManager;
+use Laminas\ServiceManager\ServiceManager;
 
 abstract class TestAbstract extends TestCase
 {
@@ -14,7 +14,7 @@ abstract class TestAbstract extends TestCase
      */
     protected $container;
 
-    public function setUp()
+    public function setUp(): void
     {
         global $container;
         $this->container = clone $container;

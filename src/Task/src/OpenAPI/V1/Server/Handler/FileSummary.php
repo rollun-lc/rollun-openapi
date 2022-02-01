@@ -23,7 +23,7 @@ class FileSummary extends AbstractHandler
     /**
      * ATTENTION! REST_OBJECT should be declared in service manager
      */
-    const REST_OBJECT = \Task\OpenAPI\V1\Server\Rest\FileSummary::class;
+    public const REST_OBJECT = \Task\OpenAPI\V1\Server\Rest\FileSummary::class;
 
     /**
      * FileSummary constructor.
@@ -40,15 +40,15 @@ class FileSummary extends AbstractHandler
     /**
      * @PHA\Post()
      * TODO check if consumer is valid, if it has correct priority and if it can be moved to class annotation
-     * @PHA\Consumer(name=PHConsumer\Json::class, mediaType="application/json")
+     * @PHA\Consumer(name=PHConsumer\Json::class, mediaRange="application/json")
      * @PHA\Attribute(name=PHAttribute\Transfer::class, options={"type":\Task\OpenAPI\V1\DTO\PostFileSummary::class,"objectAttr":"bodyData", "errorAttr":"errors"})
      * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\Task\OpenAPI\V1\DTO\TaskInfoResult::class})
      * @param ServerRequestInterface $request
      *
      * @return array
      */
-    public function fileSummaryPost(ServerRequestInterface $request): array
+    public function fileSummaryPost(ServerRequestInterface $request)
     {
-        return $this->runAction($request, 'Post()');
+        return $this->runAction($request, 'Post()', 'fileSummaryPost');
     }
 }

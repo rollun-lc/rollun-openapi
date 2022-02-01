@@ -23,7 +23,7 @@ class FileSummaryId extends AbstractHandler
     /**
      * ATTENTION! REST_OBJECT should be declared in service manager
      */
-    const REST_OBJECT = \Task\OpenAPI\V1\Server\Rest\FileSummary::class;
+    public const REST_OBJECT = \Task\OpenAPI\V1\Server\Rest\FileSummary::class;
 
     /**
      * FileSummaryId constructor.
@@ -44,9 +44,9 @@ class FileSummaryId extends AbstractHandler
      *
      * @return array
      */
-    public function fileSummaryIdDelete(ServerRequestInterface $request): array
+    public function fileSummaryIdDelete(ServerRequestInterface $request)
     {
-        return $this->runAction($request, 'Delete()');
+        return $this->runAction($request, 'Delete()', 'fileSummaryIdDelete');
     }
     /**
      * @PHA\Get()
@@ -55,8 +55,8 @@ class FileSummaryId extends AbstractHandler
      *
      * @return array
      */
-    public function fileSummaryIdGet(ServerRequestInterface $request): array
+    public function fileSummaryIdGet(ServerRequestInterface $request)
     {
-        return $this->runAction($request, 'Get()');
+        return $this->runAction($request, 'Get()', 'fileSummaryIdGet');
     }
 }

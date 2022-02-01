@@ -21,9 +21,13 @@ class UserGETQueryData
      * @DTA\Data(field="sortOrder", nullable=true)
      * @DTA\Strategy(name="QueryParameter", options={"type":"string"})
      * @DTA\Validator(name="QueryParameterType", options={"type":"string"})
+     * @DTA\Validator(name="Enum", options={"allowed":{
+     *      "'asc'",
+     *      "'desc'"
+     * }})
      * @var string
      */
-    public $sort_order;
+    public $sortOrder;
     /**
      * @DTA\Data(field="limit", nullable=true)
      * @DTA\Strategy(name="QueryParameter", options={"type":"int"})
@@ -37,7 +41,7 @@ class UserGETQueryData
      * @DTA\Validator(name="QueryParameterType", options={"type":"string"})
      * @var string
      */
-    public $sort_by;
+    public $sortBy;
     /**
      * @DTA\Data(field="rql", nullable=true)
      * @DTA\Strategy(name="QueryParameter", options={"type":"string"})

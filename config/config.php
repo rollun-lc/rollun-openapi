@@ -7,9 +7,9 @@
 declare(strict_types = 1);
 
 use Symfony\Component\Dotenv\Dotenv;
-use Zend\ConfigAggregator\ArrayProvider;
-use Zend\ConfigAggregator\ConfigAggregator;
-use Zend\ConfigAggregator\PhpFileProvider;
+use Laminas\ConfigAggregator\ArrayProvider;
+use Laminas\ConfigAggregator\ConfigAggregator;
+use Laminas\ConfigAggregator\PhpFileProvider;
 
 // To enable or disable caching, set the `ConfigAggregator::ENABLE_CACHE` boolean in
 // `config/autoload/local.php`.
@@ -25,28 +25,28 @@ if(file_exists('.env')) {
 $appEnv = getenv('APP_ENV');
 
 $aggregator = new ConfigAggregator([
-    \Zend\Serializer\ConfigProvider::class,
-    \rollun\repository\ConfigProvider::class,
-    \Zend\Expressive\Authentication\Basic\ConfigProvider::class,
+    \Laminas\Cache\Storage\Adapter\BlackHole\ConfigProvider::class,
+    \Laminas\Serializer\ConfigProvider::class,
+    /*\Zend\Expressive\Authentication\Basic\ConfigProvider::class,
     \Zend\Expressive\Authentication\Session\ConfigProvider::class,
     \Zend\Expressive\Authentication\ConfigProvider::class,
     \Zend\Expressive\Session\ConfigProvider::class,
-    \Zend\Expressive\Session\Ext\ConfigProvider::class,
-    \Zend\Cache\ConfigProvider::class,
-    \Zend\Mail\ConfigProvider::class,
-    \Zend\Db\ConfigProvider::class,
-    \Zend\Validator\ConfigProvider::class,
-    \Zend\Expressive\Router\FastRouteRouter\ConfigProvider::class,
-    \Zend\HttpHandlerRunner\ConfigProvider::class,
-    \Zend\Expressive\Helper\ConfigProvider::class,
-    \Zend\Expressive\ConfigProvider::class,
-    \Zend\Expressive\Router\ConfigProvider::class,
+    \Zend\Expressive\Session\Ext\ConfigProvider::class,*/
+    \Laminas\Cache\ConfigProvider::class,
+    \Laminas\Mail\ConfigProvider::class,
+    \Laminas\Db\ConfigProvider::class,
+    \Laminas\Validator\ConfigProvider::class,
+    \Mezzio\Router\FastRouteRouter\ConfigProvider::class,
+    \Laminas\HttpHandlerRunner\ConfigProvider::class,
+    \Mezzio\Helper\ConfigProvider::class,
+    \Mezzio\ConfigProvider::class,
+    \Mezzio\Router\ConfigProvider::class,
     // Include cache configuration
     new ArrayProvider($cacheConfig),
     // Rollun config
-    \rollun\uploader\ConfigProvider::class,
-    \rollun\datastore\ConfigProvider::class,
-    \rollun\permission\ConfigProvider::class,
+    //\rollun\uploader\ConfigProvider::class,
+    rollun\datastore\ConfigProvider::class,
+    //\rollun\permission\ConfigProvider::class,
     \rollun\logger\ConfigProvider::class,
     \rollun\tracer\ConfigProvider::class,
     \rollun\callback\ConfigProvider::class,

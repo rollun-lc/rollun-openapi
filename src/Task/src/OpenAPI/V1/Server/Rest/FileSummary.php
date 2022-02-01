@@ -2,64 +2,77 @@
 
 namespace Task\OpenAPI\V1\Server\Rest;
 
-use OpenAPI\Server\Rest\BaseAbstract;
+use OpenAPI\Server\Rest\Base7Abstract;
 use Psr\Log\LoggerInterface;
-use rollun\Callables\TaskExample;
 use rollun\dic\InsideConstruct;
 
 /**
  * Class FileSummary
  */
-class FileSummary extends BaseAbstract
+class FileSummary extends Base7Abstract
 {
-    const CONTROLLER_OBJECT = TaskExample\FileSummary::class;
+	public const CONTROLLER_OBJECT = 'FileSummary1Controller';
 
-    /** @var TaskExample\FileSummary */
-    protected $controllerObject;
+	/** @var object */
+	protected $controllerObject;
 
-    /** @var LoggerInterface */
-    protected $logger;
-
-
-    /**
-     * FileSummary constructor.
-     *
-     * @param mixed $controllerObject
-     * @param LoggerInterface|null logger
-     *
-     * @throws \ReflectionException
-     */
-    public function __construct($controllerObject = null, $logger = null)
-    {
-        InsideConstruct::init(['controllerObject' => self::CONTROLLER_OBJECT, 'logger' => LoggerInterface::class]);
-    }
+	/** @var LoggerInterface */
+	protected $logger;
 
 
-    /**
-     * @inheritDoc
-     *
-     * @param \Task\OpenAPI\V1\DTO\PostFileSummary $bodyData
-     */
-    public function post($bodyData)
-    {
-        return $this->controllerObject->runTask($bodyData)->toArrayForDto();
-    }
+	/**
+	 * FileSummary constructor.
+	 *
+	 * @param mixed $controllerObject
+	 * @param LoggerInterface|null logger
+	 *
+	 * @throws \ReflectionException
+	 */
+	public function __construct($controllerObject = null, $logger = null)
+	{
+		InsideConstruct::init(['controllerObject' => static::CONTROLLER_OBJECT, 'logger' => LoggerInterface::class]);
+	}
 
 
-    /**
-     * @inheritDoc
-     */
-    public function deleteById($id)
-    {
-        return $this->controllerObject->deleteById($id)->toArrayForDto();
-    }
+	/**
+	 * @inheritDoc
+	 *
+	 * @param \Task\OpenAPI\V1\DTO\PostFileSummary $bodyData
+	 */
+	public function post($bodyData = null)
+	{
+		if (method_exists($this->controllerObject, 'post')) {
+		    $bodyDataArray = (array) $bodyData;
+
+		    return $this->controllerObject->post($bodyDataArray);
+		}
+
+		throw new \Exception('Not implemented method');
+	}
 
 
-    /**
-     * @inheritDoc
-     */
-    public function getById($id)
-    {
-        return $this->controllerObject->getTaskInfoById($id)->toArrayForDto();
-    }
+	/**
+	 * @inheritDoc
+	 */
+	public function deleteById($id)
+	{
+		if (method_exists($this->controllerObject, 'deleteById')) {
+		    return $this->controllerObject->deleteById($id);
+		}
+
+		throw new \Exception('Not implemented method');
+	}
+
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getById($id)
+	{
+		if (method_exists($this->controllerObject, 'getById')) {
+		    return $this->controllerObject->getById($id);
+		}
+
+		throw new \Exception('Not implemented method');
+	}
 }

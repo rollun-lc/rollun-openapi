@@ -79,4 +79,11 @@ class QueryParameter implements StrategyInterface
             }
         }
     }
+
+    // TODO Не разобрался до конца
+    public function merge($from, &$to): void
+    {
+        //return $from;
+        $to = $from;
+    }
 }

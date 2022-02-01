@@ -11,10 +11,10 @@ use Jaeger\Tag\StringTag;
 use rollun\dic\InsideConstruct;
 use rollun\logger\LifeCycleToken;
 use rollun\utils\Json\Serializer;
-use Zend\Diactoros\ServerRequestFactory;
-use Zend\Expressive\Application;
-use Zend\Expressive\MiddlewareFactory;
-use Zend\ServiceManager\ServiceManager;
+use Laminas\Diactoros\ServerRequestFactory;
+use Mezzio\Application;
+use Mezzio\MiddlewareFactory;
+use Laminas\ServiceManager\ServiceManager;
 
 error_reporting(E_ALL ^ E_USER_DEPRECATED ^ E_DEPRECATED);
 

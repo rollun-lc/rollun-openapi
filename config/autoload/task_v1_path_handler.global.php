@@ -9,10 +9,9 @@ return [
             ],
         ],
     ],
-    'dependencies'                                     => [
+    'dependencies' => [
         'invokables' => [
-            \rollun\Callables\TaskExample\FileSummary::class => \rollun\Callables\TaskExample\FileSummary::class,
-            \Task\OpenAPI\V1\Server\Rest\FileSummary::class  => \Task\OpenAPI\V1\Server\Rest\FileSummary::class,
+            \Task\OpenAPI\V1\Server\Rest\FileSummary::class => \Task\OpenAPI\V1\Server\Rest\FileSummary::class,
         ],
     ],
 ];

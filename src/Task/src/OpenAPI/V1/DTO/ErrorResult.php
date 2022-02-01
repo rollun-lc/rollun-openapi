@@ -14,7 +14,7 @@ class ErrorResult
      * TODO check validator and strategy are correct and can handle container item type
      * @DTA\Strategy(name="ObjectArray", options={"type":\Task\OpenAPI\V1\DTO\Message::class})
      * @DTA\Validator(name="Collection", options={"validators":{
-     *     {"name":"Dictionary", "options":{"type":\Task\OpenAPI\V1\DTO\Message::class}}
+     *     {"name":"TypeCompliant", "options":{"type":\Task\OpenAPI\V1\DTO\Message::class}}
      * }})
      * @var \Task\OpenAPI\V1\DTO\Message[]
      */

@@ -19,7 +19,7 @@ class Transfer extends \Articus\PathHandler\Attribute\Transfer
     public function __invoke(Request $request): Request
     {
         // get classname
-        $className = $this->options->getType();
+        $className = $this->type;
 
         if (substr($className, -2) != '[]') {
             return parent::__invoke($request);
@@ -46,11 +46,11 @@ class Transfer extends \Articus\PathHandler\Attribute\Transfer
         }
 
         if (empty($error)) {
-            $request = $request->withAttribute($this->options->getObjectAttr(), $objects);
-        } elseif (empty($this->options->getErrorAttr())) {
+            $request = $request->withAttribute($this->objectAttr, $objects);
+        } elseif (empty($this->errorAttr)) {
             throw new Exception\UnprocessableEntity($error);
         } else {
-            $request = $request->withAttribute($this->options->getErrorAttr(), $error);
+            $request = $request->withAttribute($this->errorAttr, $error);
         }
 
         return $request;
@@ -63,7 +63,7 @@ class Transfer extends \Articus\PathHandler\Attribute\Transfer
      */
     public function getData(Request $request): array
     {
-        if ($this->options->getSource() === self::SOURCE_GET) {
+        if ($this->source === self::SOURCE_GET) {
             $data = [];
             $queryParams = $request->getQueryParams();
             $queryArrays = array_filter($queryParams, function ($item) {
@@ -75,7 +75,7 @@ class Transfer extends \Articus\PathHandler\Attribute\Transfer
                 foreach ($params as $param) {
                     list($key, $value) = explode('=', $param);
                     $key = urldecode($key);
-                    if (preg_match('/[\w-_]+?\[.*?\]/', $key)) {
+                    if (preg_match('/[\w\-_]+?\[.*?\]/', $key)) {
                         continue;
                     }
                     $data[$key][] = $value;

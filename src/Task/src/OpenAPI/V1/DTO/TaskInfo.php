@@ -24,14 +24,14 @@ class TaskInfo
     /**
      * @DTA\Data(field="stage")
      * @DTA\Strategy(name="Object", options={"type":\Task\OpenAPI\V1\DTO\Stage::class})
-     * @DTA\Validator(name="Dictionary", options={"type":\Task\OpenAPI\V1\DTO\Stage::class})
+     * @DTA\Validator(name="TypeCompliant", options={"type":\Task\OpenAPI\V1\DTO\Stage::class})
      * @var \Task\OpenAPI\V1\DTO\Stage
      */
     public $stage;
     /**
      * @DTA\Data(field="status")
      * @DTA\Strategy(name="Object", options={"type":\Task\OpenAPI\V1\DTO\Status::class})
-     * @DTA\Validator(name="Dictionary", options={"type":\Task\OpenAPI\V1\DTO\Status::class})
+     * @DTA\Validator(name="TypeCompliant", options={"type":\Task\OpenAPI\V1\DTO\Status::class})
      * @var \Task\OpenAPI\V1\DTO\Status
      */
     public $status;
@@ -45,7 +45,7 @@ class TaskInfo
     /**
      * @DTA\Data(field="result", nullable=true)
      * @DTA\Strategy(name="Object", options={"type":\Task\OpenAPI\V1\DTO\SummaryResult::class})
-     * @DTA\Validator(name="Dictionary", options={"type":\Task\OpenAPI\V1\DTO\SummaryResult::class})
+     * @DTA\Validator(name="TypeCompliant", options={"type":\Task\OpenAPI\V1\DTO\SummaryResult::class})
      * @var \Task\OpenAPI\V1\DTO\SummaryResult
      */
     public $result;

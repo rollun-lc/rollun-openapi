@@ -23,7 +23,7 @@ class UserId extends AbstractHandler
     /**
      * ATTENTION! REST_OBJECT should be declared in service manager
      */
-    const REST_OBJECT = \DataStoreExample\OpenAPI\V1\Server\Rest\User::class;
+    public const REST_OBJECT = \DataStoreExample\OpenAPI\V1\Server\Rest\User::class;
 
     /**
      * UserId constructor.
@@ -44,9 +44,9 @@ class UserId extends AbstractHandler
      *
      * @return array
      */
-    public function userIdDelete(ServerRequestInterface $request): array
+    public function userIdDelete(ServerRequestInterface $request)
     {
-        return $this->runAction($request, 'Delete()');
+        return $this->runAction($request, 'Delete()', 'userIdDelete');
     }
     /**
      * @PHA\Get()
@@ -55,36 +55,36 @@ class UserId extends AbstractHandler
      *
      * @return array
      */
-    public function userIdGet(ServerRequestInterface $request): array
+    public function userIdGet(ServerRequestInterface $request)
     {
-        return $this->runAction($request, 'Get()');
+        return $this->runAction($request, 'Get()', 'userIdGet');
     }
     /**
      * @PHA\Patch()
      * TODO check if consumer is valid, if it has correct priority and if it can be moved to class annotation
-     * @PHA\Consumer(name=PHConsumer\Json::class, mediaType="application/json")
+     * @PHA\Consumer(name=PHConsumer\Json::class, mediaRange="application/json")
      * @PHA\Attribute(name=PHAttribute\Transfer::class, options={"type":\DataStoreExample\OpenAPI\V1\DTO\User::class,"objectAttr":"bodyData", "errorAttr":"errors"})
      * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\DataStoreExample\OpenAPI\V1\DTO\UserResult::class})
      * @param ServerRequestInterface $request
      *
      * @return array
      */
-    public function userIdPatch(ServerRequestInterface $request): array
+    public function userIdPatch(ServerRequestInterface $request)
     {
-        return $this->runAction($request, 'Patch()');
+        return $this->runAction($request, 'Patch()', 'userIdPatch');
     }
     /**
      * @PHA\Put()
      * TODO check if consumer is valid, if it has correct priority and if it can be moved to class annotation
-     * @PHA\Consumer(name=PHConsumer\Json::class, mediaType="application/json")
+     * @PHA\Consumer(name=PHConsumer\Json::class, mediaRange="application/json")
      * @PHA\Attribute(name=PHAttribute\Transfer::class, options={"type":\DataStoreExample\OpenAPI\V1\DTO\PutUser::class,"objectAttr":"bodyData", "errorAttr":"errors"})
      * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\DataStoreExample\OpenAPI\V1\DTO\UserResult::class})
      * @param ServerRequestInterface $request
      *
      * @return array
      */
-    public function userIdPut(ServerRequestInterface $request): array
+    public function userIdPut(ServerRequestInterface $request)
     {
-        return $this->runAction($request, 'Put()');
+        return $this->runAction($request, 'Put()', 'userIdPut');
     }
 }

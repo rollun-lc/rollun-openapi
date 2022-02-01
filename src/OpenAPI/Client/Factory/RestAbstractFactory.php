@@ -5,8 +5,8 @@ namespace OpenAPI\Client\Factory;
 
 use Interop\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use Zend\ServiceManager\Exception\ServiceNotCreatedException;
-use Zend\ServiceManager\Factory\AbstractFactoryInterface;
+use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
+use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 
 /**
  * Class ApiInstanceAbstractFactory

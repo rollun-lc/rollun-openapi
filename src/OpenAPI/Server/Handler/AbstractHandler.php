@@ -7,7 +7,7 @@ use Articus\PathHandler\Exception\HttpCode;
 use OpenAPI\Server\Producer\Transfer;
 use OpenAPI\Server\Rest\RestInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Zend\Expressive\Router\RouteResult;
+use Mezzio\Router\RouteResult;
 
 /**
  * Class AbstractHandler

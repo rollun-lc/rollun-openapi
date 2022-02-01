@@ -7,7 +7,7 @@ namespace OpenAPI\Client\Factory;
 use Interop\Container\ContainerInterface;
 use OpenAPI\Client\Configuration\ConfigurationAbstract;
 use OpenAPI\Client\Configuration\ConfigurationInterface;
-use Zend\ServiceManager\Factory\AbstractFactoryInterface;
+use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 
 /**
  * Class ConfigurationAbstractFactory

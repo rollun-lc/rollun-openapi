@@ -204,8 +204,12 @@ class Transfer extends Base
             }
         }
 
-        return is_object($to) ?
-            $this->dtService->transferTypedData($from, $to) :
-            $this->dtService->transferFromTypedData($from, $to);
+        // TODO
+        if (is_object($to)) {
+            return $this->dtService->transferTypedData($from, $to);
+        } else {
+            $to = $this->transfer($from);
+            return [];
+        }
     }
 }
