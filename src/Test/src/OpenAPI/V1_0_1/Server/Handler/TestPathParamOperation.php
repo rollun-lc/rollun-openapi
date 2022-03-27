@@ -16,9 +16,9 @@ use Psr\Http\Message\ServerRequestInterface;
 use rollun\dic\InsideConstruct;
 
 /**
- * @PHA\Route(pattern="/test/{pathParam}/custom")
+ * @PHA\Route(pattern="/test/{pathParam}/operation")
  */
-class TestPathParamCustom extends AbstractHandler
+class TestPathParamOperation extends AbstractHandler
 {
     /**
      * ATTENTION! REST_OBJECT should be declared in service manager
@@ -26,7 +26,7 @@ class TestPathParamCustom extends AbstractHandler
     public const REST_OBJECT = \Test\OpenAPI\V1_0_1\Server\Rest\Test::class;
 
     /**
-     * TestPathParamCustom constructor.
+     * TestPathParamOperation constructor.
      *
      * @param RestInterface|null $restObject
      *
@@ -40,7 +40,7 @@ class TestPathParamCustom extends AbstractHandler
     /**
      * @PHA\Get()
      * @PHA\Attribute(name=PHAttribute\Transfer::class, options={
-     *     "type":\Test\OpenAPI\V1_0_1\DTO\TestPathParamCustomGETQueryData::class,
+     *     "type":\Test\OpenAPI\V1_0_1\DTO\CustomOperationGetQueryData::class,
      *     "objectAttr":"queryData",
      *     "source": PHAttribute\Transfer::SOURCE_GET
      * })
@@ -49,9 +49,9 @@ class TestPathParamCustom extends AbstractHandler
      *
      * @return array
      */
-    public function testPathParamCustomGet(ServerRequestInterface $request)
+    public function customOperationGet(ServerRequestInterface $request)
     {
-        return $this->runAction($request, 'Get()', 'testPathParamCustomGet');
+        return $this->runAction($request, 'Get()', 'customOperationGet');
     }
     /**
      * @PHA\Post()
@@ -63,8 +63,8 @@ class TestPathParamCustom extends AbstractHandler
      *
      * @return array
      */
-    public function testPathParamCustomPost(ServerRequestInterface $request)
+    public function customOperationPost(ServerRequestInterface $request)
     {
-        return $this->runAction($request, 'Post()', 'testPathParamCustomPost');
+        return $this->runAction($request, 'Post()', 'customOperationPost');
     }
 }

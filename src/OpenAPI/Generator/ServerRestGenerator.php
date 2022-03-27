@@ -211,10 +211,12 @@ class ServerRestGenerator
 
                         $method = $class->addMethod($action);
 
-                        foreach ($row['pathParams'] as $param) {
-                            $method->addComment('@param $' . $param);
-                            $method->addParameter($param);
-                            $params[] = '$' . $param;
+                        if (isset($row['pathParams'])) {
+                            foreach ($row['pathParams'] as $param) {
+                                $method->addComment('@param $' . $param);
+                                $method->addParameter($param);
+                                $params[] = '$' . $param;
+                            }
                         }
 
                         if (isset($row['queryData'])) {

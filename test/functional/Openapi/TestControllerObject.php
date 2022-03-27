@@ -44,4 +44,30 @@ class TestControllerObject
             ]
         ];
     }
+
+    public function testPathParamCustomPost($pathParam, $bodyParams)
+    {
+        if (empty($pathParam)) {
+            throw new \Exception('pathParam is required');
+        }
+        return $bodyParams;
+    }
+
+    public function customOperationGet($pathParam, $queryParams)
+    {
+        return [
+            'data' => [
+                'pathParam' => $pathParam,
+                'queryParam' => $queryParams->queryParam
+            ]
+        ];
+    }
+
+    public function customOperationPost($pathParam, $bodyParams)
+    {
+        if (empty($pathParam)) {
+            throw new \Exception('pathParam is required');
+        }
+        return $bodyParams;
+    }
 }

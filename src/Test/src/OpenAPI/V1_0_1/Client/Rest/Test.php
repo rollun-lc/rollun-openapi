@@ -13,6 +13,52 @@ class Test extends BaseAbstract
 
 	/**
 	 * @inheritDoc
+	 */
+	public function customOperationGet($pathParam, $queryParam = null)
+	{
+		// send request
+		$data = $this->getApi()->customOperationGet($pathParam, $queryParam);
+
+		// validation of response
+		$result = $this->transfer((array)$data, \Test\OpenAPI\V1_0_1\DTO\TestCustomResponse::class);
+
+		return $result;
+	}
+
+
+	/**
+	 * @return \Test\OpenAPI\V1_0_1\Client\Api\TestApi
+	 */
+	protected function getApi(): \OpenAPI\Client\Api\ApiInterface
+	{
+		return $this->api;
+	}
+
+
+	/**
+	 * @inheritDoc
+	 */
+	public function customOperationPost($pathParam, $test)
+	{
+		// validation of $test
+		if ($test instanceof \Test\OpenAPI\V1_0_1\DTO\Test) {
+		    $test = $this->toArray($test);
+		}
+		$testObject = $this->transfer((array)$test, '\Test\OpenAPI\V1_0_1\DTO\Test');
+
+
+		// send request
+		$data = $this->getApi()->customOperationPost($pathParam, $test);
+
+		// validation of response
+		$result = $this->transfer((array)$data, \Test\OpenAPI\V1_0_1\DTO\Test::class);
+
+		return $result;
+	}
+
+
+	/**
+	 * @inheritDoc
 	 *
 	 * @param array $queryData
 	 */
@@ -32,15 +78,6 @@ class Test extends BaseAbstract
 		$result = $this->transfer((array)$data, \Test\OpenAPI\V1_0_1\DTO\Collection::class);
 
 		return $result;
-	}
-
-
-	/**
-	 * @return \Test\OpenAPI\V1_0_1\Client\Api\TestApi
-	 */
-	protected function getApi(): \OpenAPI\Client\Api\ApiInterface
-	{
-		return $this->api;
 	}
 
 
@@ -74,6 +111,28 @@ class Test extends BaseAbstract
 
 		// validation of response
 		$result = $this->transfer((array)$data, \Test\OpenAPI\V1_0_1\DTO\TestCustomResponse::class);
+
+		return $result;
+	}
+
+
+	/**
+	 * @inheritDoc
+	 */
+	public function testPathParamCustomPost($pathParam, $test)
+	{
+		// validation of $test
+		if ($test instanceof \Test\OpenAPI\V1_0_1\DTO\Test) {
+		    $test = $this->toArray($test);
+		}
+		$testObject = $this->transfer((array)$test, '\Test\OpenAPI\V1_0_1\DTO\Test');
+
+
+		// send request
+		$data = $this->getApi()->testPathParamCustomPost($pathParam, $test);
+
+		// validation of response
+		$result = $this->transfer((array)$data, \Test\OpenAPI\V1_0_1\DTO\Test::class);
 
 		return $result;
 	}
