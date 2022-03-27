@@ -10,8 +10,6 @@ class Enum extends AbstractValidator
 {
     public const INVALID = 'enumInvalid';
 
-    private const MAX_ALLOWED_STRING_LENGTH = 127;
-
     /**
      * Validation failure message template definitions
      *
@@ -19,42 +17,23 @@ class Enum extends AbstractValidator
      */
     protected $messageTemplates
         = [
-            self::INVALID => "The value should be one of: [%allowed%], not '%value%'",
+            self::INVALID => "The value '%value%' not in enum list.",
         ];
 
-    /**
-     * @var array
-     */
-    protected $messageVariables = [
-        'allowed'    => 'allowedString',
-    ];
-
     protected $allowed = [];
-
-    /**
-     * String representation of $this->allowed for message variables
-     *
-     * @var string
-     */
-    protected $allowedString = '';
 
     public function setAllowed($allowed): void
     {
         $this->allowed = array_map(function ($item) {
             return $this->castToType($item);
         }, $allowed);
-
-        $this->allowedString = $this->truncate(
-            implode(', ', $this->allowed),
-            self::MAX_ALLOWED_STRING_LENGTH
-        );
     }
 
     /**
      * Converts variable to their best type
      *
      * @param $item
-     * @return false|mixed|string
+     * @return bool|float|int|string
      */
     protected function castToType($item)
     {
@@ -95,10 +74,5 @@ class Enum extends AbstractValidator
         }
 
         return $result;
-    }
-
-    private function truncate(string $string, int $length)
-    {
-        return substr($string, 0, $length);
     }
 }
