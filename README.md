@@ -133,3 +133,97 @@ class TestHandler implements RequestHandlerInterface
 ## Зависает composer install 
 Возможно проблема из-за библиотеки "rollun-com/rollun-callback". Попробуйте убрать ее из composer.json и запустить
 установку повторно. Если все прошло успешно, то установите эту библиотеку отдельно через composer require.
+
+## Пользовательские действия и эндпоинты
+
+Добавилась возможность кроме стандартных операций (CRUD), генерировать код для отправки с клиента и обработки сервером пользовательских методов, 
+которые будут работать по нужным вам эндпоинтам.
+
+Ранее у нас была возможность генерировать лишь 8 методов и, соответственно, иметь лишь 8 путей, например для какой-то сущности "Order":
+
+| № | PHP method | Http method | Path        | Action                        |
+|---|------------|-------------|-------------|-------------------------------|
+| 1 | post       | POST        | /order      | Создание                      |
+| 2 | patch      | PATCH       | /order      | Создание или замена           |
+| 3 | get        | PATCH       | /order      | Получение коллекции           |
+| 4 | delete     | PATCH       | /order      | Удаление коллекции(?)         |
+| 5 | idGet      | PATCH       | /order/{id} | Получение сущности            |
+| 6 | idPatch    | PATCH       | /order/{id} | Частичное обновление сущности |
+| 7 | idPut      | PATCH       | /order/{id} | Замена сущности               |
+| 8 | idDelete   | PATCH       | /order/{id} | Удаление сущности             |
+
+
+Сейчас можно генерировать любые другие PHP методы с любыми другими путями.
+Например, нужно сгенерировать метод, который будет обрабатывать POST запрос по пути /order/{id}/user.
+Для этого, в первую очередь, необходимо добавить нужный путь в манифесте.
+Далее есть 2 варианта, как привязать этот путь к вашему PHP методу.
+
+#### Вариант 1. Вы можете ничего более (кроме пути) не указывать
+
+```yaml
+paths:
+  /order/{id}/user:
+    post:
+      tags:
+        - Order
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+```
+
+В этом случае будет сгенерирован метод OrderIdUserPost. То есть методы в классах (Handler, Rest, Api) будут генерироваться автоматически согласно путям в camelCase.
+В контроллере необходимо описать метод с таким же названием.
+Этот метод будет принимать 2 параметра - $id и $bodyData, то есть в контроллер должен выглядеть примерно так:
+
+```php
+public function orderIdUserGet(string $id, User $bodyData)
+{
+    // code
+}
+```
+
+#### Вариант 2. Указать в манифесте operationId.
+Если вы не хотите, чтобы методы генерировались таким образом, т.е. если методу нужно задать какое-то свое логически понятное имя,
+в манифесте можно указать operationId.
+
+```yaml
+paths:
+  /order/{id}/user:
+    post:
+      tags:
+        - Order
+      operationId: setOrderUser
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+```
+
+В этом случае все методы будут иметь название setOrderUser.
+Соответственно, в контроллере тоже нужно описать метод с таким же именем.
+
+```php
+public function setOrderUser(string $id, User $bodyData)
+{
+    // code
+}
+```
+
+Замечание по поводу длины путей. Желательно чтобы пути были не больше двух уровней. 
+То есть допускаются пути /order/{id}/user, но не допускаются /order/{id}/user/roles и т.п.
+

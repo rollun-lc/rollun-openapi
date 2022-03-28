@@ -73,6 +73,46 @@ class Configuration extends ConfigurationAbstract
             'params' => [
             ]
         ],
+        'customOperationGet' => [
+            'className' => 'TestApi',
+            'returnType' => '\Test\OpenAPI\V1_0_1\Client\Model\TestCustomResponse',
+            'params' => [
+                [
+                    'paramName' => 'pathParam',
+                    'paramType' => 'string',
+                    'required' => true,
+                    'style' => 'simple',
+                    'explode' => false
+                ],
+                [
+                    'paramName' => 'queryParam',
+                    'paramType' => 'string',
+                    'required' => false,
+                    'style' => 'form',
+                    'explode' => true
+                ],
+            ]
+        ],
+        'customOperationPost' => [
+            'className' => 'TestApi',
+            'returnType' => '\Test\OpenAPI\V1_0_1\Client\Model\Test',
+            'params' => [
+                [
+                    'paramName' => 'pathParam',
+                    'paramType' => 'string',
+                    'required' => true,
+                    'style' => 'simple',
+                    'explode' => false
+                ],
+                [
+                    'paramName' => 'test',
+                    'paramType' => '\Test\OpenAPI\V1_0_1\Client\Model\Test',
+                    'required' => true,
+                    'style' => '',
+                    'explode' => false
+                ],
+            ]
+        ],
         'testGet' => [
             'className' => 'TestApi',
             'returnType' => '\Test\OpenAPI\V1_0_1\Client\Model\Collection',
@@ -136,6 +176,26 @@ class Configuration extends ConfigurationAbstract
                     'paramType' => 'string[]',
                     'required' => false,
                     'style' => 'form',
+                    'explode' => false
+                ],
+            ]
+        ],
+        'testPathParamCustomPost' => [
+            'className' => 'TestApi',
+            'returnType' => '\Test\OpenAPI\V1_0_1\Client\Model\Test',
+            'params' => [
+                [
+                    'paramName' => 'pathParam',
+                    'paramType' => 'string',
+                    'required' => true,
+                    'style' => 'simple',
+                    'explode' => false
+                ],
+                [
+                    'paramName' => 'test',
+                    'paramType' => '\Test\OpenAPI\V1_0_1\Client\Model\Test',
+                    'required' => true,
+                    'style' => '',
                     'explode' => false
                 ],
             ]

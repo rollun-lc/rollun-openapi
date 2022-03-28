@@ -161,7 +161,11 @@ class GenerateServerCommand extends GenerateCommandAbstract
                     str_replace(' ', '', ucwords(str_replace('/', ' ', $path)))
                 );
                 foreach ($item as $method => $data) {
-                    $action = $path . ucfirst($method);
+                    if (isset($data['operationId'])) {
+                        $action = $data['operationId'];
+                    } else {
+                        $action = $path . ucfirst($method);
+                    }
                     if (isset($pathHandlerData['httpMethods'][$action])) {
                         $pathHandlerData['httpMethods'][$action]['pathParams'] = $matches[1];
                     }

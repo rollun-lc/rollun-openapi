@@ -233,7 +233,7 @@ class OpenapiTest extends TestCase
         $this->assertEquals(3, count($response->data));
     }
 
-    public function testCustomServer()
+    public function testCustomGetWithoutOperation()
     {
         $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Test';
         $client = self::$container->get($clientClass);
@@ -244,6 +244,51 @@ class OpenapiTest extends TestCase
 
         $this->assertEquals($pathParam, $response->data->pathParam);
         $this->assertEquals($queryParam, $response->data->queryParam);
+    }
+
+    public function testCustomGetWithOperation()
+    {
+        $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Test';
+        $client = self::$container->get($clientClass);
+        $pathParam = 'testPathParam';
+        $queryParam = 'testQueryParam';
+
+        $response = $client->customOperationGet($pathParam, $queryParam);
+
+        $this->assertEquals($pathParam, $response->data->pathParam);
+        $this->assertEquals($queryParam, $response->data->queryParam);
+    }
+
+    public function testCustomPostWithoutOperation()
+    {
+        $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Test';
+        $dtoClass = '\Test\\OpenAPI\\V1_0_1\\DTO\\Test';
+        $pathParam = 'testPathParam';
+
+        $client = self::$container->get($clientClass);
+
+        $request = new $dtoClass();
+        $request->id = '12345';
+        $request->name = 'Test';
+
+        $response = $client->testPathParamCustomPost($pathParam,$request);
+        $this->assertInstanceOf($dtoClass, $response);
+    }
+
+    public function testCustomPostWithOperation()
+    {
+        $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Test';
+        $dtoClass = '\Test\\OpenAPI\\V1_0_1\\DTO\\Test';
+        $pathParam = 'testPathParam';
+
+        $client = self::$container->get($clientClass);
+
+        $request = new $dtoClass();
+        $request->id = '12345';
+        $request->name = 'Test';
+
+        $response = $client->customOperationPost($pathParam,$request);
+        $this->assertInstanceOf($dtoClass, $response);
     }
 
     public function testFalseExplodeArrayQueryParam()

@@ -141,6 +141,526 @@ class TestApi implements ApiInterface
     }
 
     /**
+     * Operation customOperationGet
+     *
+     * @param mixed $pathParam pathParam (required)
+     * @param mixed $queryParam queryParam (optional)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array
+     */
+    public function customOperationGet($pathParam, $queryParam = null)
+    {
+        list($response) = $this->customOperationGetWithHttpInfo($pathParam, $queryParam);
+        return $response;
+    }
+
+    /**
+     * Operation customOperationGetWithHttpInfo
+     *
+     * @param mixed $pathParam (required)
+     * @param mixed $queryParam (optional)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array
+     */
+    public function customOperationGetWithHttpInfo($pathParam, $queryParam = null)
+    {
+        $request = $this->customOperationGetRequest($pathParam, $queryParam);
+
+        $this->log('info', 'Openapi send request.', [
+            'requestBody' => (string)$request->getBody(),
+            'requestUri' => (string)$request->getUri()
+        ]);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+
+                $this->log('info', 'Openapi response successfully received.', [
+                    'class' => self::class,
+                    'responseBody' => (string)$response->getBody(),
+                    'responseStatusCode' => $response->getStatusCode()
+                ]);
+            } catch (RequestException $e) {
+                if (!$e->hasResponse()) {
+                    throw $e;
+                }
+                $response = $e->getResponse();
+
+                $this->log('info', 'Openapi not 2xx response received.', [
+                    'class' => self::class,
+                    'responseBody' => (string)$response->getBody(),
+                    'responseStatusCode' => $response->getStatusCode()
+                ]);
+            }
+
+            $statusCode = $response->getStatusCode();
+
+            $responseBody = $response->getBody();
+            switch($statusCode) {
+                case 200:
+                    return [
+                        $this->deserialize((string) $responseBody),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            return [
+                $this->deserialize((string) $responseBody),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
+
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = $this->deserialize((string) $e->getResponseBody());
+                    $e->setResponseObject($data);
+                    break;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation customOperationGetAsync
+     *
+     * 
+     *
+     * @param mixed $pathParam (required)
+     * @param mixed $queryParam (optional)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function customOperationGetAsync($pathParam, $queryParam = null)
+    {
+        return $this->customOperationGetAsyncWithHttpInfo($pathParam, $queryParam)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation customOperationGetAsyncWithHttpInfo
+     *
+     * 
+     *
+     * @param mixed $pathParam (required)
+     * @param mixed $queryParam (optional)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function customOperationGetAsyncWithHttpInfo($pathParam, $queryParam = null)
+    {
+        $request = $this->customOperationGetRequest($pathParam, $queryParam);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) {
+                    return [
+                        $this->deserialize((string) $response->getBody()),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'customOperationGet'
+     *
+     * @param mixed $pathParam (required)
+     * @param mixed $queryParam (optional)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    protected function customOperationGetRequest($pathParam, $queryParam = null)
+    {
+        // verify the required parameter 'pathParam' is set
+        if ($pathParam === null || (is_array($pathParam) && count($pathParam) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $pathParam when calling customOperationGet'
+            );
+        }
+
+        $resourcePath = '/test/{pathParam}/operation';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+        // query params
+        if ($queryParam !== null) {
+            if('form' === 'form' && is_array($queryParam)) {
+                foreach($queryParam as $key => $value) {
+                    $queryParams['queryParam'][$key] = $value;
+                }
+            }
+            else {
+                $queryParams['queryParam'] = $queryParam;
+            }
+        }
+
+
+        // path params
+        if ($pathParam !== null) {
+            $resourcePath = str_replace(
+                '{' . 'pathParam' . '}',
+                ObjectSerializer::toPathValue($pathParam),
+                $resourcePath
+            );
+        }
+
+        // body params
+        $_tempBody = null;
+
+        if ($multipart) {
+            $headers = $this->headerSelector->selectHeadersForMultipart(
+                ['text/plain']
+            );
+        } else {
+            $headers = $this->headerSelector->selectHeaders(
+                ['text/plain'],
+                []
+            );
+        }
+
+        // for model (json/xml)
+        if (isset($_tempBody)) {
+            // $_tempBody is the method argument, if present
+            if ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp\json_encode($_tempBody);
+            } else {
+                $httpBody = $_tempBody;
+            }
+        } elseif (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $multipartContents[] = [
+                        'name' => $formParamName,
+                        'contents' => $formParamValue
+                    ];
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp\json_encode($formParams);
+
+            } else {
+                // for HTTP post (form)
+                $httpBody = Query::build($formParams);
+            }
+        }
+
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $query = Query::build($queryParams);
+        return new Request(
+            'GET',
+            $this->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Operation customOperationPost
+     *
+     * @param mixed $pathParam pathParam (required)
+     * @param mixed $test test (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array
+     */
+    public function customOperationPost($pathParam, $test)
+    {
+        list($response) = $this->customOperationPostWithHttpInfo($pathParam, $test);
+        return $response;
+    }
+
+    /**
+     * Operation customOperationPostWithHttpInfo
+     *
+     * @param mixed $pathParam (required)
+     * @param mixed $test (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array
+     */
+    public function customOperationPostWithHttpInfo($pathParam, $test)
+    {
+        $request = $this->customOperationPostRequest($pathParam, $test);
+
+        $this->log('info', 'Openapi send request.', [
+            'requestBody' => (string)$request->getBody(),
+            'requestUri' => (string)$request->getUri()
+        ]);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+
+                $this->log('info', 'Openapi response successfully received.', [
+                    'class' => self::class,
+                    'responseBody' => (string)$response->getBody(),
+                    'responseStatusCode' => $response->getStatusCode()
+                ]);
+            } catch (RequestException $e) {
+                if (!$e->hasResponse()) {
+                    throw $e;
+                }
+                $response = $e->getResponse();
+
+                $this->log('info', 'Openapi not 2xx response received.', [
+                    'class' => self::class,
+                    'responseBody' => (string)$response->getBody(),
+                    'responseStatusCode' => $response->getStatusCode()
+                ]);
+            }
+
+            $statusCode = $response->getStatusCode();
+
+            $responseBody = $response->getBody();
+            switch($statusCode) {
+                case 201:
+                    return [
+                        $this->deserialize((string) $responseBody),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            return [
+                $this->deserialize((string) $responseBody),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
+
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 201:
+                    $data = $this->deserialize((string) $e->getResponseBody());
+                    $e->setResponseObject($data);
+                    break;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation customOperationPostAsync
+     *
+     * 
+     *
+     * @param mixed $pathParam (required)
+     * @param mixed $test (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function customOperationPostAsync($pathParam, $test)
+    {
+        return $this->customOperationPostAsyncWithHttpInfo($pathParam, $test)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation customOperationPostAsyncWithHttpInfo
+     *
+     * 
+     *
+     * @param mixed $pathParam (required)
+     * @param mixed $test (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function customOperationPostAsyncWithHttpInfo($pathParam, $test)
+    {
+        $request = $this->customOperationPostRequest($pathParam, $test);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) {
+                    return [
+                        $this->deserialize((string) $response->getBody()),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'customOperationPost'
+     *
+     * @param mixed $pathParam (required)
+     * @param mixed $test (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    protected function customOperationPostRequest($pathParam, $test)
+    {
+        // verify the required parameter 'pathParam' is set
+        if ($pathParam === null || (is_array($pathParam) && count($pathParam) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $pathParam when calling customOperationPost'
+            );
+        }
+        // verify the required parameter 'test' is set
+        if ($test === null || (is_array($test) && count($test) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $test when calling customOperationPost'
+            );
+        }
+
+        $resourcePath = '/test/{pathParam}/operation';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+
+        // path params
+        if ($pathParam !== null) {
+            $resourcePath = str_replace(
+                '{' . 'pathParam' . '}',
+                ObjectSerializer::toPathValue($pathParam),
+                $resourcePath
+            );
+        }
+
+        // body params
+        $_tempBody = null;
+        if (isset($test)) {
+            $_tempBody = $test;
+        }
+
+        if ($multipart) {
+            $headers = $this->headerSelector->selectHeadersForMultipart(
+                ['application/json']
+            );
+        } else {
+            $headers = $this->headerSelector->selectHeaders(
+                ['application/json'],
+                ['application/json']
+            );
+        }
+
+        // for model (json/xml)
+        if (isset($_tempBody)) {
+            // $_tempBody is the method argument, if present
+            if ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp\json_encode($_tempBody);
+            } else {
+                $httpBody = $_tempBody;
+            }
+        } elseif (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $multipartContents[] = [
+                        'name' => $formParamName,
+                        'contents' => $formParamValue
+                    ];
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp\json_encode($formParams);
+
+            } else {
+                // for HTTP post (form)
+                $httpBody = Query::build($formParams);
+            }
+        }
+
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $query = Query::build($queryParams);
+        return new Request(
+            'POST',
+            $this->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
      * Operation testGet
      *
      * @param mixed $name name (optional)
@@ -922,6 +1442,265 @@ class TestApi implements ApiInterface
         $query = Query::build($queryParams);
         return new Request(
             'GET',
+            $this->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Operation testPathParamCustomPost
+     *
+     * @param mixed $pathParam pathParam (required)
+     * @param mixed $test test (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array
+     */
+    public function testPathParamCustomPost($pathParam, $test)
+    {
+        list($response) = $this->testPathParamCustomPostWithHttpInfo($pathParam, $test);
+        return $response;
+    }
+
+    /**
+     * Operation testPathParamCustomPostWithHttpInfo
+     *
+     * @param mixed $pathParam (required)
+     * @param mixed $test (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array
+     */
+    public function testPathParamCustomPostWithHttpInfo($pathParam, $test)
+    {
+        $request = $this->testPathParamCustomPostRequest($pathParam, $test);
+
+        $this->log('info', 'Openapi send request.', [
+            'requestBody' => (string)$request->getBody(),
+            'requestUri' => (string)$request->getUri()
+        ]);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+
+                $this->log('info', 'Openapi response successfully received.', [
+                    'class' => self::class,
+                    'responseBody' => (string)$response->getBody(),
+                    'responseStatusCode' => $response->getStatusCode()
+                ]);
+            } catch (RequestException $e) {
+                if (!$e->hasResponse()) {
+                    throw $e;
+                }
+                $response = $e->getResponse();
+
+                $this->log('info', 'Openapi not 2xx response received.', [
+                    'class' => self::class,
+                    'responseBody' => (string)$response->getBody(),
+                    'responseStatusCode' => $response->getStatusCode()
+                ]);
+            }
+
+            $statusCode = $response->getStatusCode();
+
+            $responseBody = $response->getBody();
+            switch($statusCode) {
+                case 201:
+                    return [
+                        $this->deserialize((string) $responseBody),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            return [
+                $this->deserialize((string) $responseBody),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
+
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 201:
+                    $data = $this->deserialize((string) $e->getResponseBody());
+                    $e->setResponseObject($data);
+                    break;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation testPathParamCustomPostAsync
+     *
+     * 
+     *
+     * @param mixed $pathParam (required)
+     * @param mixed $test (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function testPathParamCustomPostAsync($pathParam, $test)
+    {
+        return $this->testPathParamCustomPostAsyncWithHttpInfo($pathParam, $test)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation testPathParamCustomPostAsyncWithHttpInfo
+     *
+     * 
+     *
+     * @param mixed $pathParam (required)
+     * @param mixed $test (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function testPathParamCustomPostAsyncWithHttpInfo($pathParam, $test)
+    {
+        $request = $this->testPathParamCustomPostRequest($pathParam, $test);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) {
+                    return [
+                        $this->deserialize((string) $response->getBody()),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'testPathParamCustomPost'
+     *
+     * @param mixed $pathParam (required)
+     * @param mixed $test (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    protected function testPathParamCustomPostRequest($pathParam, $test)
+    {
+        // verify the required parameter 'pathParam' is set
+        if ($pathParam === null || (is_array($pathParam) && count($pathParam) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $pathParam when calling testPathParamCustomPost'
+            );
+        }
+        // verify the required parameter 'test' is set
+        if ($test === null || (is_array($test) && count($test) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $test when calling testPathParamCustomPost'
+            );
+        }
+
+        $resourcePath = '/test/{pathParam}/custom';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+
+        // path params
+        if ($pathParam !== null) {
+            $resourcePath = str_replace(
+                '{' . 'pathParam' . '}',
+                ObjectSerializer::toPathValue($pathParam),
+                $resourcePath
+            );
+        }
+
+        // body params
+        $_tempBody = null;
+        if (isset($test)) {
+            $_tempBody = $test;
+        }
+
+        if ($multipart) {
+            $headers = $this->headerSelector->selectHeadersForMultipart(
+                ['application/json']
+            );
+        } else {
+            $headers = $this->headerSelector->selectHeaders(
+                ['application/json'],
+                ['application/json']
+            );
+        }
+
+        // for model (json/xml)
+        if (isset($_tempBody)) {
+            // $_tempBody is the method argument, if present
+            if ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp\json_encode($_tempBody);
+            } else {
+                $httpBody = $_tempBody;
+            }
+        } elseif (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $multipartContents[] = [
+                        'name' => $formParamName,
+                        'contents' => $formParamValue
+                    ];
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp\json_encode($formParams);
+
+            } else {
+                // for HTTP post (form)
+                $httpBody = Query::build($formParams);
+            }
+        }
+
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $query = Query::build($queryParams);
+        return new Request(
+            'POST',
             $this->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
             $headers,
             $httpBody
