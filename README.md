@@ -145,12 +145,12 @@ class TestHandler implements RequestHandlerInterface
 |---|------------|-------------|-------------|-------------------------------|
 | 1 | post       | POST        | /order      | Создание                      |
 | 2 | patch      | PATCH       | /order      | Создание или замена           |
-| 3 | get        | PATCH       | /order      | Получение коллекции           |
-| 4 | delete     | PATCH       | /order      | Удаление коллекции(?)         |
-| 5 | idGet      | PATCH       | /order/{id} | Получение сущности            |
+| 3 | get        | GET         | /order      | Получение коллекции           |
+| 4 | delete     | DELETE      | /order      | Удаление коллекции(?)         |
+| 5 | idGet      | GET         | /order/{id} | Получение сущности            |
 | 6 | idPatch    | PATCH       | /order/{id} | Частичное обновление сущности |
-| 7 | idPut      | PATCH       | /order/{id} | Замена сущности               |
-| 8 | idDelete   | PATCH       | /order/{id} | Удаление сущности             |
+| 7 | idPut      | PUT         | /order/{id} | Замена сущности               |
+| 8 | idDelete   | DELETE      | /order/{id} | Удаление сущности             |
 
 
 Сейчас можно генерировать любые другие PHP методы с любыми другими путями.
