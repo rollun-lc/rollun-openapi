@@ -21,7 +21,7 @@ class EnumTest extends TestCase
         self::assertNotEmpty($messages = $validator->getMessages());
         // false converts to empty string since we use implode
         self::assertEquals([
-            Enum::INVALID => "The value should be one of: [], not 'false'"
+            Enum::INVALID => "The value 'false' not in enum list."
         ],$messages);
     }
 
@@ -45,7 +45,7 @@ class EnumTest extends TestCase
         self::assertFalse($validator->isValid('another'));
         self::assertNotEmpty($messages = $validator->getMessages());
         self::assertEquals([
-            Enum::INVALID => "The value should be one of: [random], not 'another'"
+            Enum::INVALID => "The value 'another' not in enum list."
         ],$messages);
     }
 
@@ -58,7 +58,7 @@ class EnumTest extends TestCase
         self::assertFalse($validator->isValid('another'));
         self::assertNotEmpty($messages = $validator->getMessages());
         self::assertEquals([
-            Enum::INVALID => "The value should be one of: [random], not 'another'"
+            Enum::INVALID => "The value 'another' not in enum list."
         ],$messages);
     }
 }
