@@ -931,6 +931,251 @@ class TestApi implements ApiInterface
     }
 
     /**
+     * Operation testIdDelete
+     *
+     * @param mixed $id id (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array
+     */
+    public function testIdDelete($id)
+    {
+        list($response) = $this->testIdDeleteWithHttpInfo($id);
+        return $response;
+    }
+
+    /**
+     * Operation testIdDeleteWithHttpInfo
+     *
+     * @param mixed $id (required)
+     *
+     * @throws ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array
+     */
+    public function testIdDeleteWithHttpInfo($id)
+    {
+        $request = $this->testIdDeleteRequest($id);
+
+        $this->log('info', 'Openapi send request.', [
+            'requestBody' => (string)$request->getBody(),
+            'requestUri' => (string)$request->getUri()
+        ]);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+
+                $this->log('info', 'Openapi response successfully received.', [
+                    'class' => self::class,
+                    'responseBody' => (string)$response->getBody(),
+                    'responseStatusCode' => $response->getStatusCode()
+                ]);
+            } catch (RequestException $e) {
+                if (!$e->hasResponse()) {
+                    throw $e;
+                }
+                $response = $e->getResponse();
+
+                $this->log('info', 'Openapi not 2xx response received.', [
+                    'class' => self::class,
+                    'responseBody' => (string)$response->getBody(),
+                    'responseStatusCode' => $response->getStatusCode()
+                ]);
+            }
+
+            $statusCode = $response->getStatusCode();
+
+            $responseBody = $response->getBody();
+            switch($statusCode) {
+                case 200:
+                    return [
+                        $this->deserialize((string) $responseBody),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            return [
+                $this->deserialize((string) $responseBody),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
+
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = $this->deserialize((string) $e->getResponseBody());
+                    $e->setResponseObject($data);
+                    break;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation testIdDeleteAsync
+     *
+     * 
+     *
+     * @param mixed $id (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function testIdDeleteAsync($id)
+    {
+        return $this->testIdDeleteAsyncWithHttpInfo($id)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation testIdDeleteAsyncWithHttpInfo
+     *
+     * 
+     *
+     * @param mixed $id (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function testIdDeleteAsyncWithHttpInfo($id)
+    {
+        $request = $this->testIdDeleteRequest($id);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) {
+                    return [
+                        $this->deserialize((string) $response->getBody()),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'testIdDelete'
+     *
+     * @param mixed $id (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    protected function testIdDeleteRequest($id)
+    {
+        // verify the required parameter 'id' is set
+        if ($id === null || (is_array($id) && count($id) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $id when calling testIdDelete'
+            );
+        }
+
+        $resourcePath = '/Test/{id}';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+
+        // path params
+        if ($id !== null) {
+            $resourcePath = str_replace(
+                '{' . 'id' . '}',
+                ObjectSerializer::toPathValue($id),
+                $resourcePath
+            );
+        }
+
+        // body params
+        $_tempBody = null;
+
+        if ($multipart) {
+            $headers = $this->headerSelector->selectHeadersForMultipart(
+                ['application/json']
+            );
+        } else {
+            $headers = $this->headerSelector->selectHeaders(
+                ['application/json'],
+                []
+            );
+        }
+
+        // for model (json/xml)
+        if (isset($_tempBody)) {
+            // $_tempBody is the method argument, if present
+            if ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp\json_encode($_tempBody);
+            } else {
+                $httpBody = $_tempBody;
+            }
+        } elseif (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $multipartContents[] = [
+                        'name' => $formParamName,
+                        'contents' => $formParamValue
+                    ];
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp\json_encode($formParams);
+
+            } else {
+                // for HTTP post (form)
+                $httpBody = Query::build($formParams);
+            }
+        }
+
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $query = Query::build($queryParams);
+        return new Request(
+            'DELETE',
+            $this->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
      * Operation testIdGet
      *
      * @param mixed $id id (required)

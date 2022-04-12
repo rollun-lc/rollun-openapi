@@ -37,7 +37,7 @@
     "rollun-com/rollun-callback": "^7.0.0",
     "rollun-com/rollun-dic": "^4.0.0",
     "symfony/dotenv": "^6.0.3",
-    "rollun-com/rollun-datastore": "dev-laminas-with-xiag",
+    "rollun-com/rollun-datastore": "^8.0.1",
     "guzzle/guzzle": "dev-php-8.0 as v3.9.0"
   },
   "require-dev": {

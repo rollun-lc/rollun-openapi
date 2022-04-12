@@ -329,4 +329,15 @@ class OpenapiTest extends TestCase
         $this->assertIsArray($response->data);
         $this->assertEquals(2, count($response->data));
     }
+
+    public function testDeleteById()
+    {
+        $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Test';
+        $id = '12345';
+
+        $client = self::$container->get($clientClass);
+        $response = $client->deleteById($id);
+        $this->assertEquals('OK', $response->data);
+        $this->assertEmpty($response->messages);
+    }
 }

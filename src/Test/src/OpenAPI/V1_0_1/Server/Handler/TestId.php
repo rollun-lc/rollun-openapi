@@ -38,6 +38,17 @@ class TestId extends AbstractHandler
     }
 
     /**
+     * @PHA\Delete()
+     * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\Test\OpenAPI\V1_0_1\DTO\OkResponse::class})
+     * @param ServerRequestInterface $request
+     *
+     * @return array
+     */
+    public function testIdDelete(ServerRequestInterface $request)
+    {
+        return $this->runAction($request, 'Delete()', 'testIdDelete');
+    }
+    /**
      * @PHA\Get()
      * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\Test\OpenAPI\V1_0_1\DTO\Test::class})
      * @param ServerRequestInterface $request

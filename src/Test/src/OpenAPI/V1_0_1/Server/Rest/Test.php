@@ -71,6 +71,19 @@ class Test extends Base7Abstract
 	/**
 	 * @inheritDoc
 	 */
+	public function deleteById($id)
+	{
+		if (method_exists($this->controllerObject, 'deleteById')) {
+		    return $this->controllerObject->deleteById($id);
+		}
+
+		throw new \Exception('Not implemented method');
+	}
+
+
+	/**
+	 * @inheritDoc
+	 */
 	public function getById($id)
 	{
 		if (method_exists($this->controllerObject, 'getById')) {

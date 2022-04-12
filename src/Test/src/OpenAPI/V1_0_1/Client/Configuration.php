@@ -140,6 +140,19 @@ class Configuration extends ConfigurationAbstract
                 ],
             ]
         ],
+        'testIdDelete' => [
+            'className' => 'TestApi',
+            'returnType' => '\Test\OpenAPI\V1_0_1\Client\Model\OkResponse',
+            'params' => [
+                [
+                    'paramName' => 'id',
+                    'paramType' => 'string',
+                    'required' => true,
+                    'style' => 'simple',
+                    'explode' => false
+                ],
+            ]
+        ],
         'testIdGet' => [
             'className' => 'TestApi',
             'returnType' => '\Test\OpenAPI\V1_0_1\Client\Model\Test',

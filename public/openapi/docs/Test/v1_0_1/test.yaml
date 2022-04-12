@@ -74,6 +74,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Test'
+    delete:
+      tags:
+        - Test
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: '5f51f78ccaa4c'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OkResponse"
   /test/{pathParam}/custom:
     get:
       tags:
@@ -251,6 +268,15 @@ components:
           type: string
         name:
           type: string
+    OkResponse:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/ErrorResult'
+      properties:
+        data:
+          type: string
+          enum:
+            - OK
     ErrorResult:
       type: object
       properties:

@@ -70,4 +70,11 @@ class TestControllerObject
         }
         return $bodyParams;
     }
+
+    public function deleteById($id)
+    {
+        return [
+            'data' => 'OK'
+        ];
+    }
 }

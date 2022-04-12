@@ -84,6 +84,21 @@ class Test extends BaseAbstract
 	/**
 	 * @inheritDoc
 	 */
+	public function deleteById($id)
+	{
+		// send request
+		$data = $this->getApi()->testIdDelete($id);
+
+		// validation of response
+		$result = $this->transfer((array)$data, \Test\OpenAPI\V1_0_1\DTO\OkResponse::class);
+
+		return $result;
+	}
+
+
+	/**
+	 * @inheritDoc
+	 */
 	public function getById($id)
 	{
 		// send request
