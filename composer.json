@@ -90,5 +90,5 @@
       "url": "git@github.com:orlyk-rollun/guzzle3.git"
     }
   ],
-  "minimum-stability": "dev"
+  "minimum-stability": "stable"
 }
