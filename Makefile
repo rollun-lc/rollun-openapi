@@ -1,4 +1,4 @@
-init: docker-down-clear docker-pull docker-build docker-up composer-install development-enable
+init: docker-down-clear docker-pull docker-build docker-up composer-install
 up: docker-up
 down: docker-down
 restart: docker-down docker-up
