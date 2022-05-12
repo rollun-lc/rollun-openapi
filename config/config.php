@@ -25,13 +25,15 @@ if(file_exists('.env')) {
 $appEnv = getenv('APP_ENV');
 
 $aggregator = new ConfigAggregator([
+    \rollun\repository\ConfigProvider::class,
+    \rollun\uploader\ConfigProvider::class,
+    \Laminas\Filter\ConfigProvider::class,
+    \rollun\utils\Metrics\ConfigProvider::class,
+    \rollun\utils\FailedProcesses\ConfigProvider::class,
+    \Laminas\Cache\Storage\Adapter\Filesystem\ConfigProvider::class,
+    \Laminas\Diactoros\ConfigProvider::class,
     \Laminas\Cache\Storage\Adapter\BlackHole\ConfigProvider::class,
     \Laminas\Serializer\ConfigProvider::class,
-    /*\Zend\Expressive\Authentication\Basic\ConfigProvider::class,
-    \Zend\Expressive\Authentication\Session\ConfigProvider::class,
-    \Zend\Expressive\Authentication\ConfigProvider::class,
-    \Zend\Expressive\Session\ConfigProvider::class,
-    \Zend\Expressive\Session\Ext\ConfigProvider::class,*/
     \Laminas\Cache\ConfigProvider::class,
     \Laminas\Mail\ConfigProvider::class,
     \Laminas\Db\ConfigProvider::class,
