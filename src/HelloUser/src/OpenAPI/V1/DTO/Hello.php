@@ -13,7 +13,7 @@ use ReflectionProperty;
 class Hello
 {
     /**
-     * @DTA\Data(field="message")
+     * @ODTA\Data(field="message")
      * @DTA\Validator(name="Type", options={"type":"string"})
      * @var string
      */

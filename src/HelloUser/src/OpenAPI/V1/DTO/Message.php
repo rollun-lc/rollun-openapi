@@ -10,33 +10,33 @@ use ReflectionProperty;
 /**
  * @property string $level
  * @property string $text
- * @property array $context
+ * @property string $type
  */
 class Message
 {
     /**
      * Message level  (like in a logger)
-     * @DTA\Data(field="level")
+     * @ODTA\Data(field="level")
      * @DTA\Validator(name="Type", options={"type":"string"})
      * @var string
      */
     private string $level;
     /**
      * Message text
-     * @DTA\Data(field="text")
+     * @ODTA\Data(field="text")
      * @DTA\Validator(name="Type", options={"type":"string"})
      * @var string
      */
     private string $text;
     /**
-     * Message context (like in a logger)
-     * @DTA\Data(field="context", required=false)
-     * @DTA\Validator(name="Collection", options={"validators":{
-     *     {"name":"Type", "options":{"type":"string"}}
+     * @ODTA\Data(field="type", required=false)
+     * @DTA\Validator(name="Type", options={"type":"string"})
+     * @DTA\Validator(name="Enum", options={"allowed":{
+     *      "'UNDEFINED'"
      * }})
-     * @var string[]
+     * @var string
      */
-    private array $context;
+    private string $type;
 
     public function __get($name)
     {
@@ -78,19 +78,19 @@ class Message
         return $this->isInitialized('text');
     }
 
-    public function getContext(): array
+    public function getType(): string
     {
-        return $this->context;
+        return $this->type;
     }
 
-    public function setContext(array $context): void
+    public function setType(string $type): void
     {
-        $this->context = $context ;
+        $this->type = $type ;
     }
 
-    public function hasContext(): bool
+    public function hasType(): bool
     {
-        return $this->isInitialized('context');
+        return $this->isInitialized('type');
     }
 
     private function isInitialized(string $property): bool

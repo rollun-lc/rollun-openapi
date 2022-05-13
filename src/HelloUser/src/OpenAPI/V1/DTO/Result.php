@@ -14,14 +14,14 @@ use ReflectionProperty;
 class Result
 {
     /**
-     * @DTA\Data(field="data", required=false)
+     * @ODTA\Data(field="data", required=false)
      * @DTA\Strategy(name="Object", options={"type":object::class})
      * @DTA\Validator(name="TypeCompliant", options={"type":object::class})
      * @var object
      */
     private object $data;
     /**
-     * @DTA\Data(field="messages", required=false)
+     * @ODTA\Data(field="messages", required=false)
      * @DTA\Strategy(name="ObjectArray", options={"type":\HelloUser\OpenAPI\V1\DTO\Message::class})
      * @DTA\Validator(name="Collection", options={"validators":{
      *     {"name":"TypeCompliant", "options":{"type":\HelloUser\OpenAPI\V1\DTO\Message::class}}

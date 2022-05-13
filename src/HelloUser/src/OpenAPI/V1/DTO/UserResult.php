@@ -14,14 +14,14 @@ use ReflectionProperty;
 class UserResult
 {
     /**
-     * @DTA\Data(field="data", required=false)
+     * @ODTA\Data(field="data", required=false)
      * @DTA\Strategy(name="Object", options={"type":\HelloUser\OpenAPI\V1\DTO\User::class})
      * @DTA\Validator(name="TypeCompliant", options={"type":\HelloUser\OpenAPI\V1\DTO\User::class})
      * @var \HelloUser\OpenAPI\V1\DTO\User
      */
     private \HelloUser\OpenAPI\V1\DTO\User $data;
     /**
-     * @DTA\Data(field="messages", required=false)
+     * @ODTA\Data(field="messages", required=false)
      * @DTA\Strategy(name="ObjectArray", options={"type":\HelloUser\OpenAPI\V1\DTO\Message::class})
      * @DTA\Validator(name="Collection", options={"validators":{
      *     {"name":"TypeCompliant", "options":{"type":\HelloUser\OpenAPI\V1\DTO\Message::class}}

@@ -114,11 +114,10 @@ components:
           type: string
           description: 'Message text'
           example: 'Something wrong.'
-        context:
-          type: array
-          description: 'Message context (like in a logger)'
-          items:
-            type: string
+        type:
+          type: string
+          enum:
+            - UNDEFINED
     ErrorResult:
       type: object
       properties:
@@ -152,6 +151,9 @@ components:
         name:
           type: string
           example: 'Roman'
+        created_at:
+          type: string
+          format: date-time
     HelloResult:
       allOf:
         - $ref: '#/components/schemas/Result'

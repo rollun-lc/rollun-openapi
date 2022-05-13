@@ -13,7 +13,7 @@ use ReflectionProperty;
 class ErrorResult
 {
     /**
-     * @DTA\Data(field="messages", required=false)
+     * @ODTA\Data(field="messages", required=false)
      * @DTA\Strategy(name="ObjectArray", options={"type":\HelloUser\OpenAPI\V1\DTO\Message::class})
      * @DTA\Validator(name="Collection", options={"validators":{
      *     {"name":"TypeCompliant", "options":{"type":\HelloUser\OpenAPI\V1\DTO\Message::class}}

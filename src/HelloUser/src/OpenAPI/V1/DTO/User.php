@@ -10,21 +10,29 @@ use ReflectionProperty;
 /**
  * @property string $id
  * @property string $name
+ * @property \DateTime $createdAt
  */
 class User
 {
     /**
-     * @DTA\Data(field="id")
+     * @ODTA\Data(field="id")
      * @DTA\Validator(name="Type", options={"type":"string"})
      * @var string
      */
     private string $id;
     /**
-     * @DTA\Data(field="name")
+     * @ODTA\Data(field="name")
      * @DTA\Validator(name="Type", options={"type":"string"})
      * @var string
      */
     private string $name;
+    /**
+     * @ODTA\Data(field="created_at", required=false)
+     * @DTA\Strategy(name="DateTime")
+     * @DTA\Validator(name="Date", options={"format": "RFC3339"})
+     * @var \DateTime
+     */
+    private \DateTime $createdAt;
 
     public function __get($name)
     {
@@ -64,6 +72,21 @@ class User
     public function hasName(): bool
     {
         return $this->isInitialized('name');
+    }
+
+    public function getCreatedAt(): \DateTime
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTime $createdAt): void
+    {
+        $this->createdAt = $createdAt ;
+    }
+
+    public function hasCreatedAt(): bool
+    {
+        return $this->isInitialized('createdAt');
     }
 
     private function isInitialized(string $property): bool

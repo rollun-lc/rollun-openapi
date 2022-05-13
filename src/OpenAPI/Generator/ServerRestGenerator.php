@@ -248,7 +248,7 @@ class ServerRestGenerator
     private function generateConvertString(string $object, string $array, string $arrayConverting)
     {
         return $arrayConverting === 'dataTransfer' ?
-            '$this->dataTransfer->transferFromTypedData' . "($object, $array);" :
+            "$array =" . '$this->dataTransfer->extractFromTypedData' . "($object);" :
             "$array = (array) $object;";
     }
 }
