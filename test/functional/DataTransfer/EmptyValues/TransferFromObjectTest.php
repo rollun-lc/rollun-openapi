@@ -19,7 +19,7 @@ class TransferFromObjectTest extends FunctionalTestCase
         $data = $this->transferFromObject($user);
 
         self::assertTrue(isset($data['id']));
-        self::assertEquals($user->id, $user['id']);
+        self::assertEquals($user->id, $data['id']);
 
         self::assertTrue(isset($data['snake_case']));
         self::assertEquals($user->snakeCase, $data['snake_case']);
@@ -36,7 +36,7 @@ class TransferFromObjectTest extends FunctionalTestCase
         $data = $this->transferFromObject($user);
 
         self::assertTrue(isset($data['id']));
-        self::assertEquals($user->id, $user['id']);
+        self::assertEquals($user->id, $data['id']);
 
         self::assertFalse(array_key_exists('snake_case', $data));
         self::assertFalse(array_key_exists('camelCase', $data));
