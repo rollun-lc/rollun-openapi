@@ -4,11 +4,16 @@ declare(strict_types=1);
 namespace {{package}};
 
 use Articus\DataTransfer\Annotation as DTA;
+use OpenAPI\DataTransfer\Annotation as ODTA;
+use ReflectionProperty;
 
 /**
 {{#description}}
  * {{description}}
 {{/description}}
+ {{#vars}}
+ * @property {{>php_data_type}} ${{name}}
+ {{/vars}}
  */
 class {{classname}}
 {
@@ -17,11 +22,45 @@ class {{classname}}
 {{#description}}
      * {{description}}
 {{/description}}
-     * @DTA\Data(field="{{baseName}}"{{^required}}, nullable=true{{/required}}){{#vendorExtensions}}{{#internal.ze-ph.fromQuery}}
+     * @DTA\Data(field="{{baseName}}"{{#nullable}}, nullable=true{{/nullable}}{{^required}}, required=false{{/required}}){{#vendorExtensions}}{{#internal.ze-ph.fromQuery}}
 {{>model_query_var}}{{/internal.ze-ph.fromQuery}}{{/vendorExtensions}}{{#vendorExtensions}}{{^internal.ze-ph.fromQuery}}
 {{>model_normal_var}}{{/internal.ze-ph.fromQuery}}{{/vendorExtensions}}{{^vendorExtensions}}
 {{>model_normal_var}}{{/vendorExtensions}}     * @var {{dataType}}
      */
-    public {{>php_data_type}} ${{name}};
+    private {{>php_data_type}} ${{name}};
 {{/vars}}
+
+    public function __get($name)
+    {
+        return $this->isInitialized($name) ? $this->{$name} : null;
+    }
+
+    public function __set(string $name, $value): void
+    {
+        $this->{$name} = $value;
+    }
+{{#vars}}
+
+    public function get{{nameInCamelCase}}(): {{>php_data_type}}
+    {
+        return $this->{{name}};
+    }
+
+    public function set{{nameInCamelCase}}({{>php_data_type}} ${{name}}): void
+    {
+        $this->{{name}} = ${{name}} ;
+    }
+
+    public function has{{nameInCamelCase}}(): bool
+    {
+        return $this->isInitialized('{{name}}');
+    }
+{{/vars}}
+
+    private function isInitialized(string $property): bool
+    {
+        $rp = new ReflectionProperty(self::class, $property);
+        $rp->setAccessible(true);
+        return $rp->isInitialized($this);
+    }
 }{{/model}}{{/models}}

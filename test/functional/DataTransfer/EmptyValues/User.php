@@ -4,94 +4,103 @@ declare(strict_types=1);
 
 namespace rollun\test\OpenAPI\functional\DataTransfer\EmptyValues;
 
-use ArrayObject;
 use Articus\DataTransfer\Annotation as DTA;
 use OpenAPI\DataTransfer\Annotation as ODTA;
+use ReflectionProperty;
 
 /**
  * @property $id
  * @property $snakeCase
  * @property $camelCase
  */
-class User extends ArrayObject
+class User
 {
     /**
      * @ODTA\Data(field="id")
      * @DTA\Validator(name="Type", options={"type":"string"})
      * @var string
      */
-    private $id;
+    private string $id;
 
     /**
      * @ODTA\Data(field="snake_case", nullable=false, required=false)
      * @DTA\Validator(name="Type", options={"type":"string"})
      * @var string
      */
-    private $snakeCase;
+    private string $snakeCase;
 
     /**
      * @ODTA\Data(field="camelCase", nullable=false, required=false)
      * @DTA\Validator(name="Type", options={"type":"string"})
      * @var string
      */
-    private $camelCase;
+    private string $camelCase;
 
     public function __get($name)
     {
-        if (array_key_exists($name, (array)$this)) {
-            return $this[$name];
-        }
-
-        return null;
+        return $this->isInitialized($name) ? $this->{$name} : null;
     }
 
-    public function __set($name, $value)
+    public function __set(string $name, $value): void
     {
-        $this[$name] = $value;
+        $this->{$name} = $value;
     }
 
-    public function setId($id)
+    /**
+     * @return string
+     */
+    public function getId(): string
     {
-        $this['id'] = $id;
+        return $this->id;
     }
 
-    public function getId()
+    /**
+     * @param string $id
+     */
+    public function setId(string $id): void
     {
-        return $this['id'];
+        $this->id = $id;
     }
 
-    public function setSnakeCase($name)
+    public function getSnakeCase(): string
     {
-        $this['snakeCase'] = $name;
+        return $this->snakeCase;
     }
 
-    public function getSnakeCase()
+    public function setSnakeCase($value): void
     {
-        return $this['snakeCase'];
+        $this->snakeCase = $value;
     }
 
-    public function setCamelCase($name)
+    public function getCamelCase(): string
     {
-        $this['camelCase'] = $name;
+        return $this->camelCase;
     }
 
-    public function getCamelCase()
+    public function setCamelCase($value): void
     {
-        return $this['camelCase'];
+        $this->camelCase = $value;
     }
 
     public function hasId(): bool
     {
-        return array_key_exists('id', (array)$this);
+        return $this->isInitialized('id');
     }
 
     public function hasSnakeCase(): bool
     {
-        return array_key_exists('snakeCase', (array)$this);
+        return $this->isInitialized('snakeCase');
     }
 
     public function hasCamelCase(): bool
     {
-        return array_key_exists('camelCase', (array)$this);
+        return $this->isInitialized('camelCase');
+    }
+
+    private function isInitialized(string $property): bool
+    {
+        $rp = new ReflectionProperty(self::class, $property);
+        $rp->setAccessible(true);
+        return $rp->isInitialized($this);
     }
 }
