@@ -41,6 +41,7 @@ use OpenAPI\Client\ApiException;
 use HelloUser\OpenAPI\V1\Client\Configuration;
 use OpenAPI\Client\HeaderSelector;
 use OpenAPI\Client\ObjectSerializer;
+use Psr\Log\LoggerInterface;
 
 /**
  * HelloApi Class Doc Comment
@@ -52,6 +53,8 @@ use OpenAPI\Client\ObjectSerializer;
  */
 class HelloApi implements ApiInterface
 {
+    public const CONFIGURATION_CLASS = 'HelloUser\OpenAPI\V1\Client\Configuration';
+
     /**
      * @var ClientInterface
      */
@@ -73,21 +76,34 @@ class HelloApi implements ApiInterface
     protected $hostIndex;
 
     /**
-     * @param ClientInterface $client
-     * @param Configuration   $config
-     * @param HeaderSelector  $selector
-     * @param int             $hostIndex (Optional) host index to select the list of hosts if defined in the OpenAPI spec
+     * @var LoggerInterface|null
+     */
+    private $logger;
+
+    /**
+     * @param ClientInterface|null $client
+     * @param Configuration|null $config
+     * @param HeaderSelector|null $selector
+     * @param int $hostIndex (Optional) host index to select the list of hosts if defined in the OpenAPI spec
+     * @param LoggerInterface|null $logger
      */
     public function __construct(
         ClientInterface $client = null,
         Configuration $config = null,
         HeaderSelector $selector = null,
-        $hostIndex = 0
+        $hostIndex = 0,
+        LoggerInterface $logger = null
     ) {
         $this->client = $client ?: new Client();
         $this->config = $config ?: Configuration::getDefaultConfiguration();
         $this->headerSelector = $selector ?: new HeaderSelector();
         $this->hostIndex = $hostIndex;
+        $this->logger = $logger;
+    }
+
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
     }
 
     /**
@@ -152,15 +168,32 @@ class HelloApi implements ApiInterface
     {
         $request = $this->helloIdGetRequest($id);
 
+        $this->log('info', 'Openapi send request.', [
+            'requestBody' => (string)$request->getBody(),
+            'requestUri' => (string)$request->getUri()
+        ]);
+
         try {
             $options = $this->createHttpClientOption();
             try {
                 $response = $this->client->send($request, $options);
+
+                $this->log('info', 'Openapi response successfully received.', [
+                    'class' => self::class,
+                    'responseBody' => (string)$response->getBody(),
+                    'responseStatusCode' => $response->getStatusCode()
+                ]);
             } catch (RequestException $e) {
                 if (!$e->hasResponse()) {
                     throw $e;
                 }
                 $response = $e->getResponse();
+
+                $this->log('info', 'Openapi not 2xx response received.', [
+                    'class' => self::class,
+                    'responseBody' => (string)$response->getBody(),
+                    'responseStatusCode' => $response->getStatusCode()
+                ]);
             }
 
             $statusCode = $response->getStatusCode();
@@ -422,6 +455,13 @@ class HelloApi implements ApiInterface
                     ]
                 ]
             ];
+        }
+    }
+
+    protected function log(string $level, string $message, array $context): void
+    {
+        if ($this->logger) {
+            $this->logger->log($level, $message, $context);
         }
     }
 }

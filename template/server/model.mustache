@@ -22,6 +22,6 @@ class {{classname}}
 {{>model_normal_var}}{{/internal.ze-ph.fromQuery}}{{/vendorExtensions}}{{^vendorExtensions}}
 {{>model_normal_var}}{{/vendorExtensions}}     * @var {{dataType}}
      */
-    public ${{name}};
+    public {{>php_data_type}} ${{name}};
 {{/vars}}
 }{{/model}}{{/models}}

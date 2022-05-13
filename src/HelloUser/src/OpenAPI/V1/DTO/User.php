@@ -14,11 +14,11 @@ class User
      * @DTA\Validator(name="Type", options={"type":"string"})
      * @var string
      */
-    public $id;
+    public string $id;
     /**
      * @DTA\Data(field="name")
      * @DTA\Validator(name="Type", options={"type":"string"})
      * @var string
      */
-    public $name;
+    public string $name;
 }

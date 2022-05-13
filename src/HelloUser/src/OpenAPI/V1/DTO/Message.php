@@ -15,22 +15,21 @@ class Message
      * @DTA\Validator(name="Type", options={"type":"string"})
      * @var string
      */
-    public $level;
+    public string $level;
     /**
      * Message text
      * @DTA\Data(field="text")
      * @DTA\Validator(name="Type", options={"type":"string"})
      * @var string
      */
-    public $text;
+    public string $text;
     /**
      * Message context (like in a logger)
      * @DTA\Data(field="context", nullable=true)
-     * TODO check validator and strategy are correct and can handle container item type
      * @DTA\Validator(name="Collection", options={"validators":{
      *     {"name":"Type", "options":{"type":"string"}}
      * }})
      * @var string[]
      */
-    public $context;
+    public array $context;
 }

@@ -14,5 +14,5 @@ class Hello
      * @DTA\Validator(name="Type", options={"type":"string"})
      * @var string
      */
-    public $message;
+    public string $message;
 }

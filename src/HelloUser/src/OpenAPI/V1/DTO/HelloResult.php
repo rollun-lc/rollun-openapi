@@ -15,15 +15,14 @@ class HelloResult
      * @DTA\Validator(name="TypeCompliant", options={"type":\HelloUser\OpenAPI\V1\DTO\Hello::class})
      * @var \HelloUser\OpenAPI\V1\DTO\Hello
      */
-    public $data;
+    public \HelloUser\OpenAPI\V1\DTO\Hello $data;
     /**
      * @DTA\Data(field="messages", nullable=true)
-     * TODO check validator and strategy are correct and can handle container item type
      * @DTA\Strategy(name="ObjectArray", options={"type":\HelloUser\OpenAPI\V1\DTO\Message::class})
      * @DTA\Validator(name="Collection", options={"validators":{
      *     {"name":"TypeCompliant", "options":{"type":\HelloUser\OpenAPI\V1\DTO\Message::class}}
      * }})
      * @var \HelloUser\OpenAPI\V1\DTO\Message[]
      */
-    public $messages;
+    public array $messages;
 }
