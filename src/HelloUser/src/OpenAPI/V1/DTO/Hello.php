@@ -34,9 +34,10 @@ class Hello
         return $this->message;
     }
 
-    public function setMessage(string $message): void
+    public function setMessage(string $message): self
     {
-        $this->message = $message ;
+        $this->message = $message;
+        return $this;
     }
 
     public function hasMessage(): bool

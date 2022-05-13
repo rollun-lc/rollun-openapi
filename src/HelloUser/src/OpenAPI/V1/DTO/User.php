@@ -49,9 +49,10 @@ class User
         return $this->id;
     }
 
-    public function setId(string $id): void
+    public function setId(string $id): self
     {
-        $this->id = $id ;
+        $this->id = $id;
+        return $this;
     }
 
     public function hasId(): bool
@@ -64,9 +65,10 @@ class User
         return $this->name;
     }
 
-    public function setName(string $name): void
+    public function setName(string $name): self
     {
-        $this->name = $name ;
+        $this->name = $name;
+        return $this;
     }
 
     public function hasName(): bool
@@ -79,9 +81,10 @@ class User
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTime $createdAt): void
+    public function setCreatedAt(\DateTime $createdAt): self
     {
-        $this->createdAt = $createdAt ;
+        $this->createdAt = $createdAt;
+        return $this;
     }
 
     public function hasCreatedAt(): bool

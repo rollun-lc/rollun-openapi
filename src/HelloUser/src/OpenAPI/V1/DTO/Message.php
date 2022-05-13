@@ -53,9 +53,10 @@ class Message
         return $this->level;
     }
 
-    public function setLevel(string $level): void
+    public function setLevel(string $level): self
     {
-        $this->level = $level ;
+        $this->level = $level;
+        return $this;
     }
 
     public function hasLevel(): bool
@@ -68,9 +69,10 @@ class Message
         return $this->text;
     }
 
-    public function setText(string $text): void
+    public function setText(string $text): self
     {
-        $this->text = $text ;
+        $this->text = $text;
+        return $this;
     }
 
     public function hasText(): bool
@@ -83,9 +85,10 @@ class Message
         return $this->type;
     }
 
-    public function setType(string $type): void
+    public function setType(string $type): self
     {
-        $this->type = $type ;
+        $this->type = $type;
+        return $this;
     }
 
     public function hasType(): bool

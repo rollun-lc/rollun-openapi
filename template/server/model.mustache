@@ -46,9 +46,10 @@ class {{classname}}
         return $this->{{name}};
     }
 
-    public function set{{nameInCamelCase}}({{>php_data_type}} ${{name}}): void
+    public function set{{nameInCamelCase}}({{>php_data_type}} ${{name}}): self
     {
-        $this->{{name}} = ${{name}} ;
+        $this->{{name}} = ${{name}};
+        return $this;
     }
 
     public function has{{nameInCamelCase}}(): bool

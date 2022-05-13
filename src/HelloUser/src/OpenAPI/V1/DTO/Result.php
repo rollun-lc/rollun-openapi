@@ -45,9 +45,10 @@ class Result
         return $this->data;
     }
 
-    public function setData(object $data): void
+    public function setData(object $data): self
     {
-        $this->data = $data ;
+        $this->data = $data;
+        return $this;
     }
 
     public function hasData(): bool
@@ -60,9 +61,10 @@ class Result
         return $this->messages;
     }
 
-    public function setMessages(array $messages): void
+    public function setMessages(array $messages): self
     {
-        $this->messages = $messages ;
+        $this->messages = $messages;
+        return $this;
     }
 
     public function hasMessages(): bool

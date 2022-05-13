@@ -45,9 +45,10 @@ class UserResult
         return $this->data;
     }
 
-    public function setData(\HelloUser\OpenAPI\V1\DTO\User $data): void
+    public function setData(\HelloUser\OpenAPI\V1\DTO\User $data): self
     {
-        $this->data = $data ;
+        $this->data = $data;
+        return $this;
     }
 
     public function hasData(): bool
@@ -60,9 +61,10 @@ class UserResult
         return $this->messages;
     }
 
-    public function setMessages(array $messages): void
+    public function setMessages(array $messages): self
     {
-        $this->messages = $messages ;
+        $this->messages = $messages;
+        return $this;
     }
 
     public function hasMessages(): bool

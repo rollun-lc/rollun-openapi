@@ -37,9 +37,10 @@ class ErrorResult
         return $this->messages;
     }
 
-    public function setMessages(array $messages): void
+    public function setMessages(array $messages): self
     {
-        $this->messages = $messages ;
+        $this->messages = $messages;
+        return $this;
     }
 
     public function hasMessages(): bool
