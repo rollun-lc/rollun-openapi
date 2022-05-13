@@ -82,7 +82,7 @@ class Annotation extends \Articus\DataTransfer\MetadataProvider\Annotation
         foreach ($annotations as $annotation) {
             switch (true) {
                 case ($annotation instanceof DTA\Data):
-                    //TODO: конвертация DTA\Data в ODTA\Data
+                    $annotation = ODTA\Data::createByParent($annotation);
                     /** @var ODTA\Data $subset */
                     $subset = $subsets[$annotation->subset] ?? $emptySubset();
                     if ($subset[0] !== null) {

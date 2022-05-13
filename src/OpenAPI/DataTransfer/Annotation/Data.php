@@ -22,4 +22,15 @@ class Data extends \Articus\DataTransfer\Annotation\Data
      * If empty string, there is no way to check property exists.
      */
     public string|null $hasser = null;
+
+    public static function createByParent(\Articus\DataTransfer\Annotation\Data $data): static
+    {
+        $result = new static();
+        $result->field = $data->field;
+        $result->getter = $data->getter;
+        $result->nullable = $data->nullable;
+        $result->setter = $data->setter;
+        $result->subset = $data->subset;
+        return $result;
+    }
 }
