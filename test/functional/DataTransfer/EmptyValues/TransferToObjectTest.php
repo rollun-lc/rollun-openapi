@@ -19,12 +19,18 @@ class TransferToObjectTest extends FunctionalTestCase
 
         self::assertTrue($user->hasId());
         self::assertEquals($id, $user->id);
+        self::assertTrue(isset($user->id));
+        self::assertNotEmpty($user->id);
 
         self::assertTrue($user->hasSnakeCase());
         self::assertEquals($snakeCase, $user->snakeCase);
+        self::assertTrue(isset($user->snakeCase));
+        self::assertNotEmpty($user->snakeCase);
 
         self::assertTrue($user->hasCamelCase());
         self::assertEquals($camelCase, $user->camelCase);
+        self::assertTrue(isset($user->camelCase));
+        self::assertNotEmpty($user->camelCase);
     }
 
     public function testHasNotUserName()
@@ -35,12 +41,47 @@ class TransferToObjectTest extends FunctionalTestCase
 
         self::assertTrue($user->hasId());
         self::assertEquals($id, $user->id);
+        self::assertTrue(isset($user->id));
+        self::assertNotEmpty($user->id);
 
         self::assertFalse($user->hasSnakeCase());
         self::assertNull($user->snakeCase);
+        self::assertFalse(isset($user->snakeCase));
+        self::assertEmpty($user->snakeCase);
 
         self::assertFalse($user->hasCamelCase());
         self::assertNull($user->camelCase);
+        self::assertFalse(isset($user->camelCase));
+        self::assertEmpty($user->camelCase);
+    }
+
+    public function unsetDataProvider(): array
+    {
+        return [
+            'Unset initialized' => [
+                [
+                    'id' => $id = uniqid(),
+                ],
+                'id'
+            ],
+            'Unset not initialized' => [
+                [
+                    'id' => $id = uniqid(),
+                ],
+                'camelCase'
+            ]
+        ];
+    }
+
+    /**
+     * @dataProvider unsetDataProvider
+     */
+    public function testUnset(array $data, string $field)
+    {
+        $user = $this->transferToObject($data);
+
+        unset($user->{$field});
+        self::assertFalse(isset($user->{$field}));
     }
 
     private function transferToObject(array $data): User

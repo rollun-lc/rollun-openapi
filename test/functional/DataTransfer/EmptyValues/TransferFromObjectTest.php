@@ -42,6 +42,24 @@ class TransferFromObjectTest extends FunctionalTestCase
         self::assertFalse(array_key_exists('camelCase', $data));
     }
 
+    public function testUnset(): void
+    {
+        $user = new User();
+        $user->id = uniqid();
+        $user->snakeCase = uniqid();
+        $user->camelCase = uniqid();
+        unset($user->snakeCase);
+        unset($user->camelCase);
+
+        $data = $this->transferFromObject($user);
+
+        self::assertTrue(isset($data['id']));
+        self::assertEquals($user->id, $data['id']);
+
+        self::assertFalse(array_key_exists('snake_case', $data));
+        self::assertFalse(array_key_exists('camelCase', $data));
+    }
+
     private function transferFromObject(object $user): array
     {
         return $this->getDataTransfer()->extractFromTypedData($user);

@@ -40,6 +40,16 @@ class Result
         $this->{$name} = $value;
     }
 
+    public function __isset(string $name): bool
+    {
+        return $this->isInitialized($name) && isset($this->{$name});
+    }
+
+    public function __unset(string $name): void
+    {
+        unset($this->{$name});
+    }
+
     public function getData(): object
     {
         return $this->data;

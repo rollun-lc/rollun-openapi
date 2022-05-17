@@ -40,6 +40,16 @@ class HelloResult
         $this->{$name} = $value;
     }
 
+    public function __isset(string $name): bool
+    {
+        return $this->isInitialized($name) && isset($this->{$name});
+    }
+
+    public function __unset(string $name): void
+    {
+        unset($this->{$name});
+    }
+
     public function getData(): \HelloUser\OpenAPI\V1\DTO\Hello
     {
         return $this->data;

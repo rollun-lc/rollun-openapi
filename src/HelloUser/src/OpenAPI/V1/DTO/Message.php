@@ -48,6 +48,16 @@ class Message
         $this->{$name} = $value;
     }
 
+    public function __isset(string $name): bool
+    {
+        return $this->isInitialized($name) && isset($this->{$name});
+    }
+
+    public function __unset(string $name): void
+    {
+        unset($this->{$name});
+    }
+
     public function getLevel(): string
     {
         return $this->level;

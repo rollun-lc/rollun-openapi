@@ -46,6 +46,16 @@ class User
         $this->{$name} = $value;
     }
 
+    public function __isset(string $name): bool
+    {
+        return $this->isInitialized($name) && isset($this->{$name});
+    }
+
+    public function __unset(string $name): void
+    {
+        unset($this->{$name});
+    }
+
     /**
      * @return string
      */
