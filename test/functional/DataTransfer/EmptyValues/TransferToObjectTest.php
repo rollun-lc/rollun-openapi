@@ -84,6 +84,24 @@ class TransferToObjectTest extends FunctionalTestCase
         self::assertFalse(isset($user->{$field}));
     }
 
+    public function testIterable(): void
+    {
+        $user = $this->transferToObject([
+            'id' => $id = uniqid(),
+            'snake_case' => $snakeCase = uniqid()
+        ]);
+
+        $result = [];
+        foreach ($user as $key => $value) {
+            $result[$key] = $value;
+        }
+
+        self::assertEquals([
+            'id' => $id,
+            'snakeCase' => $snakeCase
+        ], $result);
+    }
+
     private function transferToObject(array $data): User
     {
         $user = new User();

@@ -6,16 +6,17 @@ namespace {{package}};
 use Articus\DataTransfer\Annotation as DTA;
 use OpenAPI\DataTransfer\Annotation as ODTA;
 use ReflectionProperty;
+use Traversable;
 
 /**
 {{#description}}
  * {{description}}
 {{/description}}
  {{#vars}}
- * @property {{>php_data_type}} ${{name}}
+ * @property {{>php_data_type}}{{#nullable}}|null{{/nullable}} ${{name}}
  {{/vars}}
  */
-class {{classname}}
+class {{classname}} implements \IteratorAggregate
 {
 {{#vars}}
     /**
@@ -49,9 +50,30 @@ class {{classname}}
     {
         unset($this->{$name});
     }
+
+    public function getIterator(): Traversable
+    {
+        return new \ArrayIterator($this->toArray());
+    }
+
+    public function toArray(): array
+    {
+        $result = [];
+        foreach (self::getAllPropertyNames() as $propertyName) {
+            if ($this->isInitialized($propertyName)) {
+                $result[$propertyName] = $this->{$propertyName};
+            }
+        }
+        return $result;
+    }
+
+    private static function getAllPropertyNames(): array
+    {
+        return [{{#vars}}'{{name}}'{{^-last}}, {{/-last}}{{/vars}}];
+    }
 {{#vars}}
 
-    public function get{{nameInCamelCase}}(): {{>php_data_type}}
+    public function get{{nameInCamelCase}}(): {{#nullable}}?{{/nullable}}{{>php_data_type}}
     {
         return $this->{{name}};
     }

@@ -5,15 +5,18 @@ declare(strict_types=1);
 namespace rollun\test\OpenAPI\functional\DataTransfer\EmptyValues;
 
 use Articus\DataTransfer\Annotation as DTA;
+use Exception;
+use JetBrains\PhpStorm\Internal\TentativeType;
 use OpenAPI\DataTransfer\Annotation as ODTA;
 use ReflectionProperty;
+use Traversable;
 
 /**
- * @property $id
- * @property $snakeCase
- * @property $camelCase
+ * @property string $id
+ * @property string $snakeCase
+ * @property string $camelCase
  */
-class User
+class User implements \IteratorAggregate
 {
     /**
      * @ODTA\Data(field="id")
@@ -54,6 +57,27 @@ class User
     public function __unset(string $name): void
     {
         unset($this->{$name});
+    }
+
+    public function getIterator(): Traversable
+    {
+        return new \ArrayIterator($this->toArray());
+    }
+
+    public function toArray(): array
+    {
+        $result = [];
+        foreach (self::getAllPropertyNames() as $propertyName) {
+            if ($this->isInitialized($propertyName)) {
+                $result[$propertyName] = $this->{$propertyName};
+            }
+        }
+        return $result;
+    }
+
+    private static function getAllPropertyNames(): array
+    {
+        return ['id', 'snakeCase', 'camelCase'];
     }
 
     /**

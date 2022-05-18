@@ -6,11 +6,12 @@ namespace HelloUser\OpenAPI\V1\DTO;
 use Articus\DataTransfer\Annotation as DTA;
 use OpenAPI\DataTransfer\Annotation as ODTA;
 use ReflectionProperty;
+use Traversable;
 
 /**
  * @property array $messages
  */
-class ErrorResult
+class ErrorResult implements \IteratorAggregate
 {
     /**
      * @ODTA\Data(field="messages", required=false)
@@ -40,6 +41,27 @@ class ErrorResult
     public function __unset(string $name): void
     {
         unset($this->{$name});
+    }
+
+    public function getIterator(): Traversable
+    {
+        return new \ArrayIterator($this->toArray());
+    }
+
+    public function toArray(): array
+    {
+        $result = [];
+        foreach (self::getAllPropertyNames() as $propertyName) {
+            if ($this->isInitialized($propertyName)) {
+                $result[$propertyName] = $this->{$propertyName};
+            }
+        }
+        return $result;
+    }
+
+    private static function getAllPropertyNames(): array
+    {
+        return ['messages'];
     }
 
     public function getMessages(): array
