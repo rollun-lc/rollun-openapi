@@ -16,7 +16,7 @@ use Traversable;
  * @property string $snakeCase
  * @property string $camelCase
  */
-class User implements \IteratorAggregate
+class User implements \IteratorAggregate, \JsonSerializable
 {
     /**
      * @ODTA\Data(field="id")
@@ -62,6 +62,11 @@ class User implements \IteratorAggregate
     public function getIterator(): Traversable
     {
         return new \ArrayIterator($this->toArray());
+    }
+
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
     }
 
     public function toArray(): array

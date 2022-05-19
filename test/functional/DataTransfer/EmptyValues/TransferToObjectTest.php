@@ -102,6 +102,21 @@ class TransferToObjectTest extends FunctionalTestCase
         ], $result);
     }
 
+    public function testJsonEncode(): void
+    {
+        $user = $this->transferToObject([
+            'id' => $id = uniqid(),
+            'snake_case' => $snakeCase = uniqid()
+        ]);
+
+        $data = json_encode($user);
+
+        self::assertEquals(json_encode([
+            'id' => $id,
+            'snakeCase' => $snakeCase
+        ]), $data);
+    }
+
     private function transferToObject(array $data): User
     {
         $user = new User();

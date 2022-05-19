@@ -13,7 +13,7 @@ use Traversable;
  * @property string $text
  * @property string $type
  */
-class Message implements \IteratorAggregate
+class Message implements \IteratorAggregate, \JsonSerializable
 {
     /**
      * Message level  (like in a logger)
@@ -62,6 +62,11 @@ class Message implements \IteratorAggregate
     public function getIterator(): Traversable
     {
         return new \ArrayIterator($this->toArray());
+    }
+
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
     }
 
     public function toArray(): array

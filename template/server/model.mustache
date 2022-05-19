@@ -16,7 +16,7 @@ use Traversable;
  * @property {{>php_data_type}}{{#nullable}}|null{{/nullable}} ${{name}}
  {{/vars}}
  */
-class {{classname}} implements \IteratorAggregate
+class {{classname}} implements \IteratorAggregate, \JsonSerializable
 {
 {{#vars}}
     /**
@@ -54,6 +54,11 @@ class {{classname}} implements \IteratorAggregate
     public function getIterator(): Traversable
     {
         return new \ArrayIterator($this->toArray());
+    }
+
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
     }
 
     public function toArray(): array

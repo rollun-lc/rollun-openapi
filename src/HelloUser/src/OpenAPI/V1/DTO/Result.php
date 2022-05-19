@@ -12,7 +12,7 @@ use Traversable;
  * @property object $data
  * @property array $messages
  */
-class Result implements \IteratorAggregate
+class Result implements \IteratorAggregate, \JsonSerializable
 {
     /**
      * @ODTA\Data(field="data", required=false)
@@ -54,6 +54,11 @@ class Result implements \IteratorAggregate
     public function getIterator(): Traversable
     {
         return new \ArrayIterator($this->toArray());
+    }
+
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
     }
 
     public function toArray(): array
