@@ -1,0 +1,38 @@
+ErrorResponse:
+    type: object
+    properties:
+        messages:
+            type: array
+            items:
+                $ref: "#/components/schemas/Message"
+    description: "message field is not required"
+Message:
+    type: object
+    properties:
+        level:
+            type: string
+            enum:
+                - info
+                - warning
+                - error
+        type:
+            type: string
+            enum:
+                - UNSUPPORTED_CARRIER
+                - UNDEFINED
+                - INVALID_RESPONSE
+                - NOT_FOUND
+            description: >
+                UNSUPPORTED_CARRIER - Requested carrier is not supported
+                UNDEFINED - Any undefined message type
+                NOT_FOUND - Tracknumber not exist
+        text:
+            type: string
+            description: Message, that describes what went wrong
+SuccessResponse:
+    allOf:
+        - $ref: '#/components/schemas/ErrorResponse'
+    type: object
+    properties:
+        data:
+            type: object
