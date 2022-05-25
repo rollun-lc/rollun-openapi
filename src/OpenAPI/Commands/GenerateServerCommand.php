@@ -29,7 +29,7 @@ class GenerateServerCommand extends GenerateCommandAbstract
             null,
             InputOption::VALUE_OPTIONAL,
             'Mode for array converting in server rest object: base -> by php (array), dataTransfer -> by dataTransferService (recommended) ',
-            'base'
+            'dataTransfer'
         );
     }
 
