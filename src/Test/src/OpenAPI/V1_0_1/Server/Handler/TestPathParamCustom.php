@@ -55,7 +55,6 @@ class TestPathParamCustom extends AbstractHandler
     }
     /**
      * @PHA\Post()
-     * TODO check if consumer is valid, if it has correct priority and if it can be moved to class annotation
      * @PHA\Consumer(name=PHConsumer\Json::class, mediaRange="application/json")
      * @PHA\Attribute(name=PHAttribute\Transfer::class, options={"type":\Test\OpenAPI\V1_0_1\DTO\Test::class,"objectAttr":"bodyData", "errorAttr":"errors"})
      * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\Test\OpenAPI\V1_0_1\DTO\Test::class})

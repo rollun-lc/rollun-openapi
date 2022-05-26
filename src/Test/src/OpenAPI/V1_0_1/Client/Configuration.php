@@ -273,6 +273,10 @@ class Configuration extends ConfigurationAbstract
             [
                 "url" => "http://localhost:8082/openapi/Test/v1_0_1",
                 "description" => "No description provided",
+            ],
+            [
+                "url" => "http://rollun-openapi/openapi/Test/v1_0_1",
+                "description" => "No description provided",
             ]
         ];
     }

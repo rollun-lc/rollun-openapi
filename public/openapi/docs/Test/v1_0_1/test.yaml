@@ -5,6 +5,7 @@ info:
 servers:
   - url: http://localhost:8001/openapi/Test/v1_0_1
   - url: http://localhost:8082/openapi/Test/v1_0_1
+  - url: http://rollun-openapi/openapi/Test/v1_0_1
 paths:
   /Test:
     post:
