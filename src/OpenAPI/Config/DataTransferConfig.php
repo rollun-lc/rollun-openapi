@@ -18,7 +18,9 @@ use OpenAPI\DataTransfer\MetadataProvider\Factory\AnnotationFactory;
 use OpenAPI\DataTransfer\Strategy\Factory\FieldDataFactory as FieldDataStrategyFactory;
 use OpenAPI\DataTransfer\Strategy\FieldData as FieldDataStrategy;
 use OpenAPI\DataTransfer\Validator\Factory\FieldDataFactory as FieldDataValidatorFactory;
+use OpenAPI\DataTransfer\Validator\Factory\RequiredFieldsFactory;
 use OpenAPI\DataTransfer\Validator\FieldData as FieldDataValidator;
+use OpenAPI\DataTransfer\Validator\RequiredFields;
 use OpenAPI\Server\Strategy;
 
 class DataTransferConfig
@@ -64,7 +66,8 @@ class DataTransferConfig
                 'factories' => [
                     TypeCompliant::class => ValidatorFactory\TypeCompliant::class,
                     Collection::class => ValidatorFactory\Collection::class,
-                    FieldDataValidator::class => FieldDataValidatorFactory::class
+                    FieldDataValidator::class => FieldDataValidatorFactory::class,
+                    RequiredFields::class => RequiredFieldsFactory::class
                 ],
                 'aliases' => [
                     'Dictionary' => TypeCompliant::class,

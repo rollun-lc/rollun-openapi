@@ -12,6 +12,7 @@ use Laminas\Stdlib\FastPriorityQueue;
 use OpenAPI\DataTransfer\Annotation as ODTA;
 use OpenAPI\DataTransfer\Strategy\FieldData as FieldDataStrategy;
 use OpenAPI\DataTransfer\Validator\FieldData as FieldDataValidator;
+use OpenAPI\DataTransfer\Validator\RequiredFields;
 
 class Annotation extends \Articus\DataTransfer\MetadataProvider\Annotation
 {
@@ -44,6 +45,7 @@ class Annotation extends \Articus\DataTransfer\MetadataProvider\Annotation
                 $classFields[$subset][$fieldName] = $field;
                 $fieldStrategies[$subset][$fieldName] = $strategy;
                 $fieldValidators[$subset][$fieldName] = $validator;
+                $required[$subset][$fieldName] = $isRequired;
                 $hassers[$subset][$fieldName] = $hasser;
             }
         }
@@ -56,6 +58,7 @@ class Annotation extends \Articus\DataTransfer\MetadataProvider\Annotation
                 $strategy[1]['hassers'] = $hassers[$subset];
             }
             $classStrategies[$subset] = $strategy;
+            $validator[1]['links'][] = [RequiredFields::class, ['type' => $className, 'subset' => $subset, 'required' => $required[$subset]], false];
             $classValidators[$subset] = $validator;
         }
 
@@ -82,7 +85,9 @@ class Annotation extends \Articus\DataTransfer\MetadataProvider\Annotation
         foreach ($annotations as $annotation) {
             switch (true) {
                 case ($annotation instanceof DTA\Data):
-                    $annotation = ODTA\Data::createByParent($annotation);
+                    if (!$annotation instanceof ODTA\Data) {
+                        $annotation = ODTA\Data::createByParent($annotation);
+                    }
                     /** @var ODTA\Data $subset */
                     $subset = $subsets[$annotation->subset] ?? $emptySubset();
                     if ($subset[0] !== null) {

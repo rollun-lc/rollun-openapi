@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace rollun\test\OpenAPI\functional\DataTransfer\EmptyValues;
 
+use Articus\DataTransfer\Exception\InvalidData;
 use Articus\DataTransfer\Service;
+use OpenAPI\DataTransfer\Validator\RequiredFields;
 use rollun\test\OpenAPI\functional\FunctionalTestCase;
 
 class TransferToObjectTest extends FunctionalTestCase
@@ -117,10 +119,27 @@ class TransferToObjectTest extends FunctionalTestCase
         ]), $data);
     }
 
+    public function testRequired(): void
+    {
+        try {
+            $this->transferToObject([
+                'snake_case' => uniqid()
+            ]);
+        } catch (InvalidData $e) {
+            self::assertEquals(
+                [RequiredFields::INVALID => 'Property id is required.'],
+                $e->getViolations()
+            );
+        }
+    }
+
     private function transferToObject(array $data): User
     {
         $user = new User();
-        $this->getDataTransfer()->transferToTypedData($data, $user);
+        $errors = $this->getDataTransfer()->transferToTypedData($data, $user);
+        if (!empty($errors)) {
+            throw new InvalidData($errors);
+        }
         return $user;
     }
 
