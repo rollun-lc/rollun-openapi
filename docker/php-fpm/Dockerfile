@@ -23,7 +23,7 @@ RUN chmod +x /usr/local/bin/openapi-generator
 RUN pecl install xdebug-3.0.2 && docker-php-ext-enable xdebug
 
 # Install YAML extension
-RUN pecl install yaml-2.0.2 && echo "extension=yaml.so" > /usr/local/etc/php/conf.d/ext-yaml.ini
+RUN docker-php-ext-enable yaml
 
 COPY ./php-fpm.conf  /usr/local/etc/php-fpm.conf
 COPY ./conf.d  /usr/local/etc/php/conf.d
