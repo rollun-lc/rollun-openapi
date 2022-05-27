@@ -16,22 +16,12 @@ class OpenapiTest extends TestCase
     protected static $container;
 
     protected const MANIFEST = 'test.yaml';
-    //protected const MANIFEST = 'https://raw.githubusercontent.com/rollun-com/openapi-manifests/ab8c5b5c3e6364be207473c17bbc647d62bf07d7/test__v1.0.1.yml';
 
     public static function setUpBeforeClass(): void
     {
         self::$php = PHP_BINARY;
         global $container;
         self::$container = $container;
-//        self::$pid = exec(self::$php . ' -S localhost:8001 public/index.php 1>/dev/null & echo $!');
-    }
-
-    public static function tearDownAfterClass(): void
-    {
-//        exec('kill -9 ' . self::$pid);
-        //exec('rm -rf src/Test');
-        //exec('rm -rf public/openapi/docs/Test');
-        //unlink('config/autoload/test_v1_0_1_path_handler.global.php');
     }
 
     public function testGenerateServer()
