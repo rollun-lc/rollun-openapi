@@ -21,6 +21,9 @@ docker-pull:
 docker-build:
 	docker-compose build
 
+prune-packages:
+	rm -rf ./composer.lock ./vendor
+
 composer-install:
 	docker-compose exec rollun-openapi-php-fpm composer install
 
