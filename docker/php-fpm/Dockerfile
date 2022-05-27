@@ -32,6 +32,8 @@ COPY ./conf.d  /usr/local/etc/php/conf.d
 COPY ./entrypoint.sh /usr/local/bin/docker-php-entrypoint
 RUN chmod +x /usr/local/bin/docker-php-entrypoint
 
+ENV COMPOSER_MEMORY_LIMIT -1
+
 WORKDIR /var/www/app
 
 CMD ["php-fpm", "-R"]
