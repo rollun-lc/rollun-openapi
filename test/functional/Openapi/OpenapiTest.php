@@ -4,6 +4,7 @@
 namespace rollun\test\OpenAPI\functional\Openapi;
 
 
+use OpenAPI\Client\Rest\ClientInterface;
 use PHPUnit\Framework\TestCase;
 
 class OpenapiTest extends TestCase
@@ -13,21 +14,11 @@ class OpenapiTest extends TestCase
     protected static $container;
 
     protected const MANIFEST = 'test.yaml';
-    //protected const MANIFEST = 'https://raw.githubusercontent.com/rollun-com/openapi-manifests/ab8c5b5c3e6364be207473c17bbc647d62bf07d7/test__v1.0.1.yml';
 
     public static function setUpBeforeClass()
     {
         global $container;
         self::$container = $container;
-        self::$pid = exec('php -S localhost:8001 public/index.php 1>/dev/null & echo $!');
-    }
-
-    public static function tearDownAfterClass()
-    {
-        exec('kill -9 ' . self::$pid);
-        //exec('rm -rf src/Test');
-        //exec('rm -rf public/openapi/docs/Test');
-        //unlink('config/autoload/test_v1_0_1_path_handler.global.php');
     }
 
     public function testGenerateServer()
@@ -65,7 +56,7 @@ class OpenapiTest extends TestCase
         $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Test';
         $dtoClass = '\Test\\OpenAPI\\V1_0_1\\DTO\\Test';
 
-        $client = self::$container->get($clientClass);
+        $client = $this->getClientClass($clientClass);
         $response = $client->getById(1);
         $this->assertInstanceOf($dtoClass, $response);
     }
@@ -79,7 +70,7 @@ class OpenapiTest extends TestCase
         $collectionClass = '\\Test\\OpenAPI\\V1_0_1\\DTO\\Collection';
         $dtoClass = '\\Test\\OpenAPI\\V1_0_1\\DTO\\Test';
 
-        $client = self::$container->get($clientClass);
+        $client = $this->getClientClass($clientClass);
 
         $request = [
             'name' => 'Test',
@@ -98,7 +89,7 @@ class OpenapiTest extends TestCase
         $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Test';
         $dtoClass = '\Test\\OpenAPI\\V1_0_1\\DTO\\Test';
 
-        $client = self::$container->get($clientClass);
+        $client = $this->getClientClass($clientClass);
 
         $response = $client->post([
             'id' => '12345',
@@ -114,7 +105,7 @@ class OpenapiTest extends TestCase
     {
         $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Bla';
 
-        $client = self::$container->get($clientClass);
+        $client = $this->getClientClass($clientClass);
         $response = $client->post();
 
         $this->assertNull($response);
@@ -128,7 +119,7 @@ class OpenapiTest extends TestCase
         $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Test';
         $dtoClass = '\Test\\OpenAPI\\V1_0_1\\DTO\\Test';
 
-        $client = self::$container->get($clientClass);
+        $client = $this->getClientClass($clientClass);
 
         $request = new $dtoClass();
         $request->id = '12345';
@@ -145,7 +136,7 @@ class OpenapiTest extends TestCase
         $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Test';
         $dtoClass = '\Test\\OpenAPI\\V1_0_1\\DTO\\Test';
 
-        $client = self::$container->get($clientClass);
+        $client = $this->getClientClass($clientClass);
 
         $request = new $dtoClass();
         $request->name = 'Test';
@@ -164,7 +155,7 @@ class OpenapiTest extends TestCase
         $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Bla';
         $collectionClass = '\\Test\\OpenAPI\\V1_0_1\\DTO\\BlaResult';
 
-        $client = self::$container->get($clientClass);
+        $client = $this->getClientClass($clientClass);
 
         $request = [
             'name' => 'OK',
@@ -183,7 +174,7 @@ class OpenapiTest extends TestCase
         $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Bla';
         $collectionClass = '\\Test\\OpenAPI\\V1_0_1\\DTO\\BlaResult';
 
-        $client = self::$container->get($clientClass);
+        $client = $this->getClientClass($clientClass);
 
         $request = [
             'name' => 'Error',
@@ -203,7 +194,7 @@ class OpenapiTest extends TestCase
         $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Bla';
         $collectionClass = '\\Test\\OpenAPI\\V1_0_1\\DTO\\BlaResult';
 
-        $client = self::$container->get($clientClass);
+        $client = $this->getClientClass($clientClass);
 
         $request = [
             'name' => 'Exception',
@@ -220,7 +211,7 @@ class OpenapiTest extends TestCase
         $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Test';
         $collectionClass = '\\Test\\OpenAPI\\V1_0_1\\DTO\\Collection';
 
-        $client = self::$container->get($clientClass);
+        $client = $this->getClientClass($clientClass);
 
         $request = [
             'id' => [
@@ -236,7 +227,7 @@ class OpenapiTest extends TestCase
     public function testCustomGetWithoutOperation()
     {
         $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Test';
-        $client = self::$container->get($clientClass);
+        $client = $this->getClientClass($clientClass);
         $pathParam = 'testPathParam';
         $queryParam = 'testQueryParam';
 
@@ -249,7 +240,7 @@ class OpenapiTest extends TestCase
     public function testCustomGetWithOperation()
     {
         $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Test';
-        $client = self::$container->get($clientClass);
+        $client = $this->getClientClass($clientClass);
         $pathParam = 'testPathParam';
         $queryParam = 'testQueryParam';
 
@@ -265,7 +256,7 @@ class OpenapiTest extends TestCase
         $dtoClass = '\Test\\OpenAPI\\V1_0_1\\DTO\\Test';
         $pathParam = 'testPathParam';
 
-        $client = self::$container->get($clientClass);
+        $client = $this->getClientClass($clientClass);
 
         $request = new $dtoClass();
         $request->id = '12345';
@@ -281,7 +272,7 @@ class OpenapiTest extends TestCase
         $dtoClass = '\Test\\OpenAPI\\V1_0_1\\DTO\\Test';
         $pathParam = 'testPathParam';
 
-        $client = self::$container->get($clientClass);
+        $client = $this->getClientClass($clientClass);
 
         $request = new $dtoClass();
         $request->id = '12345';
@@ -296,7 +287,7 @@ class OpenapiTest extends TestCase
         $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Bla';
         $collectionClass = '\\Test\\OpenAPI\\V1_0_1\\DTO\\BlaResult';
 
-        $client = self::$container->get($clientClass);
+        $client = $this->getClientClass($clientClass);
 
         $request = [
             'id' => [
@@ -314,7 +305,7 @@ class OpenapiTest extends TestCase
         $clientClass = '\\Test\\OpenAPI\\V1_0_1\\Client\\Rest\\Bla';
         $collectionClass = '\\Test\\OpenAPI\\V1_0_1\\DTO\\BlaResult';
 
-        $client = self::$container->get($clientClass);
+        $client = $this->getClientClass($clientClass);
 
         $request = [
             'id' => implode(',', [
@@ -325,5 +316,13 @@ class OpenapiTest extends TestCase
         $this->assertInstanceOf($collectionClass, $response);
         $this->assertIsArray($response->data);
         $this->assertEquals(2, count($response->data));
+    }
+
+    private function getClientClass(string $clientClass): ClientInterface
+    {
+        /** @var ClientInterface $client */
+        $client = self::$container->get($clientClass);
+        $client->setHostIndex(getenv('TEST_MANIFEST_HOST_INDEX') === false ? 0 : (int)getenv('TEST_MANIFEST_HOST_INDEX'));
+        return $client;
     }
 }

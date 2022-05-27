@@ -20,6 +20,7 @@ services:
       - ./:/var/www/app
     environment:
       PHP_IDE_CONFIG: serverName=rollun-openapi
+      TEST_MANIFEST_HOST_INDEX: 2
 
   rollun-openapi-logstash:
     image: docker.elastic.co/logstash/logstash:7.7.0
