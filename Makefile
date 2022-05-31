@@ -38,3 +38,9 @@ composer-test:
 
 logstash-logs:
 	docker-compose logs -f -t rollun-openapi-logstash
+
+openapi-generate-server:
+	docker-compose run --rm php-openapi-generator php bin/openapi-generator generate:server --arrayConverting=dataTransfer
+
+openapi-generate-client:
+	docker-compose run --rm php-openapi-generator php bin/openapi-generator generate:client

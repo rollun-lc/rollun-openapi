@@ -1,0 +1,6 @@
+java -ea                          \
+  ${JAVA_OPTS}                    \
+  -Xms512M                        \
+  -Xmx1024M                       \
+  -server                         \
+  -jar /usr/local/share/java/openapi-generator-cli.jar "$@"
