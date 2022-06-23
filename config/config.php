@@ -51,7 +51,6 @@ $aggregator = new ConfigAggregator([
     \rollun\permission\ConfigProvider::class,
     \rollun\logger\ConfigProvider::class,
     \rollun\tracer\ConfigProvider::class,
-    \rollun\callback\ConfigProvider::class,
     // OpenAPI config
     \OpenAPI\ConfigProvider::class,
     // Default App module config
