@@ -1,15 +1,11 @@
-FROM maxrollundev/php-fpm-7.2
-
-USER root
+FROM maxrollundev/php-fpm-dev-7.2
 
 # To fix dpkg error while installing default-jre: https://yarnaudov.com/fix-java-jdk-jre-debian-ubuntu-install.html
 RUN mkdir -p /usr/share/man/man1
 
-# Install ping and ip command for entrypoint.sh and other deps
+# Install yaml and java
 RUN apt-get update \
-    && apt-get install -y iputils-ping \
-    iproute2 \
-    libyaml-dev \
+    && apt-get install -y libyaml-dev \
     wget \
     default-jre
 
@@ -19,21 +15,7 @@ RUN wget https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/4
 COPY ./openapi-generator /usr/local/bin/openapi-generator
 RUN chmod +x /usr/local/bin/openapi-generator
 
-# Install xdebug
-RUN pecl install xdebug-3.0.2 && docker-php-ext-enable xdebug
-
 # Install YAML extension
 RUN docker-php-ext-enable yaml
 
-COPY ./php-fpm.conf  /usr/local/etc/php-fpm.conf
-COPY ./conf.d  /usr/local/etc/php/conf.d
-
-# Set entrypoint
-COPY ./entrypoint.sh /usr/local/bin/docker-php-entrypoint
-RUN chmod +x /usr/local/bin/docker-php-entrypoint
-
 ENV COMPOSER_MEMORY_LIMIT -1
-
-WORKDIR /var/www/app
-
-CMD ["php-fpm", "-R"]
