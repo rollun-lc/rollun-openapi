@@ -2,6 +2,8 @@ openapi: 3.0.0
 info:
   version: "1.0.1"
   title: Test
+tags:
+  - name: Test
 servers:
   - url: http://localhost:8001/openapi/Test/v1_0_1
   - url: http://localhost:8082/openapi/Test/v1_0_1

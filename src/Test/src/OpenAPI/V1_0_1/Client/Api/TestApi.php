@@ -2245,6 +2245,31 @@ class TestApi implements ApiInterface
         }
     }
 
+    /*protected function deserialize(string $responseBody, ?string $mimeType = null)
+    {
+        $mimeType = $mimeType ?? 'application/json';
+        switch ($mimeType) {
+            case 'application/json':
+            case 'application/vnd.api+json':
+            try {
+                return ObjectSerializer::deserialize($responseBody);
+            } catch (InvalidArgumentException $exception) {
+                return [
+                    'data' => null,
+                    'messages' => [
+                        [
+                            'level' => 'error',
+                            'type' => 'INVALID_RESPONSE',
+                            'text' => 'Response body decoding error: "' . $exception->getMessage() . '"'
+                        ]
+                    ]
+                ];
+            }
+        }
+
+        return $responseBody;
+    }*/
+
     protected function log(string $level, string $message, array $context): void
     {
         if ($this->logger) {

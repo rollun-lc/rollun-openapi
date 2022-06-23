@@ -335,7 +335,7 @@ class ClientRestGenerator
 
         $paramVariables = [];
         foreach ($params as $param) {
-            if (!empty($param['paramType']) && !in_array($param['paramType'], ['null','boolean','object','number','string']) && strpos($param['paramType'], '[]') === false) {
+            if (!empty($param['paramType']) && !in_array($param['paramType'], ['null','boolean','object','int','number','string']) && strpos($param['paramType'], '[]') === false) {
                 $paramType = str_replace("Client\Model", "DTO", $param['paramType']);
                 //$body .= "// validation of \${$param['paramName']}\n";
                 //$body .= "\${$param['paramName']} = \$this->transfer((array)\${$param['paramName']}, $paramType::class);";
