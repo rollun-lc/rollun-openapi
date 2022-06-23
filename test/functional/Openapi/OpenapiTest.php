@@ -5,39 +5,15 @@ namespace rollun\test\OpenAPI\functional\Openapi;
 
 
 use OpenAPI\Client\Rest\ClientInterface;
-use PHPUnit\Framework\TestCase;
+use rollun\test\OpenAPI\functional\FunctionalTestCase;
 
-class OpenapiTest extends TestCase
+class OpenapiTest extends FunctionalTestCase
 {
-    protected static $php;
-
-    protected static $pid;
-
-    protected static $container;
-
     protected const MANIFEST = 'test.yaml';
-
-    public static function setUpBeforeClass(): void
-    {
-        self::$php = PHP_BINARY;
-        global $container;
-        self::$container = $container;
-
-        self::$pid = exec(self::$php . ' -S localhost:8001 public/index.php 1>/dev/null & echo $!');
-    }
-
-    public static function tearDownAfterClass(): void
-    {
-        exec('kill -9 ' . self::$pid);
-        //exec('rm -rf src/Test');
-        //exec('rm -rf public/openapi/docs/Test');
-        //unlink('config/autoload/test_v1_0_1_path_handler.global.php');
-    }
 
     public function testGenerateServer()
     {
-        $command = self::$php . ' bin/openapi-generator generate:server --manifest=' . self::MANIFEST;
-        exec($command, $outputs);
+        static::php('bin/openapi-generator generate:server --manifest=' . self::MANIFEST);
 
         sleep(1);
 
@@ -51,8 +27,7 @@ class OpenapiTest extends TestCase
      */
     public function testGenerateClient()
     {
-        $command = self::$php . ' bin/openapi-generator generate:client  --debug=true --manifest=' . self::MANIFEST;
-        exec($command);
+        static::php('bin/openapi-generator generate:client  --debug=true --manifest=' . self::MANIFEST);
 
         sleep(1);
 
@@ -345,7 +320,7 @@ class OpenapiTest extends TestCase
     private function getClientClass(string $clientClass): ClientInterface
     {
         /** @var ClientInterface $client */
-        $client = self::$container->get($clientClass);
+        $client = $this->getContainer()->get($clientClass);
         $client->setHostIndex(getenv('TEST_MANIFEST_HOST_INDEX') === false ? 0 : (int)getenv('TEST_MANIFEST_HOST_INDEX'));
         return $client;
     }

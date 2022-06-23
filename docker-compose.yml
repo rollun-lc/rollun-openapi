@@ -19,6 +19,7 @@ services:
     volumes:
       - ./:/var/www/app
     environment:
+      IS_DOCKER: 1
       PHP_IDE_CONFIG: serverName=rollun-openapi
       TEST_MANIFEST_HOST_INDEX: 2
 

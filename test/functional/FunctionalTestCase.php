@@ -15,6 +15,8 @@ use Xiag\Rql\Parser\Query;
  */
 class FunctionalTestCase extends PHPUnitTestCase
 {
+    private static string $localServerPid;
+
     /**
      * @var ServiceManager|null
      */
@@ -28,5 +30,48 @@ class FunctionalTestCase extends PHPUnitTestCase
         }
 
         return $this->container;
+    }
+
+    protected static function php(string $args): string|false
+    {
+        return exec(static::getPhpBinaryPath() . ' ' . $args);
+    }
+
+    public static function setUpBeforeClass(): void
+    {
+        if (self::shouldRunLocalServer()) {
+            static::runLocalServer();
+        }
+    }
+
+    private static function runLocalServer(): void
+    {
+        $result = static::php('-S localhost:8001 public/index.php 1>/dev/null & echo $!');
+        if ($result === false) {
+            throw new \RuntimeException('Cannot start local server.');
+        }
+        self::$localServerPid = $result;
+    }
+
+    public static function tearDownAfterClass(): void
+    {
+        if (self::shouldRunLocalServer()) {
+            static::stopLocalServer();;
+        }
+    }
+
+    private static function stopLocalServer(): void
+    {
+        exec('kill -9 ' . self::$localServerPid);
+    }
+
+    protected static function shouldRunLocalServer(): bool
+    {
+        return getenv('IS_DOCKER') != 1;
+    }
+
+    protected static function getPhpBinaryPath(): string
+    {
+        return PHP_BINARY;
     }
 }
