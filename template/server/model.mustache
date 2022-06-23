@@ -23,7 +23,7 @@ class {{classname}} implements \IteratorAggregate, \JsonSerializable
 {{#description}}
      * {{description}}
 {{/description}}
-     * @ODTA\Data(field="{{baseName}}"{{#nullable}}, nullable=true{{/nullable}}{{^required}}, required=false{{/required}}){{#vendorExtensions}}{{#internal.ze-ph.fromQuery}}
+     * @ODTA\Data(field="{{baseName}}"{{#isNullable}}, nullable=true{{/isNullable}}{{^required}}, required=false{{/required}}){{#vendorExtensions}}{{#internal.ze-ph.fromQuery}}
 {{>model_query_var}}{{/internal.ze-ph.fromQuery}}{{/vendorExtensions}}{{#vendorExtensions}}{{^internal.ze-ph.fromQuery}}
 {{>model_normal_var}}{{/internal.ze-ph.fromQuery}}{{/vendorExtensions}}{{^vendorExtensions}}
 {{>model_normal_var}}{{/vendorExtensions}}     * @var {{dataType}}
