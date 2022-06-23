@@ -9,11 +9,7 @@ use OpenAPI\Client\Rest\BaseAbstract;
  */
 class User extends BaseAbstract
 {
-	public const CONFIGURATION_CLASS = 'HelloUser\OpenAPI\V1\Client\Configuration';
-
-	/** @var string */
-	protected $apiName = '\HelloUser\OpenAPI\V1\Client\Api\UserApi';
-
+	public const API_NAME = '\HelloUser\OpenAPI\V1\Client\Api\UserApi';
 
 	/**
 	 * @inheritDoc
@@ -31,14 +27,27 @@ class User extends BaseAbstract
 
 
 	/**
+	 * @return \HelloUser\OpenAPI\V1\Client\Api\UserApi
+	 */
+	protected function getApi(): \OpenAPI\Client\Api\ApiInterface
+	{
+		return $this->api;
+	}
+
+
+	/**
 	 * @inheritDoc
 	 *
 	 * @param array $bodyData
 	 */
-	public function post($bodyData)
+	public function post($bodyData = null)
 	{
 		// validation of $bodyData
+		if ($bodyData instanceof \HelloUser\OpenAPI\V1\DTO\User) {
+		    $bodyData = $this->toArray($bodyData);
+		}
 		$bodyDataObject = $this->transfer((array)$bodyData, '\HelloUser\OpenAPI\V1\DTO\User');
+
 
 		// send request
 		$data = $this->getApi()->userPost($bodyData);
@@ -47,14 +56,5 @@ class User extends BaseAbstract
 		$result = $this->transfer((array)$data, \HelloUser\OpenAPI\V1\DTO\UserResult::class);
 
 		return $result;
-	}
-
-
-	/**
-	 * @return \HelloUser\OpenAPI\V1\Client\Api\UserApi
-	 */
-	protected function getApi(): \OpenAPI\Client\Api\ApiInterface
-	{
-		return $this->api;
 	}
 }

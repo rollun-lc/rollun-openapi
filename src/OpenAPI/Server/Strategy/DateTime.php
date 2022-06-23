@@ -70,4 +70,9 @@ class DateTime implements StrategyInterface
 
         return false;
     }
+
+    public function merge($from, &$to): void
+    {
+        $to = $from;
+    }
 }

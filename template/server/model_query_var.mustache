@@ -9,14 +9,10 @@
      * @DTA\Validator(name="Date", options={"format": "RFC3339"})
 {{/isDateTime}}
 {{/isContainer}}
-{{#isContainer}}
-     * TODO add validator(s) and strategy for {{dataType}} and collection format {{internal.ze-ph.collectionFormat}}
-{{/isContainer}}
 {{/isPrimitiveType}}
 {{#isPrimitiveType}}
 {{#isContainer}}
 {{#items}}
-     * TODO check validator and strategy are correct and can handle container item type
      * @DTA\Strategy(name="QueryParameterArray", options={"type":"{{dataType}}", "format":"{{internal.ze-ph.collectionFormat}}"})
      * @DTA\Validator(name="QueryParameterArrayType", options={"type":"{{dataType}}", "format":"{{internal.ze-ph.collectionFormat}}"})
 {{/items}}

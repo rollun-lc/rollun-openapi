@@ -23,7 +23,7 @@ class TestControllerObject
 
     public function get($query)
     {
-        $limit = $query['id'] ? count($query['id']) : 1;
+        $limit = isset($query['id']) ? count($query['id']) : 1;
         for ($i = 1; $i <= $limit; $i++) {
             $data[] = [
                 'id' => (string) $i,

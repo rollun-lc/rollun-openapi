@@ -16,7 +16,6 @@
 {{/isDateTime}}
 {{/isContainer}}
 {{#isContainer}}
-     * TODO check validator and strategy are correct and can handle container item type
      * @DTA\Strategy(name="ObjectArray", options={"type":{{#items}}{{dataType}}{{/items}}::class})
      * @DTA\Validator(name="Collection", options={"validators":{
      *     {"name":"TypeCompliant", "options":{"type":{{#items}}{{dataType}}{{/items}}::class}}
@@ -27,7 +26,6 @@
 {{#isContainer}}
 {{#items}}
 {{^isFreeFormObject}}
-     * TODO check validator and strategy are correct and can handle container item type
      * @DTA\Validator(name="Collection", options={"validators":{
      *     {"name":"Type", "options":{"type":"{{dataType}}"}}
      * }})

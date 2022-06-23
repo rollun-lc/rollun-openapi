@@ -9,11 +9,7 @@ use OpenAPI\Client\Rest\BaseAbstract;
  */
 class Hello extends BaseAbstract
 {
-	public const CONFIGURATION_CLASS = 'HelloUser\OpenAPI\V1\Client\Configuration';
-
-	/** @var string */
-	protected $apiName = '\HelloUser\OpenAPI\V1\Client\Api\HelloApi';
-
+	public const API_NAME = '\HelloUser\OpenAPI\V1\Client\Api\HelloApi';
 
 	/**
 	 * @inheritDoc

@@ -1,4 +1,4 @@
-init: docker-down-clear docker-pull docker-build docker-up composer-install development-enable
+init: docker-down-clear docker-pull docker-build docker-up composer-install
 up: docker-up
 down: docker-down
 restart: docker-down docker-up
@@ -35,3 +35,9 @@ composer-test:
 
 logstash-logs:
 	docker-compose logs -f -t rollun-openapi-logstash
+
+openapi-generate-server:
+	docker-compose run --rm php-openapi-generator php bin/openapi-generator generate:server --arrayConverting=dataTransfer
+
+openapi-generate-client:
+	docker-compose run --rm php-openapi-generator php bin/openapi-generator generate:client

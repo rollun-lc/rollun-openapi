@@ -45,7 +45,48 @@ class Configuration extends ConfigurationAbstract
     /**
      * @var array
      */
-    public static $additionalData = ['helloIdGet'=>['className'=>'HelloApi', 'returnType' => '\HelloUser\OpenAPI\V1\Client\Model\HelloResult','params' => [['paramName'=>'id','paramType'=>'string','required'=>true],]],'userIdGet'=>['className'=>'UserApi', 'returnType' => '\HelloUser\OpenAPI\V1\Client\Model\UserResult','params' => [['paramName'=>'id','paramType'=>'string','required'=>true],]],'userPost'=>['className'=>'UserApi', 'returnType' => '\HelloUser\OpenAPI\V1\Client\Model\UserResult','params' => [['paramName'=>'user','paramType'=>'\HelloUser\OpenAPI\V1\Client\Model\User','required'=>true],]],];
+    public static $additionalData = [
+        
+        'helloIdGet' => [
+            'className' => 'HelloApi',
+            'returnType' => '\HelloUser\OpenAPI\V1\Client\Model\HelloResult',
+            'params' => [
+                [
+                    'paramName' => 'id',
+                    'paramType' => 'string',
+                    'required' => true,
+                    'style' => 'simple',
+                    'explode' => false
+                ],
+            ]
+        ],
+        'userIdGet' => [
+            'className' => 'UserApi',
+            'returnType' => '\HelloUser\OpenAPI\V1\Client\Model\UserResult',
+            'params' => [
+                [
+                    'paramName' => 'id',
+                    'paramType' => 'string',
+                    'required' => true,
+                    'style' => 'simple',
+                    'explode' => false
+                ],
+            ]
+        ],
+        'userPost' => [
+            'className' => 'UserApi',
+            'returnType' => '\HelloUser\OpenAPI\V1\Client\Model\UserResult',
+            'params' => [
+                [
+                    'paramName' => 'user',
+                    'paramType' => '\HelloUser\OpenAPI\V1\Client\Model\User',
+                    'required' => true,
+                    'style' => '',
+                    'explode' => false
+                ],
+            ]
+        ],
+    ];
 
     /**
      * The host
