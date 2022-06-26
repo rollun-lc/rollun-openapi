@@ -261,6 +261,25 @@ SuccessResponse:
                 об'єкту, або примитивом (рядок, число і т.п.).
 ```
 
+> Поле 'data' фактично може бути якого завгодно типу, але генератор поки не підтримує поля у яких не об'явлений тип,
+> тому зазвичай тип поля 'data' в маніфесті ставиться 'object'. Але він може бути змінений у об'єкті нащадку.
+>```yaml
+>SuccessResponse:
+>  allOf:
+>    - $ref: '#/components/schemas/ErrorResponse'
+>  type: object
+>  properties:
+>    data:
+>      type: object
+>ResourceResponse:
+>  allOf:
+>    - $ref: '#/components/schemas/SuccessResult'
+>  type: object
+>  properties:
+>    data:
+>      type: string
+>```
+
 У відповіді **ПОВИННО** бути присутнім одне з полів: 'data', або 'messages'.
 
 > Компоненти вище описані для openapi специфікації версії '3.0.0'. Згідно якої, якщо не вказано, що поле обов'язкове
