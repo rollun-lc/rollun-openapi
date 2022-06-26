@@ -118,6 +118,10 @@ https://site.com/videos/1/actions/convert // Good
 https://site.com/videos/1/actions/converter // Avoid
 ```
 
+## 3.3 Іменування query параметрів
+
+TODO
+
 # 4 Операції над ресурсами
 
 ## 4.1 Загальні правила
