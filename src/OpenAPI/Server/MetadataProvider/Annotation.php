@@ -38,9 +38,8 @@ class Annotation extends Base
         } catch (Throwable $e) {
             // because message writes to http reason where new lines not allowed
             $message = $this->deleteNewLines($e->getMessage());
-            $code = !empty($e->getCode()) ? $e->getCode() : 500;
 
-            throw new PHException\HttpCode($code, $message, Transfer::getSingleErrorMessages($message));
+            throw new PHException\HttpCode(500, $message, Transfer::getSingleErrorMessages($message));
         }
 
         return $result;
