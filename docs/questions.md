@@ -132,9 +132,96 @@ servers:
 
 ## Як оброблювати помилку виконання лонг таску?
 
+Створення задачі
+
+```http request
+POST /articles
+
+{
+  "data": {
+    "title": "My article!"
+  }
+}
+```
+
+```
+HTTP 202 Accepted
+Content-type: application/long-task+json
+Retry-After: 30
+
+{
+  "data": {
+    "id": "123",
+    "status": "creating"
+  }
+}
+```
+
+Отримання задачі
+
+```http request
+GET /articles/actions/post/123
+```
+
+```
+HTTP 202 Accepted
+Content-type: application/long-task-pending+json
+
+{
+  "data": {
+    "id": "123",
+    "stage": "creating"
+  }
+}
+```
+
+Помилка
+
+```http request
+GET /articles/actions/post/123
+```
+
+```
+HTTP 200 OK
+Content-type: application/long-task-problem+json
+
+{
+  "messages": [
+    {
+      "level": "error",
+      "type": "UNDEFINED_ERROR",
+      "text": "Something went wrong"
+    }
+  ]
+}
+```
+
+Виконана задача
+
+```http request
+GET /articles/actions/post/123
+```
+
+```
+HTTP 200 OK
+Content-type: application/json
+
+{
+  "data": {
+    "id": 1,
+    "title": "My article!"
+  }
+}
+```
+
 ## Чи потрібен нам власний медіа тип?
 
 ## Що повинні повертати запити, якщо лонг-таск видалено?
+
+404 Not Found- якщо ідентифікатор задачі звільнено і в подальшому під цим ідентифікатором може з'явитись нова задача.
+Навіть якщо ми використовуємо uuid, адже все одно ми ніде не зберігаємо інформацію що ідентифікатор зарезервовано.
+
+410 Gone - Якщо інформацію про задачу видалено, але ми десь запам'ятали, що цей ідентифікатор колись був зайнятий.
 
 ## Яка інформація повинна передаватись в messages?
 
