@@ -160,9 +160,11 @@ $ curl -I https://api.github.com/users/octocat
 
 Також github мають окремий ендпоінт, що повертає ліміти по кожному ресурсу:
 
-```
+``` http request
 GET /rate_limit
+```
 
+```json
 {
   "resources": {
     "core": {
@@ -265,8 +267,8 @@ Content-Type: application/vnd.rollun+json
 }
 ```
 
-```
-HTTP 202 Accepted
+```http
+HTTP/1.1 202 Accepted
 Content-type: application/vnd.rollun-long-task+json
 Retry-After: 30
 
@@ -285,8 +287,8 @@ GET /articles/actions/post/123
 Accept: application/vnd.rollun+json, application/vnd.rollun-error+json, application/vnd.rollun-long-task+json
 ```
 
-```
-HTTP 202 Accepted
+```http
+HTTP/1.1 202 Accepted
 Content-type: application/vnd.rollun-long-task+json
 Retry-After: 10
 
@@ -305,8 +307,8 @@ GET /articles/actions/post/123
 Accept: application/vnd.rollun+json, application/vnd.rollun-error+json, application/vnd.rollun-long-task+json
 ```
 
-```
-HTTP 200 OK
+```http
+HTTP/1.1 200 OK
 Content-type: application/vnd.rollun-error+json
 
 {
@@ -327,8 +329,8 @@ GET /articles/actions/post/123
 Accept: application/vnd.rollun+json, application/vnd.rollun-error+json, application/vnd.rollun-long-task+json
 ```
 
-```
-HTTP 200 OK
+```http
+HTTP/1.1 200 OK
 Content-type: application/vnd.rollun+json
 
 {
