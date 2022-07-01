@@ -495,6 +495,148 @@ Message:
 
 ## Яка інформація повинна передаватись в messages?
 
+Типи повідомлень які можуть потрапити в messages:
+
+- **Опис помилки при виконанні запиту**
+
+```http request
+GET /orders
+```
+
+```http
+HTTP/1.1 500 Internal Server Error
+
+{
+  "messages": [
+    {
+      "level": "error",
+      "type": "DATABASE_PROBLEM",
+      "message": "Database not available. Try again later."
+    }
+  ]
+}
+```
+
+- **Метаінформація про ресурс**
+
+Наприклад штат у якому найбільше замовлень, чи попередження про несвіжість даних: в данном контексті саме несвіжість
+усієї колекції, а не даних в якомусь конкретному замовлені. Тобто в колекції може не бути якогось елементу, але
+усі інші елементи колекції містять актуальну інформацію.
+
+```http request
+GET /orders
+```
+
+```http
+HTTP/1.1 200 OK
+
+{
+  "data": [
+    //... 
+  ], 
+  "messages": [
+    {
+      "level": "info",
+      "type": "MOST_POPULAR_STATE",
+      "message": "Texas"
+    },
+    {
+      "level": "warning",
+      "type": "DATA_IS_NOT_FRESH",
+      "message": "Last collection update was 2 days ago."
+    }
+  ]
+}
+```
+
+- **Метаінформація про запит**
+
+```http request
+GET /orders
+```
+
+```http
+HTTP/1.1 200 OK
+
+{
+  "data": [
+    //... 
+  ], 
+  "messages": [
+    {
+      "level": "info",
+      "type": "REQUEST_TIME",
+      "message": "0.1 sec"
+    }
+  ]
+}
+```
+
+- **Попередження та метаінформація пов'язані з конкретним елементом колекції**
+
+Наприклад в деяких з повернених замовлень спосіб відправки не збігається з тим який ми запитували. Або якись
+конкретний елемент колекції містить не актуальну інформацію, хоча сама колекція в актуальному стані.
+
+```http request
+GET /resources
+```
+
+```http
+HTTP/1.1 200 OK
+
+{
+  "data": [
+    //... 
+  ], 
+  "messages": [
+    {
+      "level": "info",
+      "type": "SHIPPINH_METHOD_MISMATCH",
+      "message": "Order AU001 has incorrect carrier. Requested 'USPS' Actual 'FedEx'."
+    },
+    {
+      "level": "warning",
+      "type": "ELEMENT_DATA_IS_NOT_FRESH",
+      "message": "Order RM002 has las update 2 days ago."
+    }
+  ]
+}
+```
+
+Ось такого роду помилки не зручно передавати в messages, адже доведеться якимось чином з'ясовувати, до якого саме
+елементу колекції відноситься помилка. Куди зручніше записувати такі попередження як частину інформації про елемент.
+
+```http 
+HTTP/1.1 200 OK
+
+{
+  "data": [
+    {
+      "number": "AU001",
+      // ... ,
+      "messages": [
+        {
+          "level": "warning",
+          "type": "SHIPPINH_METHOD_MISMATCH",
+          "message": "Order AU001 has incorrect carrier. Requested 'USPS' Actual 'FedEx'."
+        }
+      ]
+    },
+    {
+      "number": "RM002",
+      // ... ,
+      "messages": [
+        {
+          "level": "warning",
+          "type": "DATA_IS_NOT_FRESH",
+          "message": "Order RM002 has las update 2 days ago."
+        }
+      ]
+    }
+  ]
+}
+```
+
 # 2. Openapi генератор
 
 ## Як повинен працювати вибір сервера?
