@@ -685,6 +685,88 @@ HTTP/1.1 200 OK
 
 ## Як повинен працювати вибір сервера?
 
+Вимоги:
+
+- При зміні порядку серверів в маніфесті в коді не повинен змінитись сервер на який відправляються запити
+- Потрібна можливість вибирати сервер випадково (для балансування навантаження), або почергово (для надійності)
+
+В коді можна ідентифікувати сервер за допомогою рядка. Порівняння може виконуватись за допомогою parse_url, окремо
+для scheme, host і path. Клієнтський код, при виборі сервера, обов'язково повинен вказати host, але scheme і path для 
+зручності можуть бути опціональними, якщо можливо однозначно визначити який хост мав на увазі клієнт.
+
+```yaml
+servers:
+  - url: https://api.foo.com/v1
+  - url: https://bar.com/v1
+  - url: http://bar.com/v1
+```
+
+```php
+$client->setHost('https://api.foo.com/v1'); // Ok
+$client->setHost('https://api.foo.com'); // Ok
+$client->setHost('api.foo.com/v1'); // Ok
+$client->setHost('api.foo.com'); // Ok
+$client->setHost('bar.com'); // Ok
+
+$client->setHost('http://api.foo.com/v1'); // Error (scheme in manifest is https not http)
+$client->setHost('api.foo.com/v1/users'); // Error (path in manifest is /v1 not /v1/users)
+$client->setHost('bar.com/v1'); // Error (bar.com has 2 available scheme: http and https)
+$client->setHost('foo.com'); // Error (host in manifest is api.foo.com not foo.com)
+$client->setHost('/v1'); // Error (host required)
+```
+
+Для того щоб можна було зручно робити балансування навантаження, або почергову відправку запитів можна також зробити 
+індексування за числом (індекс 0: https://api.foo.com/v1; індекс 1: https://bar.com/v1). Але це може привести до помилок. 
+Наприклад, якщо серед серверів вказано тестовий сервер.
+
+```yaml
+servers:
+  - url: https://api.example.com/v1
+    description: Production server (uses live data)
+  - url: https://sandbox-api.example.com:8443/v1
+    description: Sandbox server (uses test data)
+```
+
+Тому краще передбачити можливість явно вказати в конфігурації взаємозамінні сервери і тільки їх використовувати 
+для балансування навантаження, або повторів запитів.
+
+```php
+<?php
+
+return [
+    'manifest_config' => [
+        'interchangeably_servers' => [
+            westeurope.foo.com,
+            southeastasia.foo.com
+        ]
+    ]
+];
+```
+
+В цїй самій конфігурації потрібно дати можливість вказати, що замість одного сервера потрібно використовувати будь-який
+з перерахованих в 'interchangeably_servers'. А також вказати стратегію за допомогою якої буде обиратись сервер.
+
+```php
+<?php
+
+return [
+    'manifest_config' => [
+        'interchangeably_servers' => [
+            // ...
+        ],
+        'server_choosing_strategy' => [
+            'class' => SequentialServerSelectionStrategy::class,
+            'options' => null
+        ] 
+    ]
+];
+```
+
+Також було б добре передбачити можливість в конфігурації вказати сервер по замовчуванню, але залишити цю можливість
+опціональною. Якщо не вказано сервер по замовчуванню, то використовувати перший по-порядку.
+
+Варіанти того як краще організувати конфігурацію можна ще продумати, я лише приблизно вказав як це може виглядати.
+
 ## Як повинна працювати авторизація?
 
 ## Як реалізувати підтримку oneOf?
