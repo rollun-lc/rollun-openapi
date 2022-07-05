@@ -814,6 +814,202 @@ return [
 
 ## Як повинна працювати авторизація?
 
+### Опис авторизації в маніфесті
+
+В маніфесті ми можемо описати способи авторизації в розділі components.securitySchemes, а потім в розділі security 
+посилатись на ці способи. Розділ security можна описати як для кожної операції окремо, так і глобально, тоді він 
+застосується до усіх операцій.
+
+Також в маніфесті можна вказати що операція потребує авторизацію **хоча б одним** з перелічених методів, **одночасно**
+декількома методами, або комбінований варіант: хоча б одним з перелічених способів, коли кожен спосіб може складатись
+одночасно з декількох методів.
+
+Доступні способи авторизації:
+- HTTP схеми автентифікації (що використовують заголовок Authorization):
+  - [Basic](https://swagger.io/docs/specification/authentication/basic-authentication/)
+  - [Bearer](https://swagger.io/docs/specification/authentication/bearer-authentication/)
+  - інші HTTP схеми, що визначені в [RFC 7235](https://tools.ietf.org/html/rfc7235) та [HTTP Authentication Scheme Registry](https://www.iana.org/assignments/http-authschemes/http-authschemes.xhtml)
+- [API ключі](https://swagger.io/docs/specification/authentication/api-keys/) в заголовках, query string або cookies
+  - [Cookie authentication](https://swagger.io/docs/specification/authentication/cookie-authentication/)
+- [OAuth 2](https://swagger.io/docs/specification/authentication/oauth2/)
+- [OpenID Connect Discovery](https://swagger.io/docs/specification/authentication/openid-connect-discovery/)
+
+Приклад маніфесту з використанням основних способів авторизації:
+
+```yaml
+openapi: 3.0.3
+info:
+  title: Security
+  description: Security
+  version: 1.0.0
+servers:
+  - url: 'https://example.com'
+paths:
+  '/basic':
+    get:
+      security:
+        - BasicAuth: []
+      responses:
+        "200":
+          description: Basic authorization
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceListResult"
+  '/bearer':
+      get:
+        security:
+          - BearerAuth: []
+        responses:
+          "200":
+            description: Bearer authorization
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ResourceListResult"
+  '/oauth2':
+      get:
+        security:
+          - OAuth2:
+              - read
+        responses:
+          "200":
+            description: OAuth 2 authorization
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ResourceListResult"
+  '/multiple':
+    get:
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+        - OAuth2:
+            - read
+      responses:
+        "200":
+          description: OAuth 2 authorization
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceListResult"
+components:
+  schemas:
+    ResourceListResult:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Resource'
+    Resource:
+      type: object
+      properties:
+        id:
+          type: string
+
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+    BearerAuth:
+      type: http
+      scheme: bearer
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://example.com/oauth/authorize
+          tokenUrl: https://example.com/oauth/token
+          scopes:
+            read: Grants read access
+```
+
+Детальніше про те як описувати авторизацію в openapi маніфесті: [Swagger - Authentication](https://swagger.io/docs/specification/authentication/)
+
+### Приклади генераціїї коду різними генераторами
+
+Zend, [Laminas](https://openapi-generator.tech/docs/generators/php-mezzio-ph/#feature-set), 
+[Symfony](https://openapi-generator.tech/docs/generators/php-symfony/#feature-set) генератори не підтримують авторизацію.
+У різних випадках або генерується код з помилками, або просто нічого пов'язаного з авторизацією.
+
+Slim4 генератор підтримує авторизацію (хоча чомусь в документації вказано, що ні). 
+
+Основна ідея авторизації в slim полягає в тому, що він генерує клас [`AbstractAuthenticator`](https://github.com/misha-rollun/openapi-generator-tests/blob/master/slim/security/lib/Auth/AbstractAuthenticator.php),
+який програміст повинен розширити класами, імена яких збігаються з описаними в маніфесті security схемами: 
+`BasicAuthenticator`, `BearerAuthenticator`, `OAuth2Authenticator`. `AbstractAuthenticator` має метод, що приймає 
+`Psr\Http\Message\ServerRequestInterface` та повинен виконати авторизацію та записати об'єкт авторизованого користувача
+в атрибути запиту:
+
+```php
+public function __invoke(ServerRequestInterface &$request, TokenSearch $tokenSearch)
+{
+   /**
+    * Try find authorization token via header, parameters, cookie or attribute
+    * If token not found, return response with status 401 (unauthorized)
+    */
+    $token = $tokenSearch->getToken($request);
+
+    /**
+     * Verify if token is valid on database
+     * If token isn't valid, expired or has insufficient scope must throw an UnauthorizedExceptionInterface
+     */
+    $user = $this->getUserByToken($token);
+
+    /**
+     * Set authenticated user at attributes
+     */
+    $request = $request->withAttribute('authenticated_user', $user);
+
+    return true;
+}
+```
+
+> Звідки береться TokenSearch я не досліджував, адже це якісь особливості бібліотеки авторизації, яка використовується
+> в slim і навряд чи це нам потрібно. В загальному випадку одного об'єкту запиту вистачає для будь-якого рівня
+> складності авторизації.
+
+Після чого при конфігурації роутингу, slim для кожного роуту, для якого потрібна авторизація прокидує спеціальний
+middleware, що проводить авторизацію за допомогою класів, що описані в абзаці вище. Тобто, якщо у нас роут `/basic`
+потребує Basic авторизацію, а роут `/multiple` усі види авторизації, то slim сформує роутер приблизно наступним чином:
+
+```php
+$router->add(method: 'GET', path: '/basic', middlewares: [
+    new OpenapiAuthMiddleware($container->get(BasicAuthenticator::class)),
+])
+
+$router->add(method: 'GET', path: '/multiple', middlewares: [
+    new OpenapiAuthMiddleware($container->get(BasicAuthenticator::class)),
+    new OpenapiAuthMiddleware($container->get(BearerAuthenticator::class)),
+    new OpenapiAuthMiddleware($container->get(OAuth2Authenticator::class)),
+])
+```
+
+Ідея з тим як це реалізовано в slim генераторі мені подобається і я за реалізацію чогось схожого. З можливістю генерації
+більш конкретних класів для способів авторизації, що ми активно використовуємо. Наприклад генерувати 
+`BasicAuthenticatorAbstract` з абстрактним методом якому передаються 'username' та 'password', замість усього запиту.
+
+### Які методи авторизації ми будемо використовувати
+
+Basic - для самих простих варіантів, можливо для взаємодії сервісів всередині приватної докер мережі.
+
+Bearer - простий і універсальний спосіб для будь-яких взаємодій: як всередині приватної докер мережі, так і для фронтенд
+запитів.
+
+OAuth2 - для авторизації за допомогою google та інших сторонніх сервісів.
+
+TODO:
+1. Передбачити в архітектурі можливість авторизації: 
+   - за одним з декількох способів, 
+   - за декількома способами одночасно 
+   - комбінований варіант
+
+> Конкретно в реалізації генератора нам достатньо підтримувати лише перший пункт, але повинна бути передбачена можливість
+> розширення.
+
+2. Вирішити якими будуть абстрактні реалізації для Basic, Bearer, OAuth2 авторизацій
+3. Як повинен працювати генератор для клієнта
+
 ## Як реалізувати підтримку oneOf?
 
 ## План впровадження нових можливостей по версіям
