@@ -1012,6 +1012,239 @@ TODO:
 
 ## Як реалізувати підтримку oneOf?
 
+З підтримкою поліморфізму в openapi генераторах все не дуже добре. Деякі просто не працюють, деякі працюють, але не
+проводять ніякої валідації, чи визначення який саме об'єкт було передано. Повної підтримки не має ні один генератор,
+принаймні я такого не знайшов.
+
+Openapi схема на якій я проводив тести:
+
+```yaml
+Shop:
+  type: object
+  properties:
+    id:
+      type: string
+    info:
+      oneOf:
+        - $ref: '#/components/schemas/BookShopInfo'
+        - $ref: '#/components/schemas/SupermarketInfo'
+
+BookShopInfo:
+  type: object
+  properties:
+    tags:
+      type: string
+      enum:
+        - books
+        - reading
+    genres:
+      type: array
+      items:
+        type: string
+
+SupermarketInfo:
+  type: object
+  properties:
+    tags:
+      type: string
+      enum:
+        - food
+        - spices
+    vendors:
+      type: array
+      items:
+        type: string
+```
+
+Згенеровний код для основних генераторів можна подивитись [тут](https://github.com/misha-rollun/openapi-generator-tests)
+
+Спочатку загальні моменти. Усі генератори при використанні oneOf генерують допоміжний клас (або інтерфейс), який 
+явно не описаний в маніфесті. Наприклад для маніфесту вище згенерується допоміжний клас ShopInfo.
+
+При цьому в згенерованій openapi моделі цей ShopInfo не завжди правильний. В нашому прикладі і BookShopInfo і 
+SupermarketInfo мають enum поле tags, с різними доступними значеннями. При цьому openapi-generator згенерує наступні
+моделі:
+
+> Приклад нижче для останньої версії (пятої) генератора, четверта версія, що ми використовуємо настільки погано
+> підтримує oneOf, що можна сказати, що взагалі не підтримує.
+
+```json5
+[
+  {
+    "model": {
+      "name":  "Shop",
+      "vars": [
+        {
+          "name": "id"
+        },
+        {
+          "name": "info",
+          "openApiType": "ShopInfo"
+        }
+      ]
+    }
+  }, 
+  {
+    "model": {
+      "name":  "ShopInfo",
+      "oneOf": [
+        "BookShopInfo",
+        "SupermarketInfo"
+      ],
+      "vars": [
+        // openapi-generator об'єднав поля з BookShopInfo і SupermarketInfo
+        {
+          "name": "tags",
+          // Значення для enum взялись тільки з SupermarketInfo
+          "_enum": [
+            "food",
+            "spices"
+          ]
+        },
+        {
+          "name": "genres"
+        },
+        {
+          "name": "vendors"
+        }
+      ]
+    }
+  },
+  {
+    "model": {
+      "name":  "BookShopInfo",
+      "vars": [
+        {
+          "name": "tags",
+          "_enum": [
+            "books",
+            "reading"
+          ]
+        },
+        {
+          "name": "genres"
+        }
+      ]
+    }
+  },
+  {
+    "model": {
+      "name":  "SupermarketInfo",
+      "vars": [
+        {
+          "name": "tags",
+          "_enum": [
+            "food",
+            "spices"
+          ]
+        },
+        {
+          "name": "vendors"
+        }
+      ]
+    }
+  },
+]
+```
+
+Деякі генератори не перевіряють в своїх mustache шаблонах чи модель це oneOf і генерують її як звичайний клас.
+Наприклад так робить mezzio (laminas) генератор:
+
+```php
+class Shop
+{
+    /**
+     * @DTA\Data(field="id", nullable=true)
+     * @DTA\Validator(name="Scalar", options={"type":"string"})
+     * @var string|null
+     */
+    public $id;
+
+    /**
+     * @DTA\Data(field="info", nullable=true)
+     * @DTA\Strategy(name="Object", options={"type":\App\DTO\ShopInfo::class})
+     * @DTA\Validator(name="TypeCompliant", options={"type":\App\DTO\ShopInfo::class})
+     * @var \App\DTO\ShopInfo|null
+     */
+    public $info;
+
+}
+
+class ShopInfo
+{
+    /**
+     * @DTA\Data(field="tags", nullable=true)
+     * @DTA\Validator(name="Scalar", options={"type":"string"})
+     * @var string|null
+     */
+    public $tags;
+
+    /**
+     * @DTA\Data(field="genres", nullable=true)
+     * @DTA\Strategy(name="Object", options={"type":::class})
+     * @DTA\Validator(name="TypeCompliant", options={"type":::class})
+     * @var string[]|null
+     */
+    public $genres;
+
+    /**
+     * @DTA\Data(field="vendors", nullable=true)
+     * @DTA\Strategy(name="Object", options={"type":::class})
+     * @DTA\Validator(name="TypeCompliant", options={"type":::class})
+     * @var string[]|null
+     */
+    public $vendors;
+
+}
+```
+
+Php (client), Symfony, C# генератори працюють так само.
+
+Slim генератор фактично генерує коректний код:
+
+```php
+class ShopInfo extends BaseModel
+{
+    /**
+     * @var string Models namespace.
+     * Can be required for data deserialization when model contains referenced schemas.
+     */
+    protected const MODELS_NAMESPACE = '\OpenAPIServer\Model';
+
+    protected const MODEL_SCHEMA = <<<'SCHEMA'
+        {
+          "oneOf" : [ {
+            "$ref" : "#/components/schemas/BookShopInfo"
+          }, {
+            "$ref" : "#/components/schemas/SupermarketInfo"
+          } ]
+        }
+    SCHEMA;
+}
+```
+
+Але я не знайшов ніякої валідації по цій схемі чи десеріалізації об'єкта з json. Хоча теоретично валідацію і 
+десеріалізацію можна відносно легко дописати.
+
+У Java така сама проблема: генерується коректний код, але я не знайшов валідації чи десеріалізації:
+
+```java
+public interface ShopInfo {
+}
+
+public class BookShopInfo implements ShopInfo { 
+    // ...
+}
+
+public class SupermarketInfo implements ShopInfo {
+    // ...
+}
+```
+
+TODO:
+1. Варіанти того як ми можемо у себе реалізувати підтримку поліморфізму
+
+
 ## План впровадження нових можливостей по версіям
 
 ### Версія 1
