@@ -34,3 +34,5 @@ make up
 > Server name берется из переменной окружения PHP_IDE_CONFIG, значение которой обычно описывается в docker-compose
 > 
 > Example: PHP_IDE_CONFIG: serverName=service-suppliers
+
+   Також потрібно додати розширення xdebug у свій браузер, і в його налаштуваннях обрати PhpStorm.
