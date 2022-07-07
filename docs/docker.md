@@ -32,3 +32,5 @@ make up
    ![Xdebug server settings](/docs/img/servers-settings.png?raw=true)
 
 > Server name берется из переменной окружения PHP_IDE_CONFIG, значение которой обычно описывается в docker-compose
+> 
+> Example: PHP_IDE_CONFIG: serverName=service-suppliers
