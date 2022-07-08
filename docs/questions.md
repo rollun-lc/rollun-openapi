@@ -1282,6 +1282,55 @@ public class SupermarketInfo implements ShopInfo {
 TODO:
 1. Варіанти того як ми можемо у себе реалізувати підтримку поліморфізму
 
+## Організація схем, що використовуються у декількох маніфестах
+
+Openapi дозволяє посилатись з одного файлу маніфесту на компоненти, що визначені в інших файлах. Таким чином типи даних,
+що використовуються в різних маніфестах, можна описати один раз в окремому файлу.
+
+Організацію структури файлової системи можна взяти з [gcloud](https://www.belgif.be/specification/rest/api-guide/#api-specs),
+а саме: типи даних, що використовуються в декількох Api, повинні знаходитись в OpenApi файлах за шляхом: 
+
+```
+<domain>/<version>/<domain-version>.yaml
+<domain>/<subdomain>/<version>/<domain-subdomain-version>.yaml
+```
+
+Кожен файл має свій власний життєвий цикл: зі своїми мажорними, мінорними та патч версіями. 
+
+*Використання мінорних та патч версій може бути не обов'язковим, або їх можна взагалі прибрати і залишити лише мажорні. 
+Це питання ще необхідно додатково дослідити.*
+
+Фактично файли з компонентами не повинні бути валідним OpenApi файлом. Але в gcloud їх рекомендують все ж таки робити
+валідними, щоб забобігти проблем сумісності з різними інструментами.
+
+Приклад:
+
+> /person/identifier/v1/person-identifier-v1.yaml
+> ```yaml
+> info:
+>   title: person-identifier
+>   description: data types for person identifiers
+>   version: "1.1.2"
+> paths: {} # empty paths property required to be a valid OpenAPI file
+> components:
+>   schemas:
+>       Ssin:
+>           description: "Social Security Identification Number issued by the National Register or CBSS"
+>           type: string
+>           pattern: \d{11}
+> ```
+> 
+> На тип можна посилатися з іншого файлу OpenAPI наступним чином:
+> 
+> ```yaml
+> "$ref": "./person/identifier/v1/person-identifier-v1.yaml#/definitions/Ssin"
+> ```
+
+Більше прикладів можна знайти в репозиторіях [gcloud](https://github.com/belgif): 
+- [openapi-common](https://github.com/belgif/openapi-common)
+- [openapi-problem](https://github.com/belgif/openapi-problem)
+- [openapi-person](https://github.com/belgif/openapi-person)
+- і т.п.
 
 ## План впровадження нових можливостей по версіям
 
