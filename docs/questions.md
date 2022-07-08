@@ -826,6 +826,30 @@ return [
 
 Підтримка можливості клієнтом обрати куди згенерувати маніфест не потрібна.
 
+## Як конфігурація повинна прокидуватись в застосунок?
+
+Для кожного маніфесту може генеруватись своя папка з конфігурацією в `src/Generated/OpenApi/{manifestName}/config`.
+В цій папці конфігурація буде представлена набором php файлів, аналогічно як в `config/autoload`.  
+
+В директорію `src/Generated/OpenApi/` буде генеруватись ConfigProvider, що наслідується від `PhpFileProvider`, та
+збирає конфігурацію з усіх директорі `src/Generated/OpenApi/*/config`.
+
+```
+.
+└── src
+    └── Generated
+        └── Openapi
+            ├── Articles
+            │   └── config
+            │       ├── dependecies.global.php
+            │       └── router.global.php
+            └── Orders
+            │  └── config
+            │       ├── dependecies.global.php
+            │       └── router.global.php
+            ├── ConfigProvider.php
+```
+
 ## Як повинна працювати авторизація?
 
 ### Опис авторизації в маніфесті
