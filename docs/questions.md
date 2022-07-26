@@ -1888,6 +1888,139 @@ interface Handler
 Це й малось на увазі вище у рядку "Інтерфейси на кожному рівні дозволяють застосункам взаємодіяти на одному рівні так,
 ніби інших рівнів не існує".
 
+### Мапинг об'єктів між різними рівнями
+
+#### Request
+
+**Http layer**
+
+Конвертація: Php global variables -> `Psr7Request`
+
+Цим займається фреймворк.
+
+**Openapi layer**
+
+Конвертація: `Psr7Request` -> `OpenapiRequest`
+
+```php
+interface OpenapiRequest {
+    public function getParameters(): Parameters;
+    
+    public function hasBody(): bool;
+    public function getBody(): ?Schema;
+}
+
+interface Parameters {
+    public function hasPathParameter(string $name): bool;
+    public function getPathParameter(string $name): ?Parameter;
+    
+    public function hasQueryParameter(string $name): bool;
+    public function getQueryParameter(string $name): ?Parameter;
+    
+    public function hasHeaderParameter(string $name): bool;
+    public function getHeaderParameter(string $name): ?Parameter;
+    
+    public function hasCookieParameter(string $name): bool;
+    public function getCookieParameter(string $name): ?Parameter;
+}
+
+interface Parameter {
+    public function getName(): string;    
+    public function getValue(): mixed;
+}
+```
+
+> Для цих інтерфейсів будуть генеруватись відповідні реалізації для кожного ендпоінту. Наприклад, якщо в маніфесті
+> описано ендпоінт `POST /orders`, то згенерується реалізація:
+> ```php
+> class PostOrdersRequest implements OpenapiRequest {
+>   public function getParameters(): PostOrdersParameters;
+>   public function getBody(): ?Order;
+> }
+> ```
+> Відповідно будуть згенеровані й `PostOrdersParameters` та `Order`
+
+Загалом для всіх полів з `Rsr7Request` є відповідні в `OpenapiRequest`. Головна складність конвертації на цьому етапі:
+- Десеріалізація даних в об'єкти з підтримкою поліморфізму (oneOf, anyOf, allOf), різних медіа типів та кодувань.
+- Валідація даних згідно з маніфестом
+
+**Rollun layer**
+
+`OpenapiRequest` -> `Command`
+
+```php
+class Command {
+    public getPayload(): object; 
+    public getClientInfo(): ClientInfo;
+}
+``` 
+`Payload` - це звичайне DTO з публічними readonly полями та без бізнес-логіки. Ці поля будуть братись на пряму з поля 
+`payload` тіла запиту.
+
+`ClientInfo` - також DTO яка буде заповнюватись на основі хедерів.
+
+```php
+class ClientInfo {
+    public readonly ?string $language;
+    public readonly ?string $userAgent
+}
+```
+
+Можливо я щось упускаю, але в моєму розумінні це уся інформація з хедерів, яка хоч якось може вплинути на бізнес-логіку.
+Уся інша інформація з хедерів: авторизація, кодування, правила кешування і т.п повинні оброблюватись раніше формування 
+команди й незалежно від бізнес-логіки.
+
+Якщо користувач не пройшов автентифікацію, то command взагалі немає сенсу формувати, просто формується стандартна 
+помилка.
+Теж саме з кешуванням, якщо прийшов якийсь умовний запит, який не потрібно виконувати в залежності від умови, то це
+повинно вирішитись ще до формування команди.
+
+Для випадків вище клас обробник команди можна зобов'язати імплементувати деякі допоміжні методи. Наприклад, 
+```php
+// Це лише приблизний приклад, при проектуванні ці методи можуть переміститись до інших інтерфейсів,
+// змінити свою сігнатуру, з'являться нові методи і т.п. 
+
+interface Handler {
+    public function hasEtag(): bool;
+    public function getEtag(): string;
+    
+    public function hasLastModified(): bool;
+    public function getLastModified(): DateTimeInterface;
+    
+    /**
+     * @throws UserNotFoundException
+     */
+    public function authorize(string $username, string $password): User;
+    
+    public function handle(): Result;
+}
+```
+
+#### Response
+
+В цілому ситуація зеркальна запиту. Але деякі речі можна відмітити.
+
+**Rollun layer**
+
+На цьому рівні результат операції не містить прямої інформації про заголовки, правила кешування і т.п. Ця інформація
+збирається з різних місць і опирається на стандарти нашої компанії.
+
+Наприклад замість того щоб десь явно повертати 200, чи 202 код з обробника повертається об'єкт `Result`, який може бути 
+як в одному зі статусів `pending`, `fulfilled`, `rejected`, а код вже обирається в залежності від цього статусу.
+
+Код 500 формується виходячи з того чи відбувся ексепшн чи ні. 
+
+Медіа тип обирається в залежності від того відбулась помилка чи ні, синхронна операція чи асинхронна і т.п 
+
+Etag, Last-Modified і інші хедери отримуються на основі абстрактних методів, які імплементував, чи не імплементував
+програміст. 
+
+І тому подібне.
+
+Якщо програмісту потрібно втрутитись в цей процес, то він повинен це робити створюючи свою імплементацію чи декоратори 
+для стандартних інтерфейсів, та за допомогою інших патернів, що дозволяють розширювати логіку та повинні бути завчасно
+передбачені при створенні архітектури системи. 
+
 ### Назви класів, методів
 
 Теги не використовуються. Для генерації назв класів потрібно використовувати url та назви компонентів (схем, 
