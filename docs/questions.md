@@ -185,6 +185,34 @@ HATEOAS та те як вони реалізовуються в HTML.
 - PUT - повна заміна ресурсу на новий
 - PATCH - часткова зміна ресурсу за допомогою набору інструкцій
 
+Залишу також деякі прямі цитати Філдинга:
+
+> A REST API should spend almost all of its descriptive effort in defining the media type(s) used for representing 
+> resources and driving application state, or in defining extended relation names and/or hypertext-enabled mark-up 
+> for existing standard media types. Any effort spent describing what methods to use on what URIs of interest should 
+> be entirely defined within the scope of the processing rules for a media type (and, in most cases, already defined 
+> by existing media types). [Failure here implies that out-of-band information is driving interaction instead of 
+> hypertext.]
+
+> A REST API must not define fixed resource names or hierarchies (an obvious coupling of client and server). Servers 
+> must have the freedom to control their own namespace. Instead, allow servers to instruct clients on how to construct 
+> appropriate URIs, such as is done in HTML forms and URI templates, by defining those instructions within media types 
+> and link relations. [Failure here implies that clients are assuming a resource structure due to out-of band 
+> information, such as a domain-specific standard, which is the data-oriented equivalent to RPC’s functional coupling]
+
+> HTTP operations are generic: they are allowed or not, per resource, but they are always valid. Hypertext doesn’t 
+> usually tell you all the operations allowed on any given resource; it tells you which operation to use for each 
+> potential transition. The client (user or agent) has to decide what transition to take, not what interface to use.
+> 
+> HTML doesn’t need type specifications. No RESTful architecture needs type specifications. Don’t expect REST to act 
+> like some other architectural style. You don’t get to decide what POST means — that is decided by the resource. 
+> Its purpose is supposed to be described in the same context in which you found the URI that you are posting to. 
+> Presumably, that context (a hypertext representation in some media type understood by your client) tells you or your 
+> agent what to expect from the POST using some combination of standard elements/relations and human-readable text. 
+> The HTTP response will tell you what happened as a result. In HTTP, a single resource-creating POST action will result 
+> in a 201 response with another hypertext representation (telling you what happened and what can be done next) or 204 
+> response with the Location header field indicating the URI of the new resource.
+
 ### Чому для виконання довільних екшенів зазвичай використовують POST а не інші http методи
 
 Для виконання довільних екшенів зазвичай використовують POST, тому що він не накладає ніяких обмежень на те як сервер 
@@ -218,6 +246,9 @@ Request-URI.
 всі розуміють, що для людини цей url це лише набір символів, який прописаний в гіперпосиланні якоїсь кнопки чи форми.
 Реальне значення має лише сенс кнопки. А HTTP метод підбирається виходячи з зображень безпеки, кешування і т.п
 
+Фактично єдина вимога до url це, якомога довше, залишатись незмінними у часі. Адже "[implementations change, but cool 
+URIs don’t.](https://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven#comment-732)"
+
 ### HATEOAS AND OPENAPI
 
 Одна з головних концепцій REST API - це Uniform Interface. Клієнт завчасно не повинен знати ні те як будувати URI, ні 
@@ -227,6 +258,12 @@ Request-URI.
 
 > Потрібно відмітити, що Філдинг дозволяє мати правила будування URI та типизовані ресурси, але усе це дозволяється
 лише як частина реалізації кінцевого сервера, та повинно бути скритим для клієнта. 
+> 
+> Fielding:
+> A REST API should never have “typed” resources that are significant to the client. Specification authors may use 
+> resource types for describing server implementation behind the interface, but those types must be irrelevant and 
+> invisible to the client. The only types that are significant to a client are the current representation’s media type 
+> and standardized relation names.
 
 Тоді для чистого REST використання маніфестів можна використовувати лише для генерації серверного коду, ажже клієнт
 повинен орієнтуватись тільки на початковий URL та множину медіа типів?
