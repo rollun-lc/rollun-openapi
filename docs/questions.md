@@ -711,6 +711,7 @@ Response example
 
 Створення задачі
 
+Request
 ```http request
 POST /articles
 Accept: application/vnd.rollun+json, application/vnd.rollun-error+json, application/vnd.rollun-long-task+json
@@ -718,11 +719,13 @@ Content-Type: application/vnd.rollun+json
 
 {
   "data": {
+    "idempotencyKey": "abc",
     "title": "My article!"
   }
 }
 ```
 
+Response
 ```http
 HTTP/1.1 202 Accepted
 Content-type: application/vnd.rollun-long-task+json
@@ -731,6 +734,7 @@ Retry-After: 30
 {
   "data": {
     "id": "123",
+    "idempotencyKey": "abc",
     "stage": "creating"
   }
 }
@@ -738,31 +742,36 @@ Retry-After: 30
 
 Отримання задачі
 
+Request
 ```http request
 GET /articles/actions/post/123
 Accept: application/vnd.rollun+json, application/vnd.rollun-error+json, application/vnd.rollun-long-task+json
 ```
 
+Response
 ```http
 HTTP/1.1 202 Accepted
 Content-type: application/vnd.rollun-long-task+json
 Retry-After: 10
 
 {
-  "data": {
+  "task": {
     "id": "123",
+    "idempotencyKey": "abc",
     "stage": "creating"
   }
 }
 ```
 
-Помилка
+Якщо виконання закінчилось помилкою
 
+Request
 ```http request
 GET /articles/actions/post/123
 Accept: application/vnd.rollun+json, application/vnd.rollun-error+json, application/vnd.rollun-long-task+json
 ```
 
+Response
 ```http
 HTTP/1.1 200 OK
 Content-type: application/vnd.rollun-error+json
@@ -778,13 +787,15 @@ Content-type: application/vnd.rollun-error+json
 }
 ```
 
-Успішно виконана задача
+Якщо виконання успішно закінчилось
 
+Request
 ```http request
 GET /articles/actions/post/123
 Accept: application/vnd.rollun+json, application/vnd.rollun-error+json, application/vnd.rollun-long-task+json
 ```
 
+Response
 ```http
 HTTP/1.1 200 OK
 Content-type: application/vnd.rollun+json
@@ -792,6 +803,7 @@ Content-type: application/vnd.rollun+json
 {
   "data": {
     "id": 1,
+    "idempotencyKey": "abc",
     "title": "My article!"
   }
 }
@@ -803,26 +815,60 @@ Content-type: application/vnd.rollun+json
 
 - **Parent:** батьківський медіа тип. Описуваний медіа тип містить усі властивості батківського типу, 
 якщо явно не написано інше.
-- **Status codes**: список статус кодів для яких допускається використання описуваного медіа типу
 
 ### application/vnd.rollun-request+json
 
-TODO.
+**Parent:** application/json
 
-Тільки для запитів з payload замість data.
+Цей медіа тип призначений для тіла запиту. 
+
+На верхньому рівні є завжди json об'єктом (не масивом, примитивом etc).
+
+Для передачі корисних даних (фактично вхідних аргументів) **ПОВИННО** використовуватись поле `payload`. Поле **МОЖЕ**
+бути відсутнім, якщо операції не передаються ніякі вхідні аргументи.
+
+Передача інформації, для якої є визначені в http специфікації заголовки, повинна передаватись через них. А саме:
+
+- Accept - список медіа типів які здатен опрацювати клієнт
+- Accept-Charset - кодування символів (charset) яке здатен зрозуміти клієнт (utf-8, iso-8859-15, etc)
+- Accept-Encoding - кодування (encoding) яке здатен опрацювати клієнт (gzip, compress, br)
+- Accept-Language - набір природних мов, яким клієнт надає перевагу
+- Authorization - данні авторизації
+- From - email адреса власника клієнта (що, відправляє запит)
+- Заголовки умовних запитів: If-Match, If-None-Match, If-Modified-Since, If-Unmodified-Since, If-Range
+- Інші технічні заголовки
+
+Openapi schema:
+
+```yaml
+SuccessResponse:
+    type: object
+    properties:
+        payload:
+            nullable: true
+            description: >
+                Корисна інформація про стан ресурсу, або колекції ресурсів. Стан ресурсу описується набором полей 
+                об'єкту, або примитивом (рядок, число і т.п.).
+```
 
 ### application/vnd.rollun+json
 
-- **Parent:** application/json
-- **Status codes**: 2xx
+**Parent:** application/json
 
-Медіа тип призначений для успішних відповідей, а також для POST і PUT запитів. 
+Медіа тип призначений для успішних відповідей: з кодом 2хх. **НЕ РЕКОМЕНДУЄТЬСЯ** для використання зі статус кодами 
+відмінними від 2xx.
 
-Завжди json об'єкт.
+На верхньому рівні є завжди json об'єктом.
 
-Об'єкт **ПОВИНЕН** містити поле `data` з основною інформацією про стан ресурсу. Може бути null для опису пустого 
-ресурсу, наприклад для опису успішного виконання задачі, що не має результату. Або при відсутності вхідних даних для
-виконання запиту.
+Основна інформація про стан ресурсу **ПОВИННА** міститись у полі `data`. Поле `data` **МОЖЕ** бути відсутнім, якщо
+успішне виконання задачі не має результату. **МОЖЕ** бути null для опису порожнього результату.
+
+> Відсутність результату (поле 'data' відсутнє) може повертатись операцією-процедурою, яка ніколи не повертає ніякого 
+> результату. У таких операцій все ще є сенс повертати тіло відповіді, оскільки, окрім безпосередньо результату (поля
+> 'data') в ньому може міститись інформація про попередження, метаданні і т.п.
+> 
+> Порожній результат (поле 'data' дорівнює null) означає, що операція загалом повертає результат, але у данному 
+> конкретному випадку його немає (з легальних причин).
 
 Об'єкт **МОЖЕ** містити поле `messages`. Рівень повідомлення **ПОВИНЕН** бути один з: `info`, `notice`, `warning`, 
 `debug`.
@@ -872,17 +918,20 @@ Message:
 ### application/vnd.rollun-error+json
 
 - **Parent:** application/json
-- **Status codes**: 2xx, 4xx, 5xx
 
 Медіа тип призначений для опису помилок при створенні чи отриманні ресурсу і **НЕ ПОВИНЕН** використовуватись у запитах.
+**МОЖЕ** використовуватись разом з 2хх кодом, якщо сама http операція виконалась успішно, але результат який описується
+цією операцією - помилка. Приклад такої поведінки можна знайти в описі лонг тасків.
 
-Завжди json об'єкт.
+На верхньому рівні є завжди json об'єктом.
 
 Об'єкт **НЕ ПОВИНЕН** містити поле `data`.
 
-Об'єкт **ПОВИНЕН** містити поле `messages`. Рівень повідомлення **ПОВИНЕН** бути один з: `emergency`, `alert`, 
-`critical`, `error`, `warning`, `notice`, `info`. Список `messages` **ПОВИНЕН** містити хоча б одне повідомлення з 
-рівнем `error` або вище, що буде описувати причину помилки.
+Об'єкт **ПОВИНЕН** містити поле `messages` з хоча б одним повідомленням з рівнем`error` або вище, що буде описувати 
+причину помилки. 
+
+Рівень повідомлень **ПОВИНЕН** бути один з: `emergency`, `alert`, `critical`, `error`, `warning`, `notice`, `info`, 
+`debug`. 
 
 > Рівні сортируются у порядку спадання наступним чином: emergency, alert, critical, error, warning, notice, info
 
@@ -924,20 +973,21 @@ Message:
 ```
 
 ## application/vnd.rollun-long-task-pending+json
-- **Parent:** application/json
-- **Status codes**: 200, 202
+**Parent:** application/json
 
-Призначений для опису асинхронної операції (задачі). Тип **НЕ ПОВИНЕН** використовуватись для опису операції яка вже 
-виконалась. Для опису результату операції рекомендується використовувати типи `application/vnd.rollun+json` та 
+Призначений для опису стану виконання асинхронної задачі. Тип **НЕ ПОВИНЕН** використовуватись для опису задачі, яка 
+вже виконалась. Для опису результату задачі рекомендується використовувати типи `application/vnd.rollun+json` та 
 `application/vnd.rollun-error+json` в залежності від того чи виконання завершилось успішно, чи з помилкою.
 
-В `task` **ПОВИНЕН** міститись об'єкт `long-task`.
+На верхньому рівні є завжди json об'єктом.
+
+В полі `task` **ПОВИНЕН** міститись об'єкт `long-task`.
 
 Об'єкт `long-task` **ПОВИНЕН** містити поля:
 - `id` : string - ідентифікатор задачі.
 - `idempotency-key` - ключ ідемпотентності
 
-> Нам не потрібне поле status, тому що цей тип використовується лише при pending статусу операції. 
+> Нам не потрібне поле status, тому що цей тип використовується лише при pending статусу задачі. 
 > Для більш детального опису стану виконання можна використовувати поле `currentStage`.
 
 Об'єкт `long-task` **МОЖЕ** містити поля:
@@ -948,10 +998,6 @@ Message:
 
 При використанні цього типу **РЕКОМЕНДУЄТЬСЯ** повертати хедер `Retry-After`, що буде описувати естімейт, коли
 задача завершиться.
-
-TODO:
-1. Статус коди путають
-2. 
 
 ## Що повинні повертати запити, якщо інформація про лонг-таск видалено?
 
