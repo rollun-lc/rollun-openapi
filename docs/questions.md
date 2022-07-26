@@ -1241,11 +1241,11 @@ return [
 
 ## Який шлях куди генерується маніфест за замовчуванням?
 
-Замість src/{manifestName} код можна генерувати в src/Generated/OpenApi/{manifestName}.
+Замість src/{manifestName} код можна генерувати в src/Generated/OpenApi/{generator}/{manifestName}.
 
 Це рішення має ряд переваг:
 
-- В автолоадинг достатньо один раз прописати шлях до src/Generated/OpenApi/. 
+- В автолоадинг достатньо один раз прописати шлях до src/Generated/OpenApi/{generator}. 
 Замість того щоб робити це при кожній генерації нового маніфесту.
 - В директорії src стане значно простіше орієнтуватись.
 - Папку src/Generated можна ігнорувати при різних аналізах коду (статичний, покриття тестами, код стайл і т.п.)
@@ -1254,36 +1254,40 @@ return [
 
 Підтримка можливості обрати куди згенерувати маніфест не потрібна.
 
-Також я би додавав в шлях мажорну версію генератора: src/Generated/OpenApi/{generatorVersion}/{manifestName} . 
+Також я би додавав в шлях мажорну версію генератора: src/Generated/OpenApi/{generator}/{generatorVersion}/{manifestName}. 
 Це дозволить підтримувати декілька маніфестів, згенерованих різними версіями генератора одночасно (що дозволить
 плавніше переходити на нову версію). Особливо це корисно якщо ми усі класи, що потрібні для роботи генератора (
-валідатори і т.п.), будемо генерувати в директорію: src/Generated/OpenApi/{generatorVersion} , замість того щоб
-тримати їх напряму в бібліотеці openapi-generator . Також в ідеалі генератор, перед генерацією маніфеста, повинен
+валідатори і т.п.), будемо генерувати в директорію: src/Generated/OpenApi/{generator}/{generatorVersion} , замість того 
+щоб тримати їх напряму в бібліотеці openapi-generator. Також в ідеалі генератор, перед генерацією маніфеста, повинен
 перевіряти, що цей самий маніфест вже не згенеровано в проекті іншою мажорною версією генератора і пропонувати
 видалити його, якщо так. 
 
 ## Як конфігурація повинна прокидуватись в застосунок?
 
-Для кожного маніфесту може генеруватись своя папка з конфігурацією в `src/Generated/OpenApi/{manifestName}/config`.
+Для кожного маніфесту може генеруватись своя папка з конфігурацією в 
+`src/Generated/OpenApi/{generator}/{generatorVersion}/{manifestName}/config`.
 В цій папці конфігурація буде представлена набором php файлів, аналогічно як в `config/autoload`.  
 
-В директорію `src/Generated/OpenApi/` буде генеруватись ConfigProvider, що наслідується від `PhpFileProvider`, та
-збирає конфігурацію з усіх директорі `src/Generated/OpenApi/*/config`.
+В директорію `src/Generated/OpenApi/{generator}/{generatorVersion}` буде генеруватись ConfigProvider, що наслідується 
+від `PhpFileProvider`, та збирає конфігурацію з усіх директорі 
+`src/Generated/OpenApi/{generator}/{generatorVersion}/*/config`.
 
 ```
 .
 └── src
     └── Generated
         └── Openapi
-            ├── Articles
-            │   └── config
-            │       ├── dependecies.global.php
-            │       └── router.global.php
-            └── Orders
-            │  └── config
-            │       ├── dependecies.global.php
-            │       └── router.global.php
-            ├── ConfigProvider.php
+            └── RollunGenerator
+                └── V1
+                    ├── Articles
+                    │   └── config
+                    │       ├── dependecies.global.php
+                    │       └── router.global.php
+                    └── Orders
+                    │  └── config
+                    │       ├── dependecies.global.php
+                    │       └── router.global.php
+                    ├── ConfigProvider.php
 ```
 
 ## Як повинна працювати авторизація?
