@@ -1,46 +1,102 @@
 # OpenAPI generator
 
-Библиотека, которая дает возможность подключить, сгенерированный OpenAPI генератором, серверный или клиентский код к вашему проекту.
+Ця бібліотека містить php скрипт, що генерує код клієнтської або серверної сторони з openapi маніфесту. Скрипт працює 
+за допомогою утиліти [openapi-generator](https://openapi-generator.tech/).
 
-## Установка:
+> Openapi маніфест - це документ, з певною структурою, що описує HTTP API: url шляхи, формати даних запиту/відповіді, 
+> авторизацію і т.п. Детальніше можна почитати [тут](https://swagger.io/docs/specification/about/).
+> 
+> На основі цього маніфесту можна згенерувати код для клієнтської або серверної частини. 
+> 
+> Для клієнтської частини генерується API клієнт, за допомогою якого можна відправляти запити до данного Api.
+> 
+> Згенерованний код для серверної частини буде містити шаблон контролера, який потрібно імплементувати.
+>
+> І клієнт і сервер будуть містити валідацію та серіалізацію/десериалізацію даних з/в об'єкти для http запиту та 
+> відповіді.
+
+Також цю бібліотеку потрібно підключати в require секцію composer.json свого проекту, оскільки вона містить класи, що
+потрібні для роботи згенерованого коду.
+
+## Quick start
+
+Для початку потрібно мати openapi маніфест, на основі якого ви хочете згенерувати код. Усі API в нашій компанії мають
+маніфест, їх список можна переглянути в репозиторії [rollun-com/openapi-manifests](https://github.com/rollun-com/openapi-manifests) 
+
+Після цього визначитись з тим серверну або клієнтську частину ви хочете генерувати. Різниця в тому, що:
+- клієнт використовує API: тому згенерується API клієнт, який дозволять відправляти http запити (при цьому виконуючи 
+валідацію та серіалізацію/десериалізацію. Цей клієнт відразу готовий до використання.
+- сервер реалізовує API: тому згенеруються шаблони контролерів, які потрібно буде реалізувати програмісту.
+
+Встановіть бібліотеку у свій проект(мікросервіс):
+
+   ```composer require rollun-com/rollun-openapi```
+
+**Важливо** Після того, як композер відпрацює, перевірьте що у файлі `/config/config.php` 
+присутній конфіг провайдер `\OpenAPI\ConfigProvider::class`, а також він завантажується після
+`\Zend\Expressive\Router\FastRouteRouter\ConfigProvider::class` інакше не буде працювати.
+
+Після цього вам через php потрібно запустити скрипт [./bin/openapi-generator](bin/openapi-generator) даної бібліотеки
+з командою `generate:server`, якщо ви хочете згенерувати код для серверної частини, і, відповідно `generate:client`
+для клієнта. Шлях до маніфесту скрипт запитає сам, але також його можна відразу вказати через параметр `-m`. 
+
+> Якщо ви встановили цю бібліотеку через composer у свій проект, то цей скрипт буде знаходитись за шляхом
+> `./vendor/bin/openapi-generator`, а не `./bin/openapi-generator`
+
+**Важливо,** щоб не отримати помилку, цей скрипт повинен запускатись в оточені, де встановлено утиліту 
+[openapi-generator](https://openapi-generator.tech/). Це можна добитись двома шляхами:
+1. Встановити [openapi-generator](https://openapi-generator.tech/) собі у систему локально, за інструкцією на їх сайті.
+2. Використовувати docker, та запускати цей скрипт всередині докер контейнеру.
+
+### Зуапуск генерації через докер
+
+```bash
+docker run --rm \
+  -v $PWD:/var/www/app \
+  maxrollundev/php-openapi-generator:8.0 \
+  php vendor/bin/openapi-generator generate:server \
+  -m openapi.yaml
+```
+
+Де:
+- `-v $PWD:/var/www/app` - створює [волюм](https://docs.docker.com/storage/volumes/) з поточної директорії хост машини, до директорії 
+/var/www/app контейнеру (цей шлях зручно використовувати, адже для цього контейнеру він є робочою директорію по 
+замовчуванню)
+- `maxrollundev/php-openapi-generator:8.0` - назва контейнеру (8.0 - версія php)
+- `php vendor/bin/openapi-generator generate:server` - безпосередньо запуск скрипту генератора (для клієнта замінити 
+`generate:server` а `generate:client`)
+- `-m openapi.yaml` - шлях до маніфесту (може бути url)
+
+Якщо ви використовуєте docker-compose в проекті, то в розділ services можна додати сервіс генератора
+
+```yaml
+services:
+  // ...
+  
+  php-openapi-generator:
+    image: maxrollundev/php-openapi-generator:8.0
+    volumes:
+      - ./:/var/www/app
+```
+
+та запускати генератор за допомогою 
+
+```bash
+docker-compose run --rm php-openapi-generator \
+  php vendor/bin/openapi-generator generate:server \
+  -m openapi.yaml
+```
+
+### Запуск генерації без докеру
+
 1. Установите [openapi-generator](https://openapi-generator.tech/) ниже 5й (не включительно). Для проверки выполните команду:
 
    ```openapi-generator version```, в случае когда openapi-generator установлен вы увидите версию генератора.
 
    **ВЕРСИЯ ГЕНЕРАТОРА ДОЛЖНА БЫТЬ НИЖЕ ПЯТОЙ.** Связанно это с тем что в 5й версии [убрали](https://github.com/OpenAPITools/openapi-generator/pull/8145/commits) 
    генератор которым мы пользуемся, ему изменили имя и переделали для Laminas вместо Zend.
-   
 
-2. Установите библиотеку, для этого выполните команду 
-
-   ```composer require rollun-com/rollun-openapi```
-   * **!!!ВАЖНО!!!** После того как композер отработает, проверьте чтобы в файле `/config/config.php` конфиг провайдер `\OpenAPI\ConfigProvider::class` загружался после `\Zend\Expressive\Router\FastRouteRouter\ConfigProvider::class` в ином случаем работать не будет.
- 
-  
-3. Проверить что в контейнере есть `rollun\logger\LifeCycleToken`.
-
-   Под этим именем в контейнере должна находиться строка с идентификатором текущего жизненного цикла приложения.
-
-   Рекомендованный способ это установить библиотеку rollun-com/rollun-logger. В комплекте с которой идет LifeCycleToken.
-   Почитать о том как установить его в контейнер можно в [документации](https://github.com/rollun-com/rollun-logger/blob/master/docs/index.md#lifecycletoken)
-   библиотеки.
- 
-
-4. Подготовьте openapi манифест. Детали [здесь](docs/manifest.md).       
-
-
-5. Скачайте openapi манифест. Для этого перейдите на https://app.swaggerhub.com/home?type=API, откройте нужный вам манифест и сделайте экспорт в виде yaml файла. При скачивании, рекомендуется называть документ **openapi.yaml** так, как такое имя используется генератором по умолчанию.
-   ![alt text](docs/assets/img/openapi.png)
-   В версии 8+ манифест скачивать не нужно, можно указывать урл.
-6. Для генерации кода выполните команду:
-
-   ```php vendor/bin/openapi-server-generate```
-   
-   или
-   
-   ```php vendor/bin/openapi-client-generate```
-
-   В версии 8+ существенно переделаны скрипты запуска генерации и запускается так
+2. Для генерации кода выполните команду:
 
    ```php vendor/bin/openapi-generator generate:server```
    или
@@ -52,20 +108,28 @@
    
    ```php vendor/bin/openapi-generator generate:client --manifest=openapy.yaml```
    
-   Используется пакет [symfony/console](https://github.com/symfony/console).
-   
-7. Обязательно добавьте сгенерированные классы в аутолоадер композера.
-   ```
-     "autoload": {
-       "psr-4": {
-         "SomeModule\\": "src/SomeModule/src/"
-       }
-     },
-   ```
-8. При переходе на версии 9+, нужно перегенерировать всех клиентов
-   
-## Quick Start видео   
-Для просмотра видео перейдите по [ссылке](https://drive.google.com/file/d/1kzuJMICC5P4kxlkRZE5UmDD1PwBFVerp/view?usp=sharing).
+### Налаштування після генерації
+
+Обязательно добавьте сгенерированные классы в аутолоадер композера.
+```
+"autoload": {
+  "psr-4": {
+    "SomeModule\\": "src/SomeModule/src/"
+  }
+},
+```
+
+Де, SomeModule - це title маніфесту
+
+### Якщо виникли помилки
+
+1. Проверьте что в контейнере есть `rollun\logger\LifeCycleToken`.
+
+   Под этим именем в контейнере должна находиться строка с идентификатором текущего жизненного цикла приложения.
+
+   Рекомендованный способ это установить библиотеку rollun-com/rollun-logger. В комплекте с которой идет LifeCycleToken.
+   Почитать о том как установить его в контейнер можно в [документации](https://github.com/rollun-com/rollun-logger/blob/master/docs/index.md#lifecycletoken)
+   библиотеки.
 
 ## Формат даты и времени
 Формат даты и времени, согласно спецификации [OpenApi](https://swagger.io/docs/specification/data-models/data-types/) должен возвращаться
