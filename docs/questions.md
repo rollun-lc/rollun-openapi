@@ -821,7 +821,7 @@ Response example
     "pagination": {
       "nextPageCursor": "gRk90324",
       "prevPageCursor": null,
-      "currentCursor": null,
+      "currentCursor": 'nm2bu4n5j',
       "pageSize": 20
     }
   },
@@ -833,13 +833,39 @@ Response example
 
 Детальніше: [Zalando RESTful API and Event Guidelines](https://opensource.zalando.com/restful-api-guidelines/#pagination)
 
+### Зарезервовані параметри
+
+#### Reserved query parameters
+
+| name     | manifest support                                         | required | has default value | description                                                    |
+|----------|----------------------------------------------------------|----------|-------------------|----------------------------------------------------------------|
+| pageSize | **mandatory** if any pagination used                     | false    | true              | maximum number of items per page desired by client             |
+| page     | **mandatory** for offset-based, **N/A** for cursor-based | false    | true              | the index of page to be retrieved                              |
+| cursor   | **N/A** for offset-based, **mandatory** for cursor-based | false    | true              | the cursor (received in prev response) of page to be retrieved |
+
+> Manifest support визначає чи зобов'язаний цей параметр бути присутнім в маніфесті (а значить і підтримуватись 
+> сервером)
+
+#### Reserved JSON properties
+
+| name              | manifest support                                         | required | nullable        | description                                                                                                                    |
+|-------------------|----------------------------------------------------------|----------|-----------------|--------------------------------------------------------------------------------------------------------------------------------|
+| pageSize          | **mandatory** if any pagination used                     | true     | false           | Maximum number of items per page. For the last page, its value should be independent of the number of actually returned items. |
+| nextPageCursor    | **N/A** for offset-based, **mandatory** for cursor-based | true     | true            | cursor to next page                                                                                                            |
+| prevPageCursor    | **N/A** for offset-based, **mandatory** for cursor-based | true     | true            | cursor to prev page                                                                                                            |
+| currentPageCursor | **N/A** for offset-based, **mandatory** for cursor-based | true     | manifest-depend | cursor to current page                                                                                                         |
+| firstPageCursor   | **N/A** for offset-based, **optional** for cursor-based  | true     | false           | cursor to first page                                                                                                           |
+| lastPageCursor    | **N/A** for offset-based, **optional** for cursor-based  | true     | false           | cursor to last page                                                                                                            |
+| totalCount        | **mandatory** for offset-based, **N/A** for cursor-based | true     | false           | total items in collection                                                                                                      |
+| totalPages        | **mandatory** for offset-based, **N/A** for cursor-based | true     | false           | total pages (with {pageSize} size) in collection                                                                               |
+| currentPage       | **mandatory** for offset-based, **N/A** for cursor-based | true     | false           | index of current page                                                                                                          |
+
 ### Висновки
 
-Для простоти реалізації звістно краще використовувати offset-based пагінацію, але у випадках якщо наявність дублікату
-при обході сторінок критична, то потрібно використовувати cursor-based. 
+Для простоти реалізації краще використовувати offset-based пагінацію, але у випадках якщо наявність дублікату
+при обході сторінок критична, то потрібно використовувати cursor-based.
 
-Розмір сторінки вказується клієнтом за допомогою *необов'язкового* query параметру page_size (як для offset-based так 
-і для cursor-based пагінації), у цього параметру **ПОВИННО** бути значення по замовчуванню. 
+Ми почнемо з підтримки offset-based пагінацій, cursor-based - на майбутнє. 
 
 ## Як оброблювати помилку виконання лонг таску?
 
