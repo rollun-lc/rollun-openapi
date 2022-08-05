@@ -875,10 +875,10 @@ Request
 ```http request
 POST /articles
 Accept: application/vnd.rollun+json, application/vnd.rollun-error+json, application/vnd.rollun-long-task+json
-Content-Type: application/vnd.rollun+json
+Content-Type: application/vnd.rollun-request+json
 
 {
-  "data": {
+  "payload": {
     "idempotencyKey": "abc",
     "title": "My article!"
   }
@@ -1011,9 +1011,79 @@ SuccessResponse:
                 об'єкту, або примитивом (рядок, число і т.п.).
 ```
 
-### application/vnd.rollun+json
+### application/vnd.rollun-metadata+json
 
 **Parent:** application/json
+
+Є батьківським для декількох наступних медіа типів. Можливо може використовуватись як тіло відповіді для OPTIONS 
+запитів.
+
+```yaml
+SuccessResponse:
+    type: object
+    properties:
+        metadata:
+            $ref: "#/components/schemas/Metadata"
+            description: Метаінформація про ресурс, або колекцію ресурсів.
+Metadata:
+  type: object
+  properties:
+    pagination:
+      oneOf:
+        - $ref: "#/components/schemas/OffsetPaginationMetadata"
+        - $ref: "#/components/schemas/PaginationMetadata"
+
+PaginationMetadata:
+  type: object
+  required:
+    - pageSize
+  properties:
+    pageSize:
+      type: int
+      description: > 
+        Maximum number of items per page. For the last page, its value should be independent of the number of actually 
+        returned items.
+
+OffsetPaginationMetadata:
+  allOf:
+    - $ref: "#/components/schemas/PaginationMetadata"
+  required:
+    - totalCount
+    - totalPages
+    - currentPage
+  properties:
+    totalCount:
+      type: int
+      description: total items in collection
+    totalPages: 
+      type: int
+      description: total pages (with {pageSize} size) in collection
+    currentPage:
+      type: int
+      description: index of current page
+
+CursorPaginationMetadata:
+  allOf:
+    - $ref: "#/components/schemas/PaginationMetadata"
+  required:
+    - nextPageCursor
+    - prevPageCursor
+    - currentPageCursor
+  properties:
+    nextPageCursor:
+      type: int
+      description: cursor to next page
+    prevPageCursor:
+      type: int
+      description: cursor to prev page
+    currentPageCursor:
+      type: int
+      description: cursor to current page
+```
+
+### application/vnd.rollun+json
+
+**Parent:** application/vnd.rollun-metadata+json
 
 Медіа тип призначений для успішних відповідей: з кодом 2хх. **НЕ РЕКОМЕНДУЄТЬСЯ** для використання зі статус кодами 
 відмінними від 2xx.
@@ -1041,6 +1111,9 @@ SuccessResponse:
     required:
         - data
     properties:
+        metadata:
+          $ref: "#/components/schemas/Metadata"
+          description: Метаінформація про ресурс, або колекцію ресурсів.
         data:
             nullable: true
             description: >
@@ -1133,7 +1206,7 @@ Message:
 ```
 
 ## application/vnd.rollun-long-task-pending+json
-**Parent:** application/json
+**Parent:** application/vnd.rollun-metadata+json
 
 Призначений для опису стану виконання асинхронної задачі. Тип **НЕ ПОВИНЕН** використовуватись для опису задачі, яка 
 вже виконалась. Для опису результату задачі рекомендується використовувати типи `application/vnd.rollun+json` та 
