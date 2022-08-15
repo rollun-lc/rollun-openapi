@@ -697,7 +697,7 @@ GET /articles/1
 HTTP/1.1 200 OK
 
 {
-  "data" : {
+  "tasks" : {
     "id": 1,
     "title": "My article",
     "content": "..."
@@ -1531,6 +1531,7 @@ return [
 
 В цїй самій конфігурації потрібно дати можливість вказати, що замість одного сервера потрібно використовувати будь-який
 з перерахованих в 'interchangeably_servers'. А також вказати стратегію за допомогою якої буде обиратись сервер.
+з перерахованих в 'interchangeably_servers'. А також вказати стратегію за допомогою якої буде обиратись сервер.
 
 ```php
 <?php
@@ -2162,10 +2163,35 @@ class RouterCollectorMiddleware implements \Psr\Http\Server\MiddlewareInterface
 | 2. Openapi   | Реалізація функцій загальних для будь-якого openapi маніфесту    | Operation, Openapi (not Psr-7) response/request, schemas, parameters |
 | 1. Transport | Реалізація передачі даних мережею                                | PSR-7 Response\Request, Http, WebSocket                              |
 
-На цей час транспорт завжди http, тому далі, для назви останнього шару, я буду використовувати назву http замість 
-transport.
+Кожен рівень можна підміняти незалежно один від одного, допоки він виконує свої функції. Наприклад для рівня Transport
+можна зробити декілька реалізацій: 
+1. Http transport 
+2. AMQP (RabbitMQ) transport - при умові реалізації патерну [request/reply](https://www.enterpriseintegrationpatterns.com/patterns/messaging/RequestReply.html) 
+3. Передача за допомогою власного кастомного протоколу, якщо забажаєте
 
-![Openapi layers inputs and outputs](/docs/img/arch/layers-inputs-and-outputs.jpg)
+На цей час ми використовуємо лише http транспорт, тому надалі, у всіх прикладах для рівня transport я буду приводити 
+реалізацію http transport.
+
+Розглянемо кожен рівень детальніше.
+
+#### Http рівень
+
+На цьому рівні генерується RequestHandler інтерфейс, що має метод handle, який приймає psr-7 request, та повертає
+psr-7 response.
+
+Реалізація RequestHandler інтерфейсу буде залежати від того чи це серверна, чи клієнтська частина.
+
+Для серверної частини реалізація буде знаходитись в Openapi рівні. Фактично це буде адаптер який буде 
+конвертувати psr-7 об'єкти в об'єкти Openapi рівня. 
+
+![Server http layer](/docs/img/arch/server-http-layer.jpg)
+
+Для клієнтської частини реалізація буде знаходитись в http рівні, і буде просто відправляти запит за допомогою
+якогось http клієнту (Zend\HttpClient, Guzzle, ...).
+
+![Client http layer](/docs/img/arch/client-http-layer.jpg)
+
+#### Взаємодія на одному рівні
 
 По аналогії з мережевою моделью OSI. Інтерфейси на кожному рівні дозволяють застосункам взаємодіяти на одному рівні так, 
 ніби інших рівнів не існує. Для того, щоб краще це зрозуміти розглянемо на прикладі. 
@@ -2212,35 +2238,50 @@ interface Handler
 
 Цим займається фреймворк.
 
+Передбачити:
+- Десеріалізація/серіалізація query параметрів
+
 **Openapi layer**
 
 Конвертація: `Psr7Request` -> `OpenapiRequest`
 
 ```php
-interface OpenapiRequest {
+interface OpenapiRequest 
+{
     public function getParameters(): Parameters;
     
     public function hasBody(): bool;
-    public function getBody(): ?Schema;
+    /** @throws RequestHasNotBody */
+    public function getBody(): Schema;
 }
 
-interface Parameters {
+interface Parameters 
+{
     public function hasPathParameter(string $name): bool;
-    public function getPathParameter(string $name): ?Parameter;
+    /** @throws ParametrNotFound */
+    public function getPathParameter(string $name): Parameter;
     
     public function hasQueryParameter(string $name): bool;
-    public function getQueryParameter(string $name): ?Parameter;
+    /** @throws ParametrNotFound */
+    public function getQueryParameter(string $name): Parameter;
     
     public function hasHeaderParameter(string $name): bool;
-    public function getHeaderParameter(string $name): ?Parameter;
+    /** @throws ParametrNotFound */
+    public function getHeaderParameter(string $name): Parameter;
     
     public function hasCookieParameter(string $name): bool;
-    public function getCookieParameter(string $name): ?Parameter;
+    /** @throws ParametrNotFound */
+    public function getCookieParameter(string $name): Parameter;
 }
 
-interface Parameter {
+interface Parameter 
+{
     public function getName(): string;    
     public function getValue(): mixed;
+}
+
+interface Schema 
+{
 }
 ```
 
@@ -2249,20 +2290,29 @@ interface Parameter {
 > ```php
 > class PostOrdersRequest implements OpenapiRequest {
 >   public function getParameters(): PostOrdersParameters;
->   public function getBody(): ?Order;
+> 
+>   public function hasBody(): bool;
+>   public function getBody(): Order;
 > }
 > ```
-> Відповідно будуть згенеровані й `PostOrdersParameters` та `Order`
+> Відповідно будуть згенеровані й `PostOrdersParameters implements Parameters` та `Order implements Schema`
 
-Загалом для всіх полів з `Rsr7Request` є відповідні в `OpenapiRequest`. Головна складність конвертації на цьому етапі:
-- Десеріалізація даних в об'єкти з підтримкою поліморфізму (oneOf, anyOf, allOf), різних медіа типів та кодувань.
+Загалом для всіх основних полів з `Rsr7Request` є відповідні в `OpenapiRequest`, тому складності детально розписувати
+немає сенсу. 
+
+Передбачити:
+- Десеріалізація даних в об'єкти з підтримкою поліморфізму (oneOf (дискримінатор), anyOf, allOf), різних медіа типів та кодувань.
 - Валідація даних згідно з маніфестом
+- Десеріалізація/серіалізація query параметрів 
 
 **Rollun layer**
 
 `OpenapiRequest` -> `Command`
 
 ```php
+/**
+ * TODO: Query params  
+ */
 class Command {
     public getPayload(): object; 
     public getClientInfo(): ClientInfo;
