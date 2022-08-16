@@ -2157,20 +2157,18 @@ class RouterCollectorMiddleware implements \Psr\Http\Server\MiddlewareInterface
 
 Рівні з яких складається генератор:
 
-| Рівень       | Функції                                                          | Поняття специфічні для рівня                                         |
-|--------------|------------------------------------------------------------------|----------------------------------------------------------------------|
-| 3. Rollun    | Реалізація потреб для максимальної підтримки нашої специфікації. | Command (data, metadata), Handler, UseCases                          |
-| 2. Openapi   | Реалізація функцій загальних для будь-якого openapi маніфесту    | Operation, Openapi (not Psr-7) response/request, schemas, parameters |
-| 1. Transport | Реалізація передачі даних мережею                                | PSR-7 Response\Request, Http, WebSocket                              |
+| Рівень     | Функції                                                        | Поняття специфічні для рівня                                         |
+|------------|----------------------------------------------------------------|----------------------------------------------------------------------|
+| 3. Rollun  | Реалізація максимальної підтримки специфікації нашої компанії. | Command (data, metadata), Handler, UseCases                          |
+| 2. Openapi | Реалізація функцій загальних для будь-якого openapi маніфесту  | Operation, Openapi (not Psr-7) response/request, schemas, parameters |
+| 1. Http    | Реалізація передачі даних через http протокол                  | PSR-7 Response\Request                                               |
 
-Кожен рівень можна підміняти незалежно один від одного, допоки він виконує свої функції. Наприклад для рівня Transport
-можна зробити декілька реалізацій: 
-1. Http transport 
-2. AMQP (RabbitMQ) transport - при умові реалізації патерну [request/reply](https://www.enterpriseintegrationpatterns.com/patterns/messaging/RequestReply.html) 
-3. Передача за допомогою власного кастомного протоколу, якщо забажаєте
+Кожен рівень залежить від попереднього, тобто Rollun рівень залежить від Openapi, Openapi від Http, а Http від 
+вбудованих в php функцій чи сторонніх бібліотек (zend http client, guzzle).
 
-На цей час ми використовуємо лише http транспорт, тому надалі, у всіх прикладах для рівня transport я буду приводити 
-реалізацію http transport.
+Потрібно зазначити, що openapi специфікація не є незалежною від протоколу і проєктується виключно під http протокол. Про
+це можна почитати в issue на github: [#523](https://github.com/OAI/OpenAPI-Specification/issues/523),
+[#586](https://github.com/OAI/OpenAPI-Specification/issues/586)
 
 Розглянемо кожен рівень детальніше.
 
