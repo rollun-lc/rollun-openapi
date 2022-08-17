@@ -351,7 +351,7 @@ servers:
 версії маніфесту (рис 1.3.1-1), а в деяких випадках одночасно декілька, то потрібен механізм, що буде контролювати 
 сумісність версій маніфесту на клієнті та сервері.
 
-![Рис 1.3.1-1](/docs/img/specification/api-versioning.jpg)
+![Рис 1.3.1-1](../docs/img/specification/api-versioning.jpg)
 Рис 1.3.1-1
 
 > Сервер не може реалізовувати більше одної НЕ мажорної версії. Тобто для кожної мажорної версії, сервер одночасно
@@ -2212,12 +2212,12 @@ psr-7 response.
 Для серверної частини реалізація буде знаходитись в Openapi рівні. Фактично це буде адаптер який буде 
 конвертувати psr-7 об'єкти в об'єкти Openapi рівня. 
 
-![Server http layer](/docs/img/arch/server-http-layer.jpg)
+![Server http layer](../docs/img/arch/server-http-layer.jpg)
 
 Для клієнтської частини реалізація буде знаходитись в http рівні, і буде просто відправляти запит за допомогою
 якогось http клієнту (Zend\HttpClient, Guzzle, ...).
 
-![Client http layer](/docs/img/arch/client-http-layer.jpg)
+![Client http layer](../docs/img/arch/client-http-layer.jpg)
 
 ### Openapi рівень
 
@@ -2242,7 +2242,7 @@ psr-7 response.
 По аналогії з http рівнем для серверної частини реалізація Operation інтерфейсу працює ідентично, та знаходиться на 
 рівень вище, в Rollun рівні.
 
-![Server openapi layer](/docs/img/arch/server-openapi-layer.jpg)
+![Server openapi layer](../docs/img/arch/server-openapi-layer.jpg)
 
 > В цій схемі приведенно спрощенний код, та набір структур. Наприклад перед тим як викликати метод
 > handle у Handler, потрібно перевірити чи не можна повернути результат з кешу. І тому подібне.
@@ -2250,7 +2250,7 @@ psr-7 response.
 
 Для клієнтської частини реалізація працює з http рівнем, як показано на рисунку нижче.
 
-![Client openapi layer](/docs/img/arch/client-openapi-layer.jpg)
+![Client openapi layer](../docs/img/arch/client-openapi-layer.jpg)
 
 #### Конвертація: `Psr\Request` -> `Openapi\Request`
 
@@ -2368,11 +2368,11 @@ paths:
 Реалізацію Handler інтерфейсу повинен забезпечити програміст. На рисунку код, що не згенерується, а написаний 
 безпосередньо програмістом виділено в 4-й рівень Application.
 
-![Server rollun layer](/docs/img/arch/server-rollun-layer.jpg)
+![Server rollun layer](../docs/img/arch/server-rollun-layer.jpg)
 
 Для клієнтської частини реалізація працює з openapi рівнем, як показано на рисунку нижче.
 
-![Client rollun layer](/docs/img/arch/client-rollun-layer.jpg)
+![Client rollun layer](../docs/img/arch/client-rollun-layer.jpg)
 
 #### Конвертація `OpenapiRequest` -> `Command`
 
