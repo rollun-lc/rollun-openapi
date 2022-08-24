@@ -2039,6 +2039,8 @@ interface ServerSelectorDecorator extends BaseDecorator
 
 ## 2.4 Конфігурація ❌ ❌ ❌
 
+### Збір конфігурації
+
 Для кожного маніфесту може генеруватись своя папка з конфігурацією в 
 `src/Generated/OpenApi/{generator}/{generatorVersion}/{manifestName}/config`.
 В цій папці конфігурація буде представлена набором php файлів, аналогічно як в `config/autoload`.  
@@ -2063,6 +2065,104 @@ interface ServerSelectorDecorator extends BaseDecorator
                     │       ├── dependecies.global.php
                     │       └── router.global.php
                     ├── ConfigProvider.php
+```
+
+### Конфігурація роутера
+
+Конфігурація роутингу буде знаходитись в 
+`src/Generated/OpenApi/{generator}/{generatorVersion}/{manifestName}/config/router.global.php`в форматі, який ми 
+визначимо зручним для генерації, тобто не прив'язаний до ніякого фреймворку чи бібліотеки.
+
+Наприклад symfony генерує [yaml файл](https://github.com/misha-rollun/openapi-generator-tests/blob/master/symfony/5/petstore/Resources/config/routing.yml) 
+з усіма роутами:
+
+```yaml
+open_api_server_pet_addpet:
+  path:     /pet
+  methods:  [POST]
+  defaults:
+    _controller: open_api_server.controller.pet::addPetAction
+
+open_api_server_pet_deletepet:
+  path:     /pet/{petId}
+  methods:  [DELETE]
+  defaults:
+    _controller: open_api_server.controller.pet::deletePetAction
+  requirements:
+    petId: '\d+'
+```
+
+Slim генерує класс [RegisterRoutes](https://github.com/misha-rollun/openapi-generator-tests/blob/master/slim/5/petstore/lib/App/RegisterRoutes.php#L39)
+в якому конфігурація вказана в полі operations:
+
+```php
+class RegisterRoutes
+{
+    /** @var array[] list of all api operations */
+    private $operations = [
+        [
+            'httpMethod' => 'POST',
+            'basePathWithoutHost' => '/api/v3',
+            'path' => '/pet',
+            'apiPackage' => 'OpenAPIServer\Api',
+            'classname' => 'AbstractPetApi',
+            'userClassname' => 'PetApi',
+            'operationId' => 'addPet',
+            'responses' => [
+                '200' => [
+                    'jsonSchema' => '{
+                      "description" : "Successful operation",
+                      "content" : {
+                        "application/json" : {
+                          "schema" : {
+                            "$ref" : "#/components/schemas/Pet"
+                          }
+                        },
+                        "application/xml" : {
+                          "schema" : {
+                            "$ref" : "#/components/schemas/Pet"
+                          }
+                        }
+                      }
+                    }',
+                ],
+                '405' => [
+                    'jsonSchema' => '{
+                      "description" : "Invalid input"
+                    }',
+                ],
+            ],
+            // ...
+        ];
+```
+
+В директорію `src/Generated/OpenApi/{generatorVersion}`, буде генеруватись `RouterInterface`,
+`Factory\RouterInterfaceFactory` та `RouterCollectorMiddleware`:
+
+- `RouterInterface` - містить методи за допомогою яких можна додати роути ($router->add($method, $path, $middlewares).
+- `FactoryRouterInterfaceFactory` - Laminas фабрика, що буде намагатись зрозуміти який роутер використовується в проекті,
+  та створювати адаптер для нього (класи адаптерів також будуть згенеровані завчасно, фабрика лише повинна визначити
+  який саме адаптер їй використовувати).
+- `RouterCollectorMiddleware` буде збирати інформацію про роутинг з конфігурації усіх маніфестів, та додавати її в роутер.
+
+```php
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+
+class RouterCollectorMiddleware implements \Psr\Http\Server\MiddlewareInterface 
+{
+    public function __construct(
+        private readonly RouterInterface $router,
+        private readonly Config $config // також клас який ми можемо згенерувати
+    ) {}
+    
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
+        $routerConfig = $this->config->getRouterConfig();
+        $this->router->addRoutesFromConfig($routerConfig);
+        return $handler->handle($request);
+    }
+}
 ```
 
 ## 2.5 Авторизація ❌ ❌ ❌
@@ -2550,47 +2650,13 @@ Openapi дозволяє посилатись з одного файлу ман�
 - [openapi-person](https://github.com/belgif/openapi-person)
 - і т.п.
 
-## 2.8 Конфігурація роутера ❌ ❌ ❌
-
-Конфігурація роутингу буде знаходитись в `src/Generated/OpenApi/{generatorVersion}/{manifestName}/config/router.global.php`
-в форматі, який ми визначимо зручним для генерації, тобто не прив'язаний до ніякого фреймворку чи бібліотеки (окрім 
-openapi-generator).
-
-В директорію `src/Generated/OpenApi/{generatorVersion}`, буде генеруватись `RouterInterface`, 
-`Factory\RouterInterfaceFactory` та `RouterCollectorMiddleware`:
-
-- `RouterInterface` - містить методи за допомогою яких можна додати роути ($router->add($method, $path, $middlewares).
-- `FactoryRouterInterfaceFactory` - Laminas фабрика, що буде намагатись зрозуміти який роутер використовується в проекті,
-та створювати адаптер для нього (класи адаптерів також будуть згенеровані завчасно, фабрика лише повинна визначити
-який саме адаптер їй використовувати).
-- `RouterCollectorMiddleware` буде збирати інформацію про роутинг з конфігурації усіх маніфестів, та додавати її в роутер.
-
-```php
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-
-class RouterCollectorMiddleware implements \Psr\Http\Server\MiddlewareInterface 
-{
-    public function __construct(
-        private readonly RouterInterface $router,
-        private readonly Config $config // також клас який ми можемо згенерувати
-    ) {}
-    
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
-    {
-        $routerConfig = $this->config->getRouterConfig();
-        $this->router->addRoutesFromConfig($routerConfig);
-        return $handler->handle($request);
-    }
-}
-```
 
 Єдине, що залишиться програмісту це додати цей middleware в config/pipeline.php свого проекту.
 
 >Ідея від АВ: роутинг може основуватись на тому те знаходиться файл контролера. Контролери генеруються в директорію в 
 > залежності від url, а далі роутер визначає. Написати плюси і мінуси.
 
-## 2.9 Як спростити пошук реалізації маніфеста? ❌ ❌ ❌
+## 2.8 Як спростити пошук реалізації маніфеста? ❌ ❌ ❌
 
 Проблема актуальна лише для серверної частини.
 
@@ -2604,7 +2670,7 @@ class RouterCollectorMiddleware implements \Psr\Http\Server\MiddlewareInterface
 конкретного маніфеста можна розміщувати їх у директорію `Controllers\Openapi\{manifestName}`
 
 
-## 2.10 Назви класів, методів ❌ ❌ ❌
+## 2.9 Назви класів, методів ❌ ❌ ❌
 
 Теги не використовуються. Для генерації назв класів потрібно використовувати url та назви компонентів (схем, 
 авторизації і т.п).
@@ -2613,7 +2679,7 @@ class RouterCollectorMiddleware implements \Psr\Http\Server\MiddlewareInterface
 - Якщо operationId наявний - його значення
 - Якщо немає operationId - стандартні назви: post, get, getById, etc
 
-## 2.11 Підтримка rql ❌ ❌ ❌
+## 2.10 Підтримка rql ❌ ❌ ❌
 
 На першому і другому рівні підтримка не потрібна.
 
@@ -2629,7 +2695,7 @@ patchById, deleteById):
 Для того щоб генератор розумів, що конкретний рядок являється rql, то потрібно або зарезервувати ключ в якому завжди
 буде знаходитись rql, або знайти в маніфесті вказувати розширений тип поля (мені здається що таке є).
 
-## 2.12 Підтримка медіа типів ❌ ❌ ❌
+## 2.11 Підтримка медіа типів ❌ ❌ ❌
 
 На першому і другому рівні:
 
@@ -2640,14 +2706,14 @@ patchById, deleteById):
 
 Повинні підтримуватись лише медіа типи application/vnd.rollun-* , що описані [вище](#опис-медіа-типів).
 
-## 2.13 Підтримка рейт лімітів ❌ ❌ ❌
+## 2.12 Підтримка рейт лімітів ❌ ❌ ❌
 
 На третьому рівні:
 
 - повинна бути можливість задати рейт ліміти для сервера. 
 - Клієнтська частина повинна моніторити ці ліміти, та не відправляти запити, якщо виходить за них
 
-## 2.14 Обробка помилок ❌ ❌ ❌
+## 2.13 Обробка помилок ❌ ❌ ❌
 
 При виникненні невідомої або технічної помилки (виключення) на будь-якому з рівнів вона повинна записатись в messages Openapi
 Response та/або Psr-7 Response (в залежності від того де виникла помилка). 
@@ -2655,6 +2721,6 @@ Response та/або Psr-7 Response (в залежності від того д�
 На третьому рівні массив messages не потрібен, при виникненні невідомої або технічної помилки буде кидатись виключення.
 Яке клієнт повинен опрацювати через try\catch.
 
-## 2.15 Кешування ❌ ❌ ❌
+## 2.14 Кешування ❌ ❌ ❌
 
-## 2.16 Лонг таски ❌ ❌ ❌
+## 2.15 Лонг таски ❌ ❌ ❌
