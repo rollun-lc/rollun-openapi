@@ -333,7 +333,7 @@ URIs don’t.](https://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-d
 надають таку інформацію клієнту.
 
 > Потрібно відмітити, що Філдинг дозволяє мати правила будування URI та типизовані ресурси, але усе це дозволяється
-лише як частина реалізації кінцевого сервера, та повинно бути скритим для клієнта. 
+> лише як частина реалізації кінцевого сервера, та повинно бути скритим для клієнта. 
 > 
 > Fielding:
 > A REST API should never have “typed” resources that are significant to the client. Specification authors may use 
@@ -1590,14 +1590,19 @@ enum різний?*
 
 ## 2.1 Вибір сервера ❌ ❌ ❌
 
-Вимоги:
+Вибір сервера, на який буде відправлятись запит буде здійснюватись за допомогою декораторів для `RequestSender` 
+інтерфейсу. Така схема дозволить реалізовувати логіку вибору сервера будь-якої складності. При цьому інтерфейс 
+`RequestSender` може існувати тільки на http рівні, я не бачу необхідності робити його аналог на кожному з рівнів. 
+А декоратори можуть вже знаходитись на будь-якому з рівнів. 
 
-- При зміні порядку серверів в маніфесті в коді не повинен змінитись сервер на який відправляються запити
-- Потрібна можливість вибирати сервер випадково (для балансування навантаження), або почергово (для надійності)
+![Request sender](./img/arch/request-sender.jpg)
 
-В коді можна ідентифікувати сервер за допомогою рядка. Порівняння може виконуватись за допомогою php функції parse_url, 
-окремо для scheme, host і path. Клієнтський код, при виборі сервера, обов'язково повинен вказати host, але scheme і path 
-для зручності можуть бути опціональними, якщо можливо однозначно визначити який сервер мав на увазі клієнт.
+На схемі представлено декілька можливих стандартних декораторів:
+- `ServerSelectorDecorator` - вибір одного сервера серед доступних в маніфесті
+- `ServerUrlSetterDecorator` - встановлює довільний сервер
+- `BalanceLoaderDecorator` - дозволяє вказати декілька серверів, між якими буде рівномірно розподілятись навантаження 
+
+Розглянемо детальніше ServerSelectorDecorator. Візьмемо за приклад маніфест в якому вказані наступні сервери:
 
 ```yaml
 servers:
@@ -1606,72 +1611,45 @@ servers:
   - url: http://bar.com/v1
 ```
 
-```php
-$client->setHost('https://api.foo.com/v1'); // Ok
-$client->setHost('https://api.foo.com'); // Ok
-$client->setHost('api.foo.com/v1'); // Ok
-$client->setHost('api.foo.com'); // Ok
-$client->setHost('bar.com'); // Ok
-
-$client->setHost('http://api.foo.com/v1'); // Error (scheme in manifest is https not http)
-$client->setHost('api.foo.com/v1/users'); // Error (path in manifest is /v1 not /v1/users)
-$client->setHost('bar.com/v1'); // Error (bar.com has 2 available scheme: http and https)
-$client->setHost('foo.com'); // Error (host in manifest is api.foo.com not foo.com)
-$client->setHost('/v1'); // Error (host required)
-```
-
-Для того щоб можна було зручно робити балансування навантаження, або почергову відправку запитів можна також зробити 
-індексування за числом (індекс 0: https://api.foo.com/v1; індекс 1: https://bar.com/v1). Але це може привести до помилок. 
-Наприклад, якщо серед серверів вказано тестовий сервер.
-
-```yaml
-servers:
-  - url: https://api.example.com/v1
-    description: Production server (uses live data)
-  - url: https://sandbox-api.example.com:8443/v1
-    description: Sandbox server (uses test data)
-```
-
-Тому краще передбачити можливість явно вказати в конфігурації взаємозамінні сервери і тільки їх використовувати 
-для балансування навантаження, або повторів запитів.
+В першу чергу в php повинно згенеруватись enum з усіма серверами:
 
 ```php
-<?php
-
-return [
-    'manifest_config' => [
-        'interchangeably_servers' => [
-            westeurope.foo.com,
-            southeastasia.foo.com
-        ]
-    ]
-];
+enum Server 
+{
+    // Над формуванням назви сервера ще можна подумати
+    case HttpsApiFooCom;
+    case HttpsBarCom;
+    case HttpBarCom;
+    
+    public function url(): string
+    {
+        return match($this) {
+            Suit::HttpsApiFooCom => 'https://api.foo.com/v1',
+            Suit::HttpsBarCom => 'https://bar.com/v1',
+            Suit::HttpBarCom => 'https://bar.com/v1',
+        };
+    }
+}
 ```
 
-В цїй самій конфігурації потрібно дати можливість вказати, що замість одного сервера потрібно використовувати будь-який
-з перерахованих в 'interchangeably_servers'. А також вказати стратегію за допомогою якої буде обиратись сервер.
-з перерахованих в 'interchangeably_servers'. А також вказати стратегію за допомогою якої буде обиратись сервер.
+Сам декоратор буде приймати цей enum у якості сервера, та буде отримувати baseUrl за допомогою методу `Server::url()`.
+Таким чином у нас буде можливість для тестів успадкуватись від цього маніфесту, та перевизначити `Server::url()`
+метод на наші локальні мок сервера.
 
 ```php
-<?php
-
-return [
-    'manifest_config' => [
-        'interchangeably_servers' => [
-            // ...
-        ],
-        'server_choosing_strategy' => [
-            'class' => SequentialServerSelectionStrategy::class,
-            'options' => null
-        ] 
-    ]
-];
+interface ServerSelectorDecorator extends BaseDecorator
+{
+    /**
+     * Server selection among those available in the manifest
+     * 
+     * @throws CannotMatchServer when url match two or more servers
+     * @throws UnsupportedServer when url is correct but manifest has not it
+     */
+    public function selectServer(Server $server): void;
+    
+    // ...
+}
 ```
-
-Також було б добре передбачити можливість в конфігурації вказати сервер по замовчуванню, але залишити цю можливість
-опціональною. Якщо не вказано сервер по замовчуванню, то використовувати перший по-порядку.
-
-Варіанти того як краще організувати конфігурацію можна ще продумати, я лише приблизно вказав як це може виглядати.
 
 ## 2.2 Шлях до згенерованного коду ✅ ❌ ❌
 
