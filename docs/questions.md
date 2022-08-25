@@ -64,21 +64,23 @@
   * [2.2 Вибір сервера ❌ ❌ ❌](#22-----)
   * [2.3 Шлях до згенерованного коду ✅ ❌ ❌](#23-------)
   * [2.4 Конфігурація ❌ ❌ ❌](#24----)
+    * [Збір конфігурації](#-)
+    * [Конфігурація роутера](#-)
   * [2.5 Авторизація ❌ ❌ ❌](#25----)
     * [Опис авторизації в маніфесті](#---)
-    * [Приклади генераціїї коду різними генераторами](#----)
     * [Які методи авторизації ми будемо використовувати](#-----)
+    * [Генерація серверу](#-)
+    * [Генерація клієнту](#-)
   * [2.6 Поліморфізм ❌ ❌ ❌](#26----)
   * [2.7 Організація схем, що використовуються у декількох маніфестах ❌ ❌ ❌](#27----------)
-  * [2.8 Конфігурація роутера ❌ ❌ ❌](#28-----)
-  * [2.9 Як спростити пошук реалізації маніфеста? ❌ ❌ ❌](#29--------)
-  * [2.10 Назви класів, методів ❌ ❌ ❌](#210------)
-  * [2.11 Підтримка rql ❌ ❌ ❌](#211--rql---)
-  * [2.12 Підтримка медіа типів ❌ ❌ ❌](#212------)
-  * [2.13 Підтримка рейт лімітів ❌ ❌ ❌](#213------)
-  * [2.14 Обробка помилок ❌ ❌ ❌](#214-----)
-  * [2.15 Кешування ❌ ❌ ❌](#215----)
-  * [2.16 Лонг таски ❌ ❌ ❌](#216-----)
+  * [2.8 Як спростити пошук реалізації маніфеста? ❌ ❌ ❌](#28--------)
+  * [2.9 Назви класів, методів ❌ ❌ ❌](#29------)
+  * [2.10 Підтримка rql ❌ ❌ ❌](#210--rql---)
+  * [2.11 Підтримка медіа типів ❌ ❌ ❌](#211------)
+  * [2.12 Підтримка рейт лімітів ❌ ❌ ❌](#212------)
+  * [2.13 Обробка помилок ❌ ❌ ❌](#213-----)
+  * [2.14 Кешування ❌ ❌ ❌](#214----)
+  * [2.15 Лонг таски ❌ ❌ ❌](#215-----)
 <!-- TOC -->
 
 # 1. Api специфікація
@@ -2136,6 +2138,12 @@ class RegisterRoutes
         ];
 ```
 
+Конфігураця окремого роута складається з:
+- url шлях
+- http метод
+- контроллера (request handler)
+- список middlewares специфічних для окремого роута
+
 В директорію `src/Generated/OpenApi/{generatorVersion}`, буде генеруватись `RouterInterface`,
 `Factory\RouterInterfaceFactory` та `RouterCollectorMiddleware`:
 
@@ -2169,9 +2177,8 @@ class RouterCollectorMiddleware implements \Psr\Http\Server\MiddlewareInterface
 
 ### Опис авторизації в маніфесті
 
-В маніфесті ми можемо описати способи авторизації в розділі components.securitySchemes, а потім в розділі security 
-посилатись на ці способи. Розділ security можна описати як для кожної операції окремо, так і глобально, тоді він 
-застосується до усіх операцій.
+В маніфесті ми можемо описати способи авторизації в розділі `components.securitySchemes`, а потім в розділі security,
+для окремої операції або глобально, посилатись на ці способи.
 
 Також в маніфесті можна вказати що операція потребує авторизацію **хоча б одним** з перелічених методів, **одночасно**
 декількома методами, або комбінований варіант: хоча б одним з перелічених способів, коли кожен спосіб може складатись
@@ -2280,10 +2287,20 @@ components:
 
 Детальніше про те як описувати авторизацію в openapi маніфесті: [Swagger - Authentication](https://swagger.io/docs/specification/authentication/)
 
-### Приклади генераціїї коду різними генераторами
+### Які методи авторизації ми будемо використовувати
 
-Zend, [Laminas](https://openapi-generator.tech/docs/generators/php-mezzio-ph/#feature-set), 
-[Symfony](https://openapi-generator.tech/docs/generators/php-symfony/#feature-set) генератори не підтримують авторизацію.
+Basic - для самих простих варіантів, можливо для взаємодії сервісів всередині приватної докер мережі.
+
+Bearer - простий і універсальний спосіб для будь-яких взаємодій: як всередині приватної докер мережі, так і для фронтенд
+запитів.
+
+OAuth2 - для авторизації за допомогою google та інших сторонніх сервісів.
+
+### Генерація серверу
+
+Для початку розглянемо існуючі генератори: Zend, 
+[Laminas](https://openapi-generator.tech/docs/generators/php-mezzio-ph/#feature-set), 
+[Symfony](https://openapi-generator.tech/docs/generators/php-symfony/#feature-set) не підтримують авторизацію.
 У різних випадках або генерується код з помилками, або просто нічого пов'язаного з авторизацією.
 
 Slim4 генератор підтримує авторизацію (хоча чомусь в документації вказано, що ні). 
@@ -2322,6 +2339,9 @@ public function __invoke(ServerRequestInterface &$request, TokenSearch $tokenSea
 > в slim і навряд чи це нам потрібно. В загальному випадку одного об'єкту запиту вистачає для будь-якого рівня
 > складності авторизації.
 
+> В нашому випадку абстрактний аутентифікатор не повинен займатись отриманням користувача, лише провести 
+> аутентифікацію і в залежності від результату відправити або не відправити запит далі по ланцюжку.
+
 Після чого при конфігурації роутингу, slim для кожного роуту, для якого потрібна авторизація прокидує спеціальний
 middleware, що проводить авторизацію за допомогою класів, що описані в абзаці вище. Тобто, якщо у нас роут `/basic`
 потребує Basic авторизацію, а роут `/multiple` усі види авторизації, то slim сформує роутер приблизно наступним чином:
@@ -2340,28 +2360,140 @@ $router->add(method: 'GET', path: '/multiple', middlewares: [
 
 Ідея з тим як це реалізовано в slim генераторі мені подобається і я за реалізацію чогось схожого. З можливістю генерації
 більш конкретних класів для способів авторизації, що ми активно використовуємо. Наприклад генерувати 
-`BasicAuthenticatorAbstract` з абстрактним методом якому передаються 'username' та 'password', замість усього запиту.
+`AbstractBasicAuthenticator` з абстрактним методом якому передаються 'username' та 'password', замість усього запиту.
 
-### Які методи авторизації ми будемо використовувати
+Як згадувалось раніше в маніфесті можна вказати різні комбінації методів авторизації для операції:
+- за одним з декількох способів,
+- за декількома способами одночасно
+- комбінований варіант
 
-Basic - для самих простих варіантів, можливо для взаємодії сервісів всередині приватної докер мережі.
+Slim не підтримує такі комбінаці, щоб реалізувати цю підтримку можна генерувати класси `OneOfAuthenticator`, 
+`AllOfAuthenticator`, які будуть приймати у конструктор список аутентифікаторів і відповідно перевіряти, що хоча б один 
+або усі одночасно аутентифікатори провели авторизацію успішно. Тоді приклад вище, буде виглядати наступним чином:
 
-Bearer - простий і універсальний спосіб для будь-яких взаємодій: як всередині приватної докер мережі, так і для фронтенд
-запитів.
+```php
+$router->add(method: 'GET', path: '/basic', middlewares: [
+    new OpenapiAuthMiddleware($container->get(BasicAuthenticator::class)),
+])
 
-OAuth2 - для авторизації за допомогою google та інших сторонніх сервісів.
+$router->add(method: 'GET', path: '/multiple', middlewares: [
+    new OpenapiAuthMiddleware(
+      new AllOfAuthenticator([
+          $container->get(BasicAuthenticator::class),
+          $container->get(BearerAuthenticator::class),
+          $container->get(OAuth2Authenticator::class)
+      ])
+    )
+])
+```
 
-TODO:
-1. Передбачити в архітектурі можливість авторизації: 
-   - за одним з декількох способів, 
-   - за декількома способами одночасно 
-   - комбінований варіант
+Можна й робити складні комбінації:
 
-> Конкретно в реалізації генератора нам достатньо підтримувати лише перший пункт, але повинна бути передбачена можливість
-> розширення.
+```php
+$router->add(method: 'GET', path: '/', middlewares: [
+    new OpenapiAuthMiddleware(
+      new AllOfAuthenticator([
+          new OneOfAuthenticator([
+            $container->get(BasicAuthenticator::class),
+            $container->get(BearerAuthenticator::class),
+          ]),
+          $container->get(OAuth2Authenticator::class)
+      ])
+    )
+])
+```
 
-2. Вирішити якими будуть абстрактні реалізації для Basic, Bearer, OAuth2 авторизацій
-3. Як повинен працювати генератор для клієнта
+### Генерація клієнту
+
+На клієнті для Api классу повинен генеруватись метод `authorize`, що буде приймати деякий `Authenticator`. Для
+кожної конкретної операції це буде свій `Authenticator`. Наприклад операція `GET /multiple` може виглядати наступним 
+чином:
+
+```php
+use Psr\Http\Message\RequestInterface;
+
+interface GetMultipleOperation
+{
+    public function authorize(GetMultipleAuthenticator $authenticator): void;
+    public function handle(): ResourceListResult; 
+}
+
+class GetMultipleAuthenticator extends AllOfAuthenticator
+{
+    public function __construct(
+        BasicAuthenticator $basicAuthenticator,
+        BearerAuthenticator $bearerAuthenticator,
+        OAuth2Authenticator $oAuth2Authenticator,
+    ) {
+        parent::__construct([
+            $basicAuthenticator,
+            $bearerAuthenticator,
+            $oAuth2Authenticator
+        ]);
+    }
+}
+
+class AllOfAuthenticator implements Authenticator
+{
+    public function __construct(
+        /** @var  Authenticator[] */
+        private array $authenticators
+    );
+    
+    public function authenticate(RequestInterface $request): RequestInterface
+    {
+        foreach ($this->authenticators as $authenticator)
+        {
+            $request = $authenticator->authenticate($request);
+        } 
+        return $request
+    }
+}
+
+interface Authenticator
+{
+    /**
+     * Add authentication data to request
+     */
+    public function authenticate(RequestInterface $request): RequestInterface;
+}
+
+class BasicAuthenticator implements Authenticator
+{
+    public function __construct(
+        public readonly string $login,
+        public readonly string $password
+    ) {}
+    // ...
+}
+
+class BearerAuthenticator implements Authenticator
+{
+    // ...
+}
+
+class OAuth2Authenticator implements Authenticator
+{
+    // ...
+}
+```
+
+Якби в прикладі више була oneOf авторизація, то клас `GetMultipleAuthenticator` був би таким:
+
+```php
+class GetMultipleAuthenticator implements Authenticator
+{
+    public function __construct(
+        private BasicAuthenticator|BearerAuthenticator|OAuth2Authenticator $authenticator,
+    ) {
+    }
+    
+    public function authenticate(RequestInterface $request): RequestInterface
+    {
+        return $this->authenticator->authenticate($request);
+    }
+}
+```
 
 ## 2.6 Поліморфізм ❌ ❌ ❌
 
