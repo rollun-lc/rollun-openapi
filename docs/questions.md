@@ -1988,9 +1988,9 @@ enum Server
     public function url(): string
     {
         return match($this) {
-            Suit::HttpsApiFooCom => 'https://api.foo.com/v1',
-            Suit::HttpsBarCom => 'https://bar.com/v1',
-            Suit::HttpBarCom => 'https://bar.com/v1',
+            Server::HttpsApiFooCom => 'https://api.foo.com/v1',
+            Server::HttpsBarCom => 'https://bar.com/v1',
+            Server::HttpBarCom => 'https://bar.com/v1',
         };
     }
 }
