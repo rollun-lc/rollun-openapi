@@ -1454,13 +1454,35 @@ HTTP/1.1 200 OK
 З точки зору REST це також нічого не порушує, адже `server-1.com/ping` та `server-2.com/ping` - різні ресурси, адже
 мають різні URI (Unique Resource Id), та можуть повертати різні данні.
 
-> Взагалі це не задача клієнта піклуватись про розподілення навантаження між серверам та забезпеченням його доступності.
-> Ніхто не буде запом'ятовувати різні URI для того, щоб відкрити сайт. Навіть якщо url змінився, то старий url
-> повинен повертати редірект на новий.
-
 Також треба зрозуміти, що факт того, що ми описуємо інтерфейс в окремому документі (маніфесті), а не в php коді, та
 запускаємо функцію на іншій машині через інтернет з архітектурної точки зору нічого не змінює. Це все ще виклик функції,
 реалізація якої скрита за інтерфейсом.
+
+Доказати що маніфест описує інтерфейс можна було б просто з визначення того що таке openapi в їх документації:
+
+> The OpenAPI Specification (OAS) defines a standard, language-agnostic interface to RESTful **APIs** which allows both 
+> humans and computers to discover and understand the capabilities of the service without access to source code, 
+> documentation, or through network traffic inspection.
+
+Але припустимо, що вони помилаються, тоды для доказу того що, маніфест - програмний інтерфейс достатньо знайти 
+визначення цього терміну та перевірити чи відповідає він цьому визначенню.  
+
+*[Amazon](https://aws.amazon.com/ru/what-is/api)*
+> API – это механизмы, которые позволяют двум программным компонентам взаимодействовать друг с другом, используя 
+> набор определений и протоколов.  
+
+[RedHat](https://www.redhat.com/en/topics/api/what-are-application-programming-interfaces)
+>API stands for application programming interface, which is a set of definitions and protocols for building and 
+> integrating application software.
+
+[Wikipedia](https://en.wikipedia.org/wiki/API)
+> An application programming interface (API) is a way for two or more computer programs to communicate with each other. 
+> It is a type of software interface, offering a service to other pieces of software.[1] A document or standard that 
+> describes how to build or use such a connection or interface is called an API *specification*. A computer system that 
+> meets this standard is said to *implement* or expose an API. The term API may refer either to the specification or to 
+> the implementation.
+
+Openapi маніфест відповідає усім визначенням, з чого я роблю висновок, що його можна вважати програмним інтерфейсом.
 
 Тож для того, щоб зрозуміти чи повинні сервера дублювати один одного, потрібно спочатку відповісти на запитання 
 "Чи можуть дві реалізації одного інтерфейсу повертати різні вихідні данні при однакових вхідних.". Моя відповідь, що 
