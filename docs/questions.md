@@ -1524,7 +1524,6 @@ x-server-mirrors:
 Є два підходи до вирішення цієї проблеми:
 
 ### Намагатись записати rql в форматі ключ=значення
-
   
 Наприклад, перше, що спадає на думку - записувати rql в query параметр з назвою rql: 
 `mydomain.com?rql=limit(1,10)&eq(id,1)`. Але це рішення не підходить, тому що виникає проблема з тим, що частини rql 
@@ -1537,6 +1536,55 @@ x-server-mirrors:
 
 Головним мінусом такого рішення є те, що нам доведеться переписувати датастори, на підтримку нового формату rql.
 Також неприємно те, що ми фактично винаходимо новий стандарт натхнений rql.
+
+```yaml
+"/resources":
+    get:
+      parameters:
+        - name: query
+          in: query
+          required: false
+          schema:
+            type: string
+            # Ми ніяк не можемо обмежити глубину вкладених операцій стандартними засобами
+            x-rql-query-depth: 10
+            pattern: /regex pattern for query/
+            example: 'and(eq(field1,value1),eq(field2,value2))'
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: string
+            # Знову ми не можемо вказати значення по замовчуванню стандартними засобами
+            x-rql-limit-default-limit: 20
+            x-rql-limit-default-offset: 0
+            pattern: /regex pattern for limit/
+            example: limit(20,0)
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: string
+            pattern: /regex pattern for sort/
+            example: sort(-supplier)
+        - name: select
+          in: query
+          required: false
+          schema:
+            type: string
+            pattern: /regex pattern for select/
+            # Можна спробувати описати в регулярному виразі усі доступні поля, але мені здається що це добавить
+            # забагато складності в написання маніфесту, оскільки кожен раз потрібно буде вручну правити
+            # регулярний вираз. 
+            x-rql-select-available-fields: ["field1"]
+            example: sort(-field1)
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceListResult"
+```
 
 ### Описувати rql через кастомний атрибут
 
