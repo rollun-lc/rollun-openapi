@@ -1720,6 +1720,8 @@ HTTP/1.1 500 Internal Server Error
 > *[Wikipedia](https://uk.wikipedia.org/wiki/URN)*
 
 - `instance` (string) - uri конкретно цього випадку проблеми (в нашому випадку це lifecycle_token)
+- Інші довільні поля для додаткової інформації про помилки. Ці поля можуть визначатись для кожного окремого типу
+помилки свої власні.
 
 На прикладі це виглядає наступним чином:
 
@@ -1747,7 +1749,7 @@ Content-Type: application/problem+json
   "status": 400,
   "title": "Validation error",
   "detail": "There is no author in request body",
-  "validation_errors": [
+  "errors": [
       {
         "field": "author",
         "problem": "author is required"
@@ -1755,6 +1757,26 @@ Content-Type: application/problem+json
   ]
 }
 ```
+
+> Формат поля `type`:
+>
+> `urn:problem-type:<org>:[<api>]:<type>`
+>
+> де:
+>
+> `<org>`: ідентифікатор організації (rollun)
+>
+> `<api>` [необов'язковий]: назва api (title маніфесту), для специфічних помилок конкретного API
+>
+> `<type>`: тип помилки в lowerCamelCase
+> 
+> Типи помилок, за можливості, потрібно робити незалежними від конкретного API
+
+> Формат поля `instance`:
+> 
+> `urn:lifecycle-token:<lifecycle-token>`
+
+> Поле `errors` специфічне для типу помилки `urn:problem-type:rollun:validationError`
 
 # 2. Openapi генератор
 
