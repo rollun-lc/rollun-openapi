@@ -1584,7 +1584,8 @@ x-server-mirrors:
           required: false
           schema:
             type: string
-            # Знову ми не можемо вказати значення по замовчуванню стандартними засобами
+            # Якщо розділити limit на два незалежних параметри limit та offset, то можна значно спростити опис
+            # Але тоді ми будемо все далі уходити від формату rql
             x-rql-limit-default-limit: 20
             x-rql-limit-default-offset: 0
             pattern: /regex pattern for limit/
@@ -1602,10 +1603,10 @@ x-server-mirrors:
           schema:
             type: string
             pattern: /regex pattern for select/
-            # Можна спробувати описати в регулярному виразі усі доступні поля, але мені здається що це добавить
+            # Можна спробувати описати в регулярному виразі усі доступні поля, але мені здається що це додасть
             # забагато складності в написання маніфесту, оскільки кожен раз потрібно буде вручну правити
             # регулярний вираз. 
-            x-rql-select-available-fields: ["field1"]
+            x-rql-select-available-fields: ["field1", "field2"]
             example: sort(-field1)
       responses:
         "200":
@@ -1622,7 +1623,24 @@ x-server-mirrors:
 ```yaml
 "/resources":
     get:
-      x-support-rql: true
+      x-rql:
+        query:
+          depth: 10
+        limit:
+          limit:
+            default: 20
+            min: 0
+          offset:
+            default: 0
+            min: 0
+        select:
+          allowed-fields:
+            - field1
+            - field2
+          # or
+          restricted-fields:
+            - field3
+            - field4
       responses:
         "200":
           content:
@@ -1632,7 +1650,13 @@ x-server-mirrors:
 ```
 
 Мені таке рішення подобається більше, адже воно позбавлене недоліків попереднього, та якщо openapi все-таки зроблять
-підтримку формату query відмінну від application/x-www-form-urlencoded то буде простіше на неї перейти. 
+підтримку формату query відмінну від application/x-www-form-urlencoded то буде простіше на неї перейти.
+
+Мінусом такого рішення звісно буде те, що стороні інструменти не будуть вміти коректно обробляти цей описа. Наприклад 
+swagger-ui просто покаже, що у операції є розширені властивості, але не буде ніякого поля куди можна вписати 
+rql (хоча ми завжди можемо дописати swagger-ui).
+
+![Swagger ui rql extension](img/specification/swagger-ui-rql-externsion.png)
 
 ## 1.16 Обробка помилок
 
@@ -1645,7 +1669,7 @@ x-server-mirrors:
 author. Серед яких title та author - обов'язкові. Також зазвичай створення нової статті - це синхроний процес, але в 
 деяких випадках система буває перенавантаженою, та відкладає створення нових ресурсів у чергу.
 
-Розгялнемо варіант створення статті, при якому відбувається помилка: в запиті відсутнє обов'язкове поле author, для
+Розглянемо варіант створення статті, при якому відбувається помилка: в запиті відсутнє обов'язкове поле author, для
 двох випадків:
 
 **1. Синхронне створення**
