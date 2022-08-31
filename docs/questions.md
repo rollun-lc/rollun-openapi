@@ -941,12 +941,23 @@ Response example
 
 ## 1.9 Цикл життя лонг таску ✅ ❌ ❌
 
-Створення задачі
+При виконанні будь-якого http запит у відповідь може повернутись 202 код. Це означає, що сервер прийняв запит в 
+обробку, але поки ще не виконав (відклав його у чергу). В результаті запит може як виконатись, так і ні. Представлення 
+при цьому коді містить опис поточного стану виконання запиту, а також вказівник на ресурс (далі задача), що надає 
+користувачеві оцінку того, коли запит буде виконаний.
+
+В нашому випадку у відповіді з 202 статусом медіа тип **ПОВИНЕН** бути [application/vnd.rollun-long-task-pending
++json](#applicationvndrollun-long-task-pendingjson), з заголовком Location з посиланням на ресурс задачі. Також
+може бути присутній заголовок Retry-After з естімейтом виконання задачі.
+
+> Заголовок Location додавати важливо, щоб явно вказати на якому сервері знаходиться ресурс задачі. 
+
+**Початок асинхроного запиту**
 
 Request
 ```http request
 POST /articles
-Accept: application/vnd.rollun+json, application/vnd.rollun-error+json, application/vnd.rollun-long-task+json
+Accept: application/vnd.rollun+json, application/problem+json, application/vnd.rollun-long-task+json
 Content-Type: application/vnd.rollun-request+json
 
 {
@@ -960,8 +971,9 @@ Content-Type: application/vnd.rollun-request+json
 Response
 ```http
 HTTP/1.1 202 Accepted
-Content-type: application/vnd.rollun-long-task+json
+Location: http://www.example.org/actions/post/123
 Retry-After: 30
+Content-type: application/vnd.rollun-long-task+json
 
 {
   "data": {
@@ -972,17 +984,17 @@ Retry-After: 30
 }
 ```
 
-Отримання задачі
+**Отримання стану задачі**
 
 Request
 ```http request
 GET /articles/actions/post/123
-Accept: application/vnd.rollun+json, application/vnd.rollun-error+json, application/vnd.rollun-long-task+json
+Accept: application/problem+json, application/vnd.rollun-long-task+json
 ```
 
 Response
 ```http
-HTTP/1.1 202 Accepted
+HTTP/1.1 200 Ok
 Content-type: application/vnd.rollun-long-task+json
 Retry-After: 10
 
@@ -995,39 +1007,43 @@ Retry-After: 10
 }
 ```
 
-Якщо виконання закінчилось помилкою
+**Якщо виконання успішно закінчилось**
+
+У відповідь ми отримуємо 303 статус, з посиланням на результат операції. Тіло відповіді **МОЖЕ** бути присутнім і 
+вказувати на стан задачі, яка вже виконана. Це потрібно, на випадок, якщо клієнту потрібно дізнатись якусь інформацію,
+про задачу після її виконання: час скільки виконувалась задача, останій її stage, попередження і т.п.
 
 Request
 ```http request
 GET /articles/actions/post/123
-Accept: application/vnd.rollun+json, application/vnd.rollun-error+json, application/vnd.rollun-long-task+json
+Accept: application/vnd.rollun+json, application/problem+json, application/vnd.rollun-long-task+json
 ```
 
 Response
 ```http
-HTTP/1.1 200 OK
-Content-type: application/vnd.rollun-error+json
+HTTP/1.1 303 See Other
+Location: http://www.example.org/articles/1
+Content-type: application/vnd.rollun-long-task+json
 
 {
-  "messages": [
-    {
-      "level": "error",
-      "type": "UNDEFINED_ERROR",
-      "text": "Something went wrong"
-    }
-  ]
+  "task": {
+    "id": "123",
+    "idempotencyKey": "abc",
+    "stage": "created",
+    "taskRunningTime": "240 sec"
+  }
 }
 ```
 
-Якщо виконання успішно закінчилось
-
 Request
+
 ```http request
-GET /articles/actions/post/123
-Accept: application/vnd.rollun+json, application/vnd.rollun-error+json, application/vnd.rollun-long-task+json
+GET /articles/1
+Accept: application/vnd.rollun+json, application/problem+json, application/vnd.rollun-long-task+json
 ```
 
 Response
+
 ```http
 HTTP/1.1 200 OK
 Content-type: application/vnd.rollun+json
@@ -1038,6 +1054,34 @@ Content-type: application/vnd.rollun+json
     "idempotencyKey": "abc",
     "title": "My article!"
   }
+}
+```
+
+**Якщо виконання закінчилось помилкою**, то повертається код **200**, але в тілі помилки буде код, що підходить під
+помилку, яка виникла.
+
+> Детальніше про те чому код саме 200 в розділі про обробку помилок
+
+Request
+```http request
+GET /articles/actions/post/123
+Accept: application/vnd.rollun+json, application/problem+json, application/vnd.rollun-long-task+json
+```
+
+Response
+
+```http
+HTTP/1.1 200 Ok
+Content-Type: application/problem+json
+```
+
+```json
+{
+   "type": "urn:problem-type:rollun:internalServerError",
+   "instance": "urn:lifecycle-token:d9e35127e9b14201a2112b52e52508df",
+   "status": 500,
+   "title": "Internal Server Error",
+   "detail": "Null pointer exception while executing 'Article::create'."
 }
 ```
 
