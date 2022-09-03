@@ -2168,6 +2168,40 @@ Content-Type: application/problem+json
 }
 ```
 
+#### 1.16.4.6 Bad Gateway
+
+- **Status code**: 502 Bad Gateway
+- **Title**: Bad Gateway
+- **Description**: Сервер, діючи як шлюз (gateway) або проксі некоректну відповідь (або яку не знає як обробляти) від
+  висхідного сервера. На мій полгяд є сенс використовувати цей код у всіх ситаціях (якщо немає очевидно кращого коду),
+  коли сервер не може виконати запит, через те що отримав некоректну відповідь від іншого сервера. Але це не стосується
+  ситуацій, коли сервер отримав цілком легальну помилку від іншого сервера, яку знає як обробляти (Наприклад висхідний
+  сервер, що відправляє електроні листи повернув помилку, що заданого email не існує).
+
+Запит
+
+```http request
+GET /autodist/orders/123
+```
+
+Відповідь
+
+```http
+HTTP/1.1 502 Bad Gateway
+Content-Type: application/problem+json
+Retry-After: 120
+```
+
+```json
+{
+   "type": "urn:problem-type:rollun:badGateway",
+   "instance": "urn:lifecycle-token:d9e35127e9b14201a2112b52e52508df",
+   "status": 502,
+   "title": "Bad Gateway",
+   "detail": "Cannot fulfill request because autodist api returned 500 Internal Server Error"
+}
+```
+
 #### 1.16.4.6 Service Unavailable
 
 - **Status code**: 503 Service Unavailable
@@ -2199,6 +2233,45 @@ Retry-After: 120
    "detail": "Autodist api is temporarily unavailable. Please try again after 120 seconds."
 }
 ```
+#### 1.16.4.7 Gateway Timeout
+
+- **Status code**: 504 Gateway Timeout
+- **Title**: Gateway Timeout
+- **Description**: Сервер, діючи як шлюз (gateway) або проксі не дочекався відповіді від висхідного серверу
+  Запит
+
+```http request
+GET /autodist/orders/123
+```
+
+Відповідь
+
+```http
+HTTP/1.1 504 Gateway Timeout
+Content-Type: application/problem+json
+Retry-After: 120
+```
+
+```json
+{
+  "type": "urn:problem-type:rollun:gatewayTimeout",
+  "instance": "urn:lifecycle-token:d9e35127e9b14201a2112b52e52508df",
+  "status": 504,
+  "title": "Gateway Timeout",
+  "detail": "Cannot fulfill request because autodist api request is timeout"
+}
+```
+
+### 1.16.5 Помилки, що не мають http відповіді
+
+Деякі помилки виникають через те що сервер або не зміг відправити запит, або не отримав ніякої відповіді. Для таких 
+випадків немає http кодів (адже вони застосовуються у відповіді якої в даних ситуація просто немає), так само як
+і немає сенсу описувати тіло відповіді, якої немає. Ці випадки клієнт сам повинен коректно визначати та обробляти.
+
+Перелік таких помилок:
+- Request Timeout
+- DNS errors
+- Connection errors
 
 # 2. Openapi генератор
 
