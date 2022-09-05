@@ -3,6 +3,7 @@
 > Емоджі в заголовку: Узгоджено, Відредаговано, Перенесено в специфікацію
 
 <!-- TOC -->
+* [Зміст:](#-)
 * [1. Api специфікація](#1-api-)
   * [1.1 Яка різниця між PUT і PATCH запитом? ✅ ❌ ❌](#11----put--patch----)
   * [1.2 Як реалізовувати Actions? ✅ ❌ ❌](#12---actions---)
@@ -55,7 +56,12 @@
       * [1.16.4.3 Resource Not Found](#11643-resource-not-found)
       * [1.16.4.4 Too Many Requests](#11644-too-many-requests)
       * [1.16.4.5 Internal Server Error](#11645-internal-server-error)
+      * [1.16.4.6 Bad Gateway](#11646-bad-gateway)
       * [1.16.4.6 Service Unavailable](#11646-service-unavailable)
+      * [1.16.4.7 Gateway Timeout](#11647-gateway-timeout)
+    * [1.16.5 Помилки, що не мають http відповіді](#1165-----http-)
+    * [1.16.6 Помилки автозакупки](#1166--)
+    * [1.16.7 Попередження автозакупки](#1167--)
 * [2. Openapi генератор](#2-openapi-)
   * [2.1 Архітектура ❌ ❌ ❌](#21----)
     * [Різниця між генерацією для сервера і клієнта](#------)
@@ -95,6 +101,7 @@
   * [2.14 Кешування ❌ ❌ ❌](#214----)
   * [2.15 Лонг таски ❌ ❌ ❌](#215-----)
 <!-- TOC -->
+
 # 1. Api специфікація
 
 ## 1.1 Яка різниця між PUT і PATCH запитом? ✅ ❌ ❌
@@ -2272,6 +2279,27 @@ Retry-After: 120
 - Request Timeout
 - DNS errors
 - Connection errors
+
+### 1.16.6 Помилки автозакупки
+
+Усі перераховані нище помилки повертаються з кодом 400 Bad Request.
+
+- `urn:problem-type:rollun:autobuy:orderAlredyExist` - замовлення з переданим ключем ідемпотентності вже існує, але
+ми не можемо повернути інформацію про це замовлення (така ситуація може виникати в TR)
+- `urn:problem-type:rollun:autobuy:itemsNotAvailable` - замовлення не може бути створенним, тому шо 
+товару немає в наявності
+- `urn:problem-type:rollun:autobuy:unknownShippingMethod` - постачальник не має переданного способу 
+доставки
+- `urn:problem-type:rollun:autobuy:unavailableShippingMethod` - постачальнику відомий спосіб відправки,
+але він не може створити з ним данне замовлення (пояснення чому буде в details). 
+- `urn:problem-type:rollun:autobuy:unknownItem` - помилка конвертації rid -> csn, тому що заданний
+rid не існує для данного постачальника
+- `urn:problem-type:rollun:autobuy:invalidAddress` - некоректний та/або неіснуючий адрес
+
+### 1.16.7 Попередження автозакупки
+
+- `urn:problem-type:rollun:autobuy:requestMismatch` - дані створенного замовлення не відповідають 
+даним запиту.
 
 # 2. Openapi генератор
 
