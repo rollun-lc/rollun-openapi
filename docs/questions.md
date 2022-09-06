@@ -1106,22 +1106,67 @@ Content-Type: application/vnd.rollun-long-task+json
 
 ```json
 {
-
-"task": {
-  "id": "123",
-  "idempotencyKey": "abc",
-  "state": "rejected",
-  "taskRunningTime": "240 sec",
-  "problem": {
-    "type": "urn:problem-type:rollun:internalServerError",
-    "instance": "urn:lifecycle-token:d9e35127e9b14201a2112b52e52508df",
-    "status": 500,
-    "title": "Internal Server Error",
-    "detail": "Null pointer exception while executing 'Article::create'."
+  "task": {
+    "id": "123",
+    "idempotencyKey": "abc",
+    "state": "rejected",
+    "taskRunningTime": "240 sec",
+    "problem": {
+      "type": "urn:problem-type:rollun:internalServerError",
+      "instance": "urn:lifecycle-token:d9e35127e9b14201a2112b52e52508df",
+      "status": 500,
+      "title": "Internal Server Error",
+      "detail": "Null pointer exception while executing 'Article::create'."
+    }
   }
 }
-}
 ```
+
+**Перезапуск задачі**
+
+В данному випадку все залежить від двух факторів:
+- чи зберігся на сервері ключ ідемпотентності та ідентифікатор задачі
+- чи хочемо ми змінити дані запиту при перезапуску задачі
+
+Зрозуміти чи зберігся ключ ідемпотентності та ідентифікатор задачі можна відправивши запит на отримання задачі, якщо 
+повернувся код 200 або 410, то збереглись, 404 - ні. 
+
+*Якщо ключ ідемпотентності та ідентифікатор задачі не зберігся на сервері*, то ми можемо створити нову задачу з тим
+самим ключем ідемпотентності. Тобто діяти так наче минулої задачі не було і ми створюємо її перший раз: так як
+було описано вище. 
+
+*Якщо ключ ідемпотентності та ідентифікатор задачі збереглися*, то створити нову задачу не вдасться оскільки ключ
+ідемпотентності вже зарезервовано. В такому випадку можна відправити запит саме на перезапуск задачі. Сам запит може
+бути двух варіацій:
+
+- Без зміни даних запиту
+  
+  Можливо тільки якщо на сервері збереглись данні запиту. В такому випадку достатньо відправити POST запит без тіла
+  запиту.
+
+  ```http request
+  POST /articles/actions/post/123/restart
+  Accept: application/problem+json, application/vnd.rollun-long-task+json
+  ```
+
+- Зі змінною даних запиту
+
+  В такому випадку потрібно відправити POST запит з тілом запиту
+
+  ```http request
+  POST /articles/actions/post/123/restart
+  Accept: application/problem+json, application/vnd.rollun-long-task+json
+  Content-Type: application/vnd.rollun-request+json
+  ```
+  
+  ```json
+  {
+    "payload": {
+      "idempotencyKey": "abc",
+      "title": "Another title"
+    }
+  }
+  ```
 
 ## 1.10 Опис медіа типів ✅ ❌ ❌
 
