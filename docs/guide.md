@@ -32,6 +32,9 @@ paths:
                   type: string
 ```
 
+Детальніше про формат openapi документу можна почитати в [swagger.io 
+документації](https://swagger.io/docs/specification/about/)
+
 # Openapi generator
 
 Цей файл може використовуватись різними інструментами, наприклад, swagger ui генерує інтерфейс с [інтерактивною 
