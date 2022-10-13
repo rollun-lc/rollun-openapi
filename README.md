@@ -203,6 +203,105 @@ docker-compose run --rm php-openapi-generator \
    Почитать о том как установить его в контейнер можно в [документации](https://github.com/rollun-com/rollun-logger/blob/master/docs/index.md#lifecycletoken)
    библиотеки.
 
+### Використання згенерованого сервера
+
+Серверний генератор генерує шаблони контролерів, які потрібно реалізувати програмістові. Шаблони контролера знаходиться
+за шляхом `src/{ManifestTitle}/src/OpenaAPI/{ManifestVersion}/Server/Rest`. Наприклад 
+[User.php](src/HelloUser/src/OpenAPI/V1/Server/Rest/User.php) маніфесту [openapi.yaml](openapi.yaml)
+
+```php
+<?php
+
+namespace HelloUser\OpenAPI\V1\Server\Rest;
+
+use Articus\DataTransfer\Service as DataTransferService;
+use OpenAPI\Server\Rest\Base7Abstract;
+use Psr\Log\LoggerInterface;
+use rollun\dic\InsideConstruct;
+
+/**
+ * Class User
+ */
+class User extends Base7Abstract
+{
+	public const CONTROLLER_OBJECT = 'User1Controller';
+
+	/** @var object */
+	protected $controllerObject;
+
+	/** @var LoggerInterface */
+	protected $logger;
+
+	/** @var DataTransferService */
+	protected $dataTransfer;
+
+
+	/**
+	 * User constructor.
+	 *
+	 * @param mixed $controllerObject
+	 * @param LoggerInterface|null logger
+	 * @param DataTransferService|null dataTransfer
+	 *
+	 * @throws \ReflectionException
+	 */
+	public function __construct($controllerObject = null, $logger = null, $dataTransfer = null)
+	{
+		InsideConstruct::init([
+		    'controllerObject' => static::CONTROLLER_OBJECT,
+		    'logger' => LoggerInterface::class,
+		    'dataTransfer' => DataTransferService::class
+		]);
+	}
+
+
+	/**
+	 * @inheritDoc
+	 *
+	 * @param \HelloUser\OpenAPI\V1\DTO\User $bodyData
+	 */
+	public function post($bodyData = null)
+	{
+		if (method_exists($this->controllerObject, 'post')) {
+		    $bodyDataArray =$this->dataTransfer->extractFromTypedData($bodyData);
+
+		    return $this->controllerObject->post($bodyDataArray);
+		}
+
+		throw new \Exception('Not implemented method');
+	}
+
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getById($id)
+	{
+		if (method_exists($this->controllerObject, 'getById')) {
+		    return $this->controllerObject->getById($id);
+		}
+
+		throw new \Exception('Not implemented method');
+	}
+}
+```
+
+Саме методи `post`, `getById` цього класу будуть викликатись при обробці запитів. Як видно цей клас делегує ці методи
+деякому `controllerObject`. Цей `controllerObject` це клас який повинен створити програміст, в якому написати реалізацію
+усіх потрібних методів (`post`, `getById` в даному випадку). Приклад 
+[UserController](src/HelloUser/src/User/Controller/V1/UserController.php). Після чого розмістити цей клас в dependency 
+injection контейнері під ім'ям з константи CONTROLLER_OBJECT, в данному випадку 'User1Controller'. Це
+простіше всього зробити прописавши alias в конфігурації: 
+[приклад](https://github.com/rollun-com/rollun-openapi/blob/ff35e8a6f6e9274fb03aba2173742a87750f5fa6/config/autoload/hello_user.global.php#L10)
+
+### Використання згенерованого клієнта
+
+З клієнтом все простіше, від програміста не потрібно ніяких додаткових дій після генерації. Аналогічно серверу в 
+директорію `src/{ManifestTitle}/src/OpenaAPI/{ManifestVersion}/Client/Rest` генеруються класи Api клієнтів, що дозволяють
+відправляти запити. 
+
+Потрібний клас можна дістати із контейнера і він вже готовий до використання.
+
 ## Формат даты и времени
 Формат даты и времени, согласно спецификации [OpenApi](https://swagger.io/docs/specification/data-models/data-types/) должен возвращаться
 в формате [RFC 3339, section 5.6](https://tools.ietf.org/html/rfc3339#section-5.6). Примеры: "2017-07-21T17:32:28Z", "2020-12-11T15:04:02.255Z".
