@@ -106,7 +106,7 @@ openapi документу (маніфесту). Цей код може міст
 
 **Важливо** Після того, як композер відпрацює, перевірьте що у файлі `/config/config.php` 
 присутній конфіг провайдер `\OpenAPI\ConfigProvider::class`, а також він завантажується після
-`\Zend\Expressive\Router\FastRouteRouter\ConfigProvider::class` інакше не буде працювати.
+`\Zend\Expressive\Router\FastRouteRouter\ConfigProvider::class` або `\Mezzio\Router\FastRouteRouter\ConfigProvider::class` інакше не буде працювати.
 
 Після цього вам через php потрібно запустити скрипт [./bin/openapi-generator](bin/openapi-generator) даної бібліотеки
 з командою `generate:server`, якщо ви хочете згенерувати код для серверної частини, і, відповідно `generate:client`
@@ -479,3 +479,9 @@ public function setOrderUser(string $id, User $bodyData)
 
 Тесты можно запустить через `composer test`. Внутри некоторых тестов поднимается встроеный php сервер и слушает порт 
 8081, так что важно чтобы он был сводобен.
+
+### Common issues
+
+- Підтримка Маніфест структури недостатьно гнучка, щоб розробляти без підготовки. Пакет містить .yml приклади.
+- Структура відповіді повинна строго співпадати з структурою маніфесту. Інакше сервер поверне `An unexpected error occurred`
+- 
