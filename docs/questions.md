@@ -1703,45 +1703,49 @@ x-server-mirrors:
           required: false
           schema:
             type: string
-            # Ми ніяк не можемо обмежити глубину вкладених операцій стандартними засобами
-            x-rql-query-depth: 10
-            pattern: /regex pattern for query/
             example: 'and(eq(field1,value1),eq(field2,value2))'
         - name: limit
           in: query
           required: false
           schema:
-            type: string
-            # Якщо розділити limit на два незалежних параметри limit та offset, то можна значно спростити опис
-            # Але тоді ми будемо все далі уходити від формату rql
-            x-rql-limit-default-limit: 20
-            x-rql-limit-default-offset: 0
-            pattern: /regex pattern for limit/
-            example: limit(20,0)
+            type: integer
+            default: 20
+            example: 20
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+            example: 0
         - name: sort
           in: query
           required: false
           schema:
             type: string
-            pattern: /regex pattern for sort/
-            example: sort(-supplier)
+            example: -field1
         - name: select
           in: query
           required: false
+          style: form
+          explode: false
           schema:
-            type: string
-            pattern: /regex pattern for select/
-            # Можна спробувати описати в регулярному виразі усі доступні поля, але мені здається що це додасть
-            # забагато складності в написання маніфесту, оскільки кожен раз потрібно буде вручну правити
-            # регулярний вираз. 
-            x-rql-select-available-fields: ["field1", "field2"]
-            example: sort(-field1)
+            type: array
+            items:
+              type: string
+            example: field1,field2
       responses:
         "200":
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResourceListResult"
+```
+
+Example: 
+
+```
+/resource?query=and(eq(field1,value1),eq(field2,value2))&limit=20&offset=20&sort=-field1&select=field1,field2
 ```
 
 ### Описувати rql через кастомний атрибут
