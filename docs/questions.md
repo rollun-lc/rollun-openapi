@@ -2047,6 +2047,10 @@ Problem:
           description: Lifecycle token
 ```
 
+Оскільки нам також потрібно якось записувати попередження, то пропоную створити власний медіа тип 
+application/rollun.problem+json , в якому відповідь буде об'єктом з полями error та warnings, в error буде записуватись
+application/problem+json помилка. У warnings попередження у форматі, що описаний нижче.
+
 ### 1.16.3 Попередження
 
 Випадки в яких може повертатись попередження:
@@ -2055,10 +2059,12 @@ Problem:
 - *Клієнт не дотримується рекомендацій по використанню API* (наприклад не передає в запиті поле, що не обов'язкове, але 
 рекомендоване)
 
-Попередження повинні бути записані в массив `warnings` і записувати їх туди. Формат попередження: 
+Попередження повинні бути записані в массив `warnings`. Який присутній і в успішній відповіді і відповіді з помилками
+
+Формат попередження: 
 - `type` - urn з типом помилки
-- `title` - human-readable повідомлення з коротким описом попередження.
-- Довільні поля специфічні для типу помилки
+- `title` - engineers-readable повідомлення з коротким описом попередження.
+- `details` - human-readable повідомлення з коротким описом попередження.
 
 Поля `level` спеціально немає, тому що одне і те саме попередження для кожного клієнта може бути по різному важливим.
 Тому клієнт сам по типу попередження повинен вирішити на скільки воно критичне для нього.
@@ -2113,24 +2119,26 @@ GET /suppliers/not-exist/orders
 
 ```http
 HTTP/1.1 400 Bad Request
-Content-Type: application/problem+json
+Content-Type: application/rollun.problem+json
 ```
 
 ```json
 {
-  "type": "urn:problem-type:rollun:inputValidationProblem",
-  "instance": "urn:lifecycle-token:d9e35127e9b14201a2112b52e52508df",
-  "status": 400,
-  "title": "Validation error",
-  "detail": "There is no author in request body",
-  "issues": [
+  "error": {
+    "type": "urn:problem-type:rollun:inputValidationProblem",
+    "instance": "urn:lifecycle-token:d9e35127e9b14201a2112b52e52508df",
+    "status": 400,
+    "title": "Validation error",
+    "detail": "There is no author in request body",
+    "issues": [
       {
         "type": "urn:problem-type:rollun:inputValidationProblem:schemaViolation",
         "in": "path",
         "name": "supplier",
         "detail": "Supplier 'not-exist' is not in enum"
       }
-  ]
+    ]
+  }
 }
 ```
 
