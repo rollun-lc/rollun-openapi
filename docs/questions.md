@@ -2047,9 +2047,65 @@ Problem:
           description: Lifecycle token
 ```
 
-Оскільки нам також потрібно якось записувати попередження, то пропоную створити власний медіа тип 
-application/rollun.problem+json , в якому відповідь буде об'єктом з полями error та warnings, в error буде записуватись
-application/problem+json помилка. У warnings попередження у форматі, що описаний нижче.
+Оскільки нам також потрібно якось записувати попередження, то потрібно трохи доповнити цей стандарт. Є два шляхи:
+1. Винести проблему у форматі application/problem+json в поле problem, а попередження повертати в полі warnings
+
+```json
+{
+  "problem": {
+    "type": "urn:problem-type:rollun:inputValidationProblem",
+    "instance": "urn:lifecycle-token:d9e35127e9b14201a2112b52e52508df",
+    "status": 400,
+    "title": "Validation error",
+    "detail": "There is no author in request body",
+    "issues": [
+      {
+        "type": "urn:problem-type:rollun:inputValidationProblem:schemaViolation",
+        "in": "path",
+        "name": "supplier",
+        "detail": "Supplier 'not-exist' is not in enum"
+      }
+    ]
+  },
+  "warnings": [
+    {
+      "type": "urn:warning-type:deprecation",
+      "title": "Deprecation",
+      "details": "Field 'field1' is deprecated"
+    }
+  ]
+}
+```
+
+2. Додати поле warnings як частину об'єкта проблеми
+
+```json
+{
+  
+  "type": "urn:problem-type:rollun:inputValidationProblem",
+  "instance": "urn:lifecycle-token:d9e35127e9b14201a2112b52e52508df",
+  "status": 400,
+  "title": "Validation error",
+  "detail": "There is no author in request body",
+  "issues": [
+    {
+      "type": "urn:problem-type:rollun:inputValidationProblem:schemaViolation",
+      "in": "path",
+      "name": "supplier",
+      "detail": "Supplier 'not-exist' is not in enum"
+    }
+  ],
+  "warnings": [
+    {
+      "type": "urn:warning-type:deprecation",
+      "title": "Deprecation",
+      "details": "Field 'field1' is deprecated"
+    }
+  ]
+}
+```
+
+Я думаю краще обрати перший варіант
 
 ### 1.16.3 Попередження
 
@@ -2124,7 +2180,7 @@ Content-Type: application/rollun.problem+json
 
 ```json
 {
-  "error": {
+  "problem": {
     "type": "urn:problem-type:rollun:inputValidationProblem",
     "instance": "urn:lifecycle-token:d9e35127e9b14201a2112b52e52508df",
     "status": 400,
