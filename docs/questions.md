@@ -2048,15 +2048,7 @@ Problem:
     "instance": "urn:lifecycle-token:d9e35127e9b14201a2112b52e52508df",
     "status": 400,
     "title": "Validation error",
-    "detail": "There is no author in request body",
-    "issues": [
-      {
-        "type": "urn:problem-type:rollun:inputValidationProblem:schemaViolation",
-        "in": "path",
-        "name": "supplier",
-        "detail": "Supplier 'not-exist' is not in enum"
-      }
-    ]
+    "detail": "There is no author in request body"
   },
   "warnings": [
     {
