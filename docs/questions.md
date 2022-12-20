@@ -1008,7 +1008,7 @@ Retry-After: 10
   "task": {
     "id": "123",
     "idempotencyKey": "abc",
-    "state": "pending",
+    "stage": "step-1",
   }
 }
 ```
