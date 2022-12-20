@@ -954,10 +954,8 @@ Response example
 користувачеві оцінку того, коли запит буде виконаний.
 
 В нашому випадку у відповіді з 202 статусом медіа тип **ПОВИНЕН** бути [application/vnd.rollun-long-task-pending
-+json](#applicationvndrollun-long-task-pendingjson), з заголовком Location з посиланням на ресурс задачі. Також
++json](#applicationvndrollun-long-task-pendingjson), з заголовком ResourceId з ідентифікатором ресурсу задачі. Також
 може бути присутній заголовок Retry-After з естімейтом виконання задачі.
-
-> Заголовок Location додавати важливо, щоб явно вказати на якому сервері знаходиться ресурс задачі. 
 
 **Початок асинхроного запиту**
 
@@ -979,6 +977,7 @@ Response
 ```http
 HTTP/1.1 202 Accepted
 Location: http://www.example.org/actions/post/123
+ResourceId: 123
 Retry-After: 30
 Content-type: application/vnd.rollun-long-task+json
 
@@ -1016,12 +1015,7 @@ Retry-After: 10
 
 **Якщо виконання успішно закінчилось**
 
-У відповідь ми отримуємо 303 статус, з посиланням на результат операції в Location хедері (якщо результат існує). 
-Location хедер повинен дублюватись в тіло запиту під ключем `resultLocation` в розпарсеному вигляді (потрібно для 
-спрощення логіки на клієнті). 
-
-Для GET запиту тіло відповіді **ПОВИННО** бути присутнім і вказувати на стан задачі, яка вже виконана. Якщо клієнт не 
-хоче отримувати тіло з інформацією про стан задачі, то він повинен надсилати HEAD запит.
+У відповідь ми отримуємо 303 статус, з посиланням на результат операції в ResourceId хедері (якщо результат існує).
 
 Request
 ```http request
@@ -1033,25 +1027,8 @@ Response
 ```http
 HTTP/1.1 303 See Other
 Location: http://www.example.org/articles/1
+ResourceId: 1
 Content-type: application/vnd.rollun-long-task+json
-```
-
-```json5
-{
-  "task": {
-    "id": "123",
-    "idempotencyKey": "abc",
-    "state": "fulfilled",
-    "taskRunningTime": "240 sec",
-    "resultLocation": {
-      "server": "http://www.example.org", // this should be enum
-      "operation": "/articles/{id}", // this can be predefined value (enum with one value)
-      "parameters": {
-        "id": 1
-      }
-    }
-  }
-}
 ```
 
 Request
@@ -1081,16 +1058,6 @@ Content-type: application/vnd.rollun+json
 
 > Детальніше про те чому код саме 200 в розділі про обробку помилок
 
-При виникнені помилки нам повертається об'єкт задачі `application/vnd.rollun-long-task+json`, у якої під ключем 
-`task.problem` повинен бути записаний об'єкт, що відповідає `application/problem+json` медіа типу. Це потрібно з
-наступних міркувань:
-
-- Клієнту може знадобитись інформація про виконання задачі: час виконання, останній stage і т.п. Та було б неправильно
-розміщувати цю інформацію в об'єкт помилки, адже вона не належить до помилки.
-- Простіше відрізняти ситуацію коли відбулась помилка запиту на отримання задачі, та помилка в результаті виконання 
-задачі. Можна було б відрізняти ці ситуації по статус коду: 2xx - якщо помилка сталась в результаті виконання задачі,
-4xx,5xx - якшо при спробі отримати задачу. Але це рішення виглядає менш інтуїтивним і потенційно проблемним.
-
 Request
 ```http request
 GET /articles/actions/post/123
@@ -1101,23 +1068,17 @@ Response
 
 ```http
 HTTP/1.1 200 Ok
-Content-Type: application/vnd.rollun-long-task+json
+Content-Type: application/rollun.problem+json
 ```
 
 ```json
 {
-  "task": {
-    "id": "123",
-    "idempotencyKey": "abc",
-    "state": "rejected",
-    "taskRunningTime": "240 sec",
-    "problem": {
-      "type": "urn:problem-type:rollun:internalServerError",
-      "instance": "urn:lifecycle-token:d9e35127e9b14201a2112b52e52508df",
-      "status": 500,
-      "title": "Internal Server Error",
-      "detail": "Null pointer exception while executing 'Article::create'."
-    }
+  "problem": {
+    "type": "urn:problem-type:rollun:internalServerError",
+    "instance": "urn:lifecycle-token:d9e35127e9b14201a2112b52e52508df",
+    "status": 500,
+    "title": "Internal Server Error",
+    "detail": "Null pointer exception while executing 'Article::create'."
   }
 }
 ```
