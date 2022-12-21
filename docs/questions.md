@@ -976,18 +976,8 @@ Content-Type: application/vnd.rollun-request+json
 Response
 ```http
 HTTP/1.1 202 Accepted
-Location: http://www.example.org/actions/post/123
 ResourceId: 123
 Retry-After: 30
-Content-type: application/vnd.rollun-long-task+json
-
-{
-  "data": {
-    "id": "123",
-    "idempotencyKey": "abc",
-    "stage": "creating"
-  }
-}
 ```
 
 **Отримання стану задачі**
@@ -1026,9 +1016,7 @@ Accept: application/vnd.rollun+json, application/problem+json, application/vnd.r
 Response
 ```http
 HTTP/1.1 303 See Other
-Location: http://www.example.org/articles/1
 ResourceId: 1
-Content-type: application/vnd.rollun-long-task+json
 ```
 
 Request
