@@ -954,8 +954,8 @@ Response example
 користувачеві оцінку того, коли запит буде виконаний.
 
 В нашому випадку у відповіді з 202 статусом медіа тип **ПОВИНЕН** бути [application/vnd.rollun-long-task-pending
-+json](#applicationvndrollun-long-task-pendingjson), з заголовком ResourceId з ідентифікатором ресурсу задачі. Також
-може бути присутній заголовок Retry-After з естімейтом виконання задачі.
++json](#applicationvndrollun-long-task-pendingjson). Також може бути присутній заголовок Retry-After з естімейтом 
+виконання задачі.
 
 **Початок асинхроного запиту**
 
@@ -976,8 +976,17 @@ Content-Type: application/vnd.rollun-request+json
 Response
 ```http
 HTTP/1.1 202 Accepted
-ResourceId: 123
+Location: http://www.example.org/actions/post/123
 Retry-After: 30
+Content-type: application/vnd.rollun-long-task+json
+
+{
+  "data": {
+    "id": "123",
+    "idempotencyKey": "abc",
+    "stage": "step-0"
+  }
+}
 ```
 
 **Отримання стану задачі**
@@ -1005,7 +1014,7 @@ Retry-After: 10
 
 **Якщо виконання успішно закінчилось**
 
-У відповідь ми отримуємо 303 статус, з посиланням на результат операції в ResourceId хедері (якщо результат існує).
+У відповідь ми отримуємо 303 статус, з посиланням на результат операції в полі "result" (якщо результат існує).
 
 Request
 ```http request
@@ -1016,7 +1025,18 @@ Accept: application/vnd.rollun+json, application/problem+json, application/vnd.r
 Response
 ```http
 HTTP/1.1 303 See Other
-ResourceId: 1
+Location: http://www.example.org/articles/1
+Content-type: application/vnd.rollun-long-task+json
+
+{
+  "task": {
+    "id": "123",
+    "idempotencyKey": "abc",
+    "stage": "done",
+    "completed":"2018-09-13T02:10:00Z",
+    "result": "1" \\ ідентифікатор створеного ресурсу
+  }
+}
 ```
 
 Request
