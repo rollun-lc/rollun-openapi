@@ -980,7 +980,7 @@ Retry-After: 30
 Content-type: application/vnd.rollun-long-task+json
 
 {
-  "data": {
+  "task": {
     "id": "123",
     "idempotencyKey": "abc",
     "stage": "step-0"
