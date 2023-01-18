@@ -956,6 +956,14 @@ Response example
 В нашому випадку у відповіді з 202 статусом медіа тип **ПОВИНЕН** бути [application/vnd.rollun-long-task+json](#applicationvndrollun-long-task-pendingjson). Також може бути присутній заголовок Retry-After з естімейтом 
 виконання задачі.
 
+**Використання ключа ідемпотентності**
+
+Якщо ми виконуємо POST запит і використовуємо ключ ідемпотентності, то цей ключ можна використовувати у якості 
+ідентифікатора задачі. Такий підхід спрощує клієнта, дозволяючи йому не зберігати ідентифікатор задачі, але 
+ускладнює сервер, який навпаки повинен зберігати відповідність ключа ідемпотентності до ідентифікатора задачі.
+
+В прикладі нижче ключ ідемпотентності буде використовуватись у якості ідентифікатора задачі.
+
 **Початок асинхроного запиту**
 
 Request
@@ -975,13 +983,12 @@ Content-Type: application/vnd.rollun-request+json
 Response
 ```http
 HTTP/1.1 202 Accepted
-Location: http://www.example.org/actions/post/123
+Location: http://www.example.org/actions/post/abc
 Retry-After: 30
 Content-type: application/vnd.rollun-long-task+json
 
 {
   "task": {
-    "id": "123",
     "idempotencyKey": "abc",
     "stage": "step-0"
   }
@@ -990,9 +997,11 @@ Content-type: application/vnd.rollun-long-task+json
 
 **Отримання стану задачі**
 
+Отримати стан задачі можна за допомогою idempotencyKey.
+
 Request
 ```http request
-GET /articles/actions/post/123
+GET /articles/actions/post/abc
 Accept: application/problem+json, application/vnd.rollun-long-task+json
 ```
 
@@ -1004,7 +1013,6 @@ Retry-After: 10
 
 {
   "task": {
-    "id": "123",
     "idempotencyKey": "abc",
     "stage": "step-1",
   }
@@ -1017,7 +1025,7 @@ Retry-After: 10
 
 Request
 ```http request
-GET /articles/actions/post/123
+GET /articles/actions/post/abc
 Accept: application/vnd.rollun+json, application/problem+json, application/vnd.rollun-long-task+json
 ```
 
@@ -1029,7 +1037,6 @@ Content-type: application/vnd.rollun-long-task+json
 
 {
   "task": {
-    "id": "123",
     "idempotencyKey": "abc",
     "stage": "done",
     "completed":"2018-09-13T02:10:00Z",
@@ -1066,7 +1073,7 @@ Content-type: application/vnd.rollun+json
 
 Request
 ```http request
-GET /articles/actions/post/123
+GET /articles/actions/post/abc
 Accept: application/vnd.rollun+json, application/problem+json, application/vnd.rollun-long-task+json
 ```
 
