@@ -606,15 +606,17 @@ use Psr\Log\LoggerInterface;
         {{/isBasicBasic}}
         {{#isBasicBearer}}
         // this endpoint requires Bearer{{#bearerFormat}} ({{{.}}}){{/bearerFormat}} authentication (access token)
-        if ($this->config->getAccessToken() !== null) {
-            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        $bearerToken = $this->config->getAccessToken();
+        if ($bearerToken !== null) {
+            $headers['Authorization'] = 'Bearer ' . $bearerToken;
         }
         {{/isBasicBearer}}
         {{/isBasic}}
         {{#isOAuth}}
         // this endpoint requires OAuth (access token)
-        if ($this->config->getAccessToken() !== null) {
-            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        $bearerToken = $this->config->getAccessToken();
+        if ($bearerToken !== null) {
+            $headers['Authorization'] = 'Bearer ' . $bearerToken;
         }
         {{/isOAuth}}
         {{/authMethods}}
