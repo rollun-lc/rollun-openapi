@@ -975,7 +975,7 @@ Content-Type: application/vnd.rollun-request+json
 Response
 ```http
 HTTP/1.1 202 Accepted
-Location: http://www.example.org/actions/post/123
+Location: http://www.example.org/articles/actions/creating/123
 Retry-After: 30
 Content-type: application/vnd.rollun-long-task+json
 
@@ -992,7 +992,7 @@ Content-type: application/vnd.rollun-long-task+json
 
 Request
 ```http request
-GET /articles/actions/post/123
+GET /articles/actions/creating/123
 Accept: application/problem+json, application/vnd.rollun-long-task+json
 ```
 
@@ -1017,7 +1017,7 @@ Retry-After: 10
 
 Request
 ```http request
-GET /articles/actions/post/123
+GET /articles/actions/creating/123
 Accept: application/vnd.rollun+json, application/problem+json, application/vnd.rollun-long-task+json
 ```
 
@@ -1066,7 +1066,7 @@ Content-type: application/vnd.rollun+json
 
 Request
 ```http request
-GET /articles/actions/post/123
+GET /articles/actions/creating/123
 Accept: application/vnd.rollun+json, application/problem+json, application/vnd.rollun-long-task+json
 ```
 
