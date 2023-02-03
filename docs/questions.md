@@ -1091,29 +1091,40 @@ Content-Type: application/rollun.problem+json
 
 **Перезапуск задачі**
 
-Для перезапуска задачі в неї повинен бути ключ ідемпотентності.
+В такому випадку потрібно відправити POST запит з тілом запиту на url `/articles/actions/creating/{task_id}/restart`
 
-Якщо задача закінчилась помилкою, то перезапустити її можна повторно виконавши запит, що привів до створення
-лонг таску, в нашому випадку це POST /articles
+Request
 
 ```http request
-POST /articles
+POST /articles/actions/creating/123/restart
 Accept: application/vnd.rollun+json, application/problem+json, application/vnd.rollun-long-task+json
 Content-Type: application/vnd.rollun-request+json
+```
 
+```json
 {
   "payload": {
     "idempotencyKey": "abc",
-    "title": "My article!"
+    "title": "Another title"
   }
 }
 ```
 
-При такому запиті система повинна перевірити чи є задача с таким самим ключем ідемпотентності, та діяти в залежності
-від стану задачі:
-1. Якщо задачі с переданим ключем ідемпотнентності немає, то створити її
-2. Якщо задача є і її стан - pending або completed, то повернути у відповіді посилання на цю задачу
-3. Якщо задача є і її стан - rejected, то перезаписати цю задачу новою заповнивши даними з запиту
+Response
+
+```http
+HTTP/1.1 200 Ok
+Retry-After: 30
+Content-type: application/vnd.rollun-long-task+json
+
+{
+  "task": {
+    "id": "123",
+    "idempotencyKey": "abc",
+    "stage": "step-0"
+  }
+}
+```
 
 ## 1.10 Опис медіа типів ✅ ❌ ❌
 
