@@ -966,6 +966,7 @@ Content-Type: application/vnd.rollun-request+json
 
 {
   "payload": {
+    "status": "pending",
     "idempotencyKey": "abc",
     "title": "My article!"
   }
@@ -982,6 +983,7 @@ Content-type: application/vnd.rollun-long-task+json
 {
   "task": {
     "id": "123",
+    "status": "pending",
     "idempotencyKey": "abc",
     "stage": "step-0"
   }
@@ -1005,6 +1007,7 @@ Retry-After: 10
 {
   "task": {
     "id": "123",
+    "status": "pending",
     "idempotencyKey": "abc",
     "stage": "step-1",
   }
@@ -1030,6 +1033,7 @@ Content-type: application/vnd.rollun-long-task+json
 {
   "task": {
     "id": "123",
+    "status": "fulfilled",
     "idempotencyKey": "abc",
     "stage": "done",
     "completed":"2018-09-13T02:10:00Z",
@@ -1074,17 +1078,24 @@ Response
 
 ```http
 HTTP/1.1 200 Ok
-Content-Type: application/rollun.problem+json
+Content-Type: application/vnd.rollun-long-task+json
 ```
 
 ```json
 {
-  "problem": {
-    "type": "urn:problem-type:rollun:internalServerError",
-    "instance": "urn:lifecycle-token:d9e35127e9b14201a2112b52e52508df",
-    "status": 500,
-    "title": "Internal Server Error",
-    "detail": "Null pointer exception while executing 'Article::create'."
+  "task": {
+    "id": "123",
+    "status": "rejected",
+    "idempotencyKey": "abc",
+    "stage": "step-01",
+    "completed":"2018-09-13T02:10:00Z",
+    "problem": {
+      "type": "urn:problem-type:rollun:internalServerError",
+      "instance": "urn:lifecycle-token:d9e35127e9b14201a2112b52e52508df",
+      "status": 500,
+      "title": "Internal Server Error",
+      "detail": "Null pointer exception while executing 'Article::create'."
+    }
   }
 }
 ```
