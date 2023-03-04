@@ -122,3 +122,27 @@ return [
     ]
 ];
 ```
+
+## Обробка помилок
+
+### Timeout error
+
+При цій помилці буде викинуто виключення `GuzzleHttp\Exception\ConnectException` с текстом виду "cURL error 28: 
+Operation timed out after 1001 milliseconds with 0 bytes received (see https://curl.haxx.se/libcurl/c/libcurl-errors.html)". 
+Це виключення ніде не перехоплюється і долетить до клієнтського коду. Відрізнити помилку таймауту від інших помилок 
+з'єднання можна, напевно, тільки по тексту помилки. Принаймні я не знайшов як в бібліотеці guzzle їх відрізняти.
+
+```php
+<?php
+/** @var \HelloUser\OpenAPI\V1\Client\Rest\User $rest */
+$rest = $container->get(\HelloUser\OpenAPI\V1\Client\Rest\User::class);
+
+try {
+    $result = $rest->post([
+        'id' => '1',
+        'name' => 'misha'
+    ]);
+} catch (\GuzzleHttp\Exception\ConnectException $e) {
+    // handle here your exception
+}
+```
