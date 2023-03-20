@@ -46,3 +46,221 @@
 **Самоописові повідомлення**
 
 **Гіпермедіа як рушій стану застосунку**
+
+## 3. Ресурси
+
+### 3.1 URI
+
+*Правило 1*
+> URI **повинен бути записаний в kebab-case.**
+
+Приклади:
+
+```
+✅ http://parts-unlimited/openapi/suppliers-orders-cache/v1
+
+❌ http://partsUnlimited/openapi/suppliersOrdersCache/v1
+
+❌ http://parts_unlimited/openapi/suppliers_orders_cache/v1
+
+❌ http://parts-unlimited/openapi/SUPPLIERS_ORDERS_CACHE/v1
+```
+
+*Правило 2*
+> Формат URL path: `/openapi/{manifest-title}/v{major-version}/{resources}`
+> 
+> **openapi**
+>
+> Обов'язковий префікс
+> 
+> **manifest-title**
+> 
+> Поле `title` з секції `info` openapi маніфесту в kebab-case.
+> 
+> **major-version**
+> 
+> Мажорна версія API (поле `version` секції `info` openapi маніфесту). Integer, що починається з одиниці.
+> 
+> **resources**
+> 
+> Повний шлях, що ідентифікує ресурс.
+
+*Правило 3*
+> URI **не повинен містити розширення файлу**
+
+Замість цього розширення описується за допомогою медіа типу, який можна вказати в заголовках HTTP.
+
+```
+✅ http://parts-unlimited/openapi/suppliers-orders-cache/v1/orders
+
+❌ http://parts-unlimited/openapi/suppliers-orders-cache/v1/orders.json
+```
+
+### 3.2 Типи ресурсів
+
+Виділяються наступні типи ресурсів:
+- Документ
+- Колекція
+- Action
+- Датастор
+- Кінцевий автомат
+
+### 3.3 Документ
+
+Документ - це ресурс який посилається на одну конкретну бізнес сутність або екземпляр об'єкта. Завжди json об'єкт, 
+тобто не колекція, рядок і т.п.
+
+*Правило 4*
+> Кожен **документ повинен мати поле з ідентифікатором.** Це поле рекомендується називати `id` та його тип повинен бути
+> string.
+
+*Правило 5*
+> Ідентифікатор ресурсу документа рекомендується **обирати з природних бізнес ідентифікаторів** ресурсу, як, наприклад, 
+> ІПН людини. У разі відсутності таких ідентифікаторів можна використовувати сурогатний ключ.
+
+Приклад:
+
+```http request
+GET /articles/AB123
+```
+
+```json
+{
+  "data": {
+    "id": "AB123",
+    "title": "My first article!",
+    "status": "draft",
+    "content": "No content yet."
+  }
+}
+```
+
+Документ частіше за все міститься в батьківській колекції та визначається ідентифікатором. Документ 
+може містити дочірні колекції.
+
+![collection](img/specification/collection.png)
+
+Рекомендується не зловживати зв'язками в URI. Довгі цепочки залежностей, як, наприклад, `/customers/1/orders/99/products`
+буде складніше обслуговувати та адаптувати у разі зміни зв'язків між ресурсами. Цей приклад URI краще розбити на коротші
+та простіші URI: `/customers/1/orders` - щоб переглянути усі замовлення клієнта 1, а потім`/orders/99/products` щоб 
+знайти усі товари замовлення 99.
+
+### 3.4 Колекція
+
+Колекція - це список ресурсів документів.
+
+*Правило 6*
+
+> **Для назв колекцій слід використовувати іменник у множині**, як, наприклад, `employers`, `people`, `orders`.
+
+Приклад колекції
+
+```http request
+GET /orders
+```
+
+```json
+{
+  "data": [
+    {
+      "id": "1",
+      "invoice": {
+        "total": 10.34,
+        "currency": "USD"
+      }
+    },
+    {
+      "id": "2",
+      "invoice": {
+        "total": 12.26,
+        "currency": "USD"
+      }
+    }
+  ]
+}
+```
+
+### 3.4.1 RQL
+
+Фільтрування, вибірка та пагінація в колекціях здійснюється за допомогою RQL.
+
+*Правило 7*
+
+> Кожна колекція повинна підтримувати RQL. Але, за потреби, може робити це не в повному обсязі. Наприклад відмовитись
+> від підтримки groupby ноди. Про це повинно бути написано в описі операції в openapi маніфесті. 
+> 
+> Якщо клієнт надсилає rql який не підтримується сервером, то сервер повинен відповісти кодом 501 Not Implemented з
+> описом помилки в тілі відповіді.
+
+#### 3.4.1.1 Опис RQL
+
+Описати RQL в тому вигляді в якому його задумували не вийде, оскільки хоч в специфікації URL явно не вказано в якому 
+форматі повинна бути query частина, тобто це може бути будь-який рядок. Але в openapi специфікації query обов'язково 
+повинно бути у форматі ключ=значення. Тому хоч з точки зору URL запис mydomain.com?eq(id,1) коректний, але в openapi 
+маніфесті його ніяк не опишеш. Детальніше: [issue #1502](https://github.com/OAI/OpenAPI-Specification/issues/1502).
+
+Для розв'язання цієї проблеми ми розділили RQL на декілька логічних частин, щоб його можна було записати в форматі 
+ключ-значення.
+
+Опис усіх ключів RQL в openapi маніфесті:
+
+```yaml
+"/resources":
+    get:
+      parameters:
+        - name: query
+          in: query
+          required: false
+          schema:
+            type: string
+            example: 'and(eq(field1,value1),eq(field2,value2))'
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 20
+            example: 20
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+            example: 0
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: string
+            example: -field1
+        - name: select
+          in: query
+          required: false
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+            example: field1,field2
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceListResult"
+```
+
+```
+/resource?query=and(eq(field1,value1),eq(field2,value2))&limit=20&offset=20&sort=-field1&select=field1,field2
+```
+
+#### 3.4.1.2 Фільтрація
+
+Фільтрація елементів колекції здійснюється за допомогою query параметру `query`. 
+
+Наприклад query ```/cars?query=and(eq(doors,5),or(eq(color,blue),eq(color,black)))``` буде інтерпретовано як "знайти
+автомобілі у яких 5 дверей та їх колір або синій або чорний".
+
+#### 3.4.1.3 Пагінація
