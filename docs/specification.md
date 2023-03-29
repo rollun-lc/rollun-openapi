@@ -823,7 +823,7 @@ POST /employers/93017373/notifications
 *Правило*
 
 > Створення скінченного автомата - це завжди синхронна операція. У відповідь на створення лонг таску ми отримуємо лише 
-> його ідентифікатор, а не повну сутність.
+> його ідентифікатор у заголовку Location, а не повну сутність.
 
 Example request
 
@@ -851,15 +851,7 @@ Example response
 
 ```http
 HTTP/1.1 200 OK
-Content-Type: application/vnd.rollun+json
-```
-
-```json
-{
-  "data": {
-    "id": "qwerty123"
-  }
-}
+Location: /fsm/order-creation-tasks/qwerty123
 ```
 
 На майбутнє ми залишаємо до розгляду варіант, коли створення скінченного автомата може бути асинхронною операцією. В 
@@ -886,7 +878,7 @@ Content-Type: application/vnd.rollun+json
 > Клієнт може змінювати стейджі за допомогою http запитів, що завчасно описані в маніфесті. При цьому усі запити повинні
 > бути синхронними. Запити можуть бути двох видів:
 > 1. PATCH & PUT запити, що змінюють поля скінченного автомата.
-> 2. POST /actions/... - екшени, що переводять скінченний автомат з одного стейджу в інший
+> 2. POST & GET /actions/... - екшени, що переводять скінченний автомат з одного стейджу в інший
 
 При цьому, коли скінченний автомат переходить в якийсь із стейджів (навіть самого в себе), то на сервері можуть 
 запускатись трігери, які також можуть змінити стейдж скінченного автомата.
@@ -903,3 +895,347 @@ PATCH запиту. При цьому після кожного редагува
 `POST /articles/actions/publish`, що переведе статтю в published стейдж.
 
 ![Article stages](img/specification/article-stages.jpg)
+
+## 4. Media types
+
+### 4.1 Схема опису
+
+- **Parent:** батьківський медіа тип. Описуваний медіа тип містить усі властивості батківського типу,
+  якщо явно не написано інше.
+
+### 4.2 application/vnd.rollun-request+json
+
+**Parent:** application/json
+
+Цей медіа тип призначений для тіла запиту.
+
+На верхньому рівні є завжди json об'єктом (не масивом, примитивом etc).
+
+Для передачі корисних даних (фактично вхідних аргументів) **ПОВИННО** використовуватись поле `payload`. Поле **МОЖЕ**
+бути відсутнім, якщо операції не передаються ніякі вхідні аргументи.
+
+Передача інформації, для якої є визначені в http специфікації заголовки, повинна передаватись через них. А саме:
+
+- Accept - список медіа типів які здатен опрацювати клієнт
+- Accept-Charset - кодування символів (charset) яке здатен зрозуміти клієнт (utf-8, iso-8859-15, etc)
+- Accept-Encoding - кодування (encoding) яке здатен опрацювати клієнт (gzip, compress, br)
+- Accept-Language - набір природних мов, яким клієнт надає перевагу
+- Authorization - данні авторизації
+- From - email адреса власника клієнта (що, відправляє запит)
+- Заголовки умовних запитів: If-Match, If-None-Match, If-Modified-Since, If-Unmodified-Since, If-Range
+- Інші технічні заголовки
+
+Openapi schema:
+
+```yaml
+SuccessResponse:
+    type: object
+    properties:
+        payload:
+            nullable: true
+            description: >
+                Корисна інформація про стан ресурсу, або колекції ресурсів. Стан ресурсу описується набором полей 
+                об'єкту, або примитивом (рядок, число і т.п.).
+```
+
+### 4.3 application/vnd.rollun-document+json
+
+**Parent:** application/vnd.rollun-metadata+json
+
+Медіа тип призначений для успішних відповідей з документом в тілі відповіді.
+
+На верхньому рівні є завжди json об'єктом.
+
+Представлення документа **ПОВИННО** міститись у полі `data`. 
+
+Поле `data` **МОЖЕ** бути відсутнім, якщо успішне виконання операції має пусте представлення. Відсутність результату 
+(поле `data` відсутнє) може повертатись операцією, яка ніколи не повертає ніякого результату. У таких операцій все ще є 
+сенс повертати тіло відповіді, оскільки, окрім безпосередньо результату (поля'data') в ньому може міститись інформація 
+про попередження, метаданні і т.п.
+
+Поле `data` може містити порожній результат, тобто дорівнювати null, що означає, що операція загалом повертає результат, 
+але у данному конкретному випадку його немає (з легальних причин).
+
+Об'єкт **МОЖЕ** містити поле `messages`. Рівень повідомлення **ПОВИНЕН** бути один з: `info`, `notice`, `warning`,
+`debug`.
+
+Openapi schema:
+
+```yaml
+DocumentResponse:
+    type: object
+    properties:
+        data:
+          type: object
+          nullable: true
+          description: >
+            Представлення документа. Представлення ресурсу документа описується набором полей 
+            об'єкту, або примитивом (рядок, число і т.п.).
+        warnings:
+          type: array
+          items:
+            $ref: "#/components/schemas/Warning"
+
+Warning:
+  description: A warning object
+  type: object
+  required:
+    - type
+    - title
+    - status
+    - detail
+    - instance
+  properties:
+    type:
+      type: string
+      format: uri
+      description: An absolute URI that identifies the problem type
+      example: https://rollun.org/docs/openapi/warnings/deprecation
+    title:
+      type: string
+      description: |
+        A short, summary of the problem type. Written in English and readable for engineers (usually not suited 
+        for non technical stakeholders and not localized). The same for the same warning types.
+      example: Deprecation
+    detail:
+      type: string
+      description: A human-readable explanation specific to this occurrence of the problem
+      example: Field 'author' is deprecated
+```
+
+### 4.4 application/vnd.rollun-collection+json
+
+- **Parent:** application/json
+
+Медіа тип призначений для повернення колекцій документів.
+
+На верхньому рівні є завжди json об'єктом.
+
+Поле `data` **ПОВИННО** бути присутнім і містити массив - колекцію документів.
+
+Поле `metadata` **МОЖЕ** бути присутнім і містити додаткову інформацію про колекцію:
+- про пагінацію 
+  - offset - поточний відступ
+  - limit - кількість елементів на сторінці
+  - totalCount - загальна кількість елементів
+
+Openapi schema:
+
+```yaml
+CollectionResponse:
+    type: object
+    required:
+      - data
+    properties:
+        data:
+          type: array
+          description: An array of documents 
+          items:
+            type: object
+        metadata:
+            $ref: "#/components/schemas/Metadata"
+            description: Метаінформація про ресурс, або колекцію ресурсів.
+        warnings:
+          type: array
+          items:
+            $ref: "#/components/schemas/Warning"
+Metadata:
+  type: object
+  properties:
+    pagination:
+      allOf:
+        - $ref: "#/components/schemas/PaginationMetadata"
+
+OffsetPaginationMetadata:
+  required:
+    - totalCount
+    - limit
+    - offset
+  properties:
+    totalCount:
+      type: int
+      description: total items in collection
+    limit: 
+      type: int
+      description: count of elements in current page
+    offset:
+      type: int
+      description: offset of current page
+
+Warning:
+  description: A warning object
+  type: object
+  required:
+    - type
+    - title
+    - status
+    - detail
+    - instance
+  properties:
+    type:
+      type: string
+      format: uri
+      description: An absolute URI that identifies the problem type
+      example: https://rollun.org/docs/openapi/warnings/deprecation
+    title:
+      type: string
+      description: |
+        A short, summary of the problem type. Written in English and readable for engineers (usually not suited 
+        for non technical stakeholders and not localized). The same for the same warning types.
+      example: Deprecation
+    detail:
+      type: string
+      description: A human-readable explanation specific to this occurrence of the problem
+      example: Field 'author' is deprecated
+```
+
+### 4.5 application/vnd.rollun-error+json
+
+- **Parent:** application/json
+
+Медіа тип призначений для опису помилок при створенні чи отриманні ресурсу і **НЕ ПОВИНЕН** використовуватись у запитах.
+**МОЖЕ** використовуватись разом з 2хх кодом, якщо сама http операція виконалась успішно, але результат який описується
+цією операцією - помилка. Приклад такої поведінки можна знайти в описі лонг тасків.
+
+На верхньому рівні є завжди json об'єктом.
+
+Об'єкт **НЕ ПОВИНЕН** містити поле `data`.
+
+Об'єкт **ПОВИНЕН** містити поле `problem` з описом помилки у форматі [RFC-7807](https://www.rfc-editor.org/rfc/rfc7807)
+
+Openapi schema:
+
+```yaml
+ErrorResponse:
+    type: object
+    properties:
+        problem:
+          allOf:
+            - $ref: "#/components/schemas/Message"
+        warnings:
+          type: array
+          items:
+            $ref: "#/components/schemas/Warning"
+
+Problem:
+  description: A Problem Details object (RFC 7807)
+  type: object
+  required:
+    - type
+    - title
+    - status
+    - detail
+    - instance
+  properties:
+    type:
+      type: string
+      format: uri
+      description: An absolute URI that identifies the problem type
+      example: https://rollun.org/docs/openapi/problems/service-unavailable
+    title:
+      type: string
+      description: |
+        A short, summary of the problem type. Written in English and readable for engineers (usually not suited 
+        for non technical stakeholders and not localized).
+      example: Service Unavailable
+    status:
+      type: integer
+      format: int32
+      description: The HTTP status code generated by the origin server for this occurrence of the problem.
+      minimum: 400
+      maximum: 600
+      exclusiveMaximum: true
+      example: 503
+    detail:
+      type: string
+      description: A human-readable explanation specific to this occurrence of the problem
+      example: External API is temporarily unavailable. Please try again after 120 seconds.
+    instance:
+      type: string
+      format: uri
+      description: Uri to where logs is placed. Should contain lifecycle token
+      exampole: https://elastic.com/logs?lifecycle-token=AHJKSD234JIOWFE433HFW
+
+Warning:
+  description: A warning object
+  type: object
+  required:
+    - type
+    - title
+    - status
+    - detail
+    - instance
+  properties:
+    type:
+      type: string
+      format: uri
+      description: An absolute URI that identifies the problem type
+      example: https://rollun.org/docs/openapi/warnings/deprecation
+    title:
+      type: string
+      description: |
+        A short, summary of the problem type. Written in English and readable for engineers (usually not suited 
+        for non technical stakeholders and not localized). The same for the same warning types.
+      example: Deprecation
+    detail:
+      type: string
+      description: A human-readable explanation specific to this occurrence of the problem
+      example: Field 'author' is deprecated
+```
+
+### 4.6 application/vnd.rollun-long-task+json
+
+- **Parent:** application/vnd.rollun-document+json
+
+Призначений для опису стану виконання асинхронної задачі.
+
+Поле `data` **ПОВИННО** бути присутнім. В полі `data` **ПОВИНЕН** міститись об'єкт `long-task`.
+
+Об'єкт `long-task` **ПОВИНЕН** містити поля:
+- `id` : string - ідентифікатор задачі.
+- `idempotency-key` - ключ ідемпотентності
+- `status` - enum: pending, rejected, fulfilled
+- `problem`: `application/problem+json` - якщо статус 'rejected'
+
+Об'єкт `long-task` **МОЖЕ** містити поля:
+- `stage` : string - етап виконання задачі, повинен бути enum
+- `percentComplete`: int[0-100] - стан виконання задачі у відсотках
+- `createdAt`: date-time - час створення задачі
+- `startedAt`: date-time - час початку виконання задачі
+
+При використанні цього типу, якщо задача в статусі `pending`, то **РЕКОМЕНДУЄТЬСЯ** повертати хедер `Retry-After`,
+що буде описувати естімейт, коли задача завершиться.
+
+### 4.7 application/vnd.rollun-long-task-collection+json
+
+- **Parent:** application/vnd.rollun-collection+json
+
+Колекція об'єктів `long-task`.
+
+В полі `data` усі об'єкти **ПОВИННІ** бути типу `long-task` як описано в медіа типі 
+`application/vnd.rollun-long-task+json`.
+
+### 4.8 application/vnd.rollun-fsm+json
+
+- **Parent:** application/vnd.rollun-document+json
+
+Поле `data` **ПОВИННО** бути присутнім. В полі `data` **ПОВИНЕН** міститись об'єкт `fsm`.
+
+Об'єкт `fsm` **ПОВИНЕН** містити поля:
+- `id` : string - ідентифікатор скінченного автомата.
+- `idempotency-key` - ключ ідемпотентності
+- `status` - enum: pending, rejected, fulfilled
+- `stage` : string - етап виконання задачі, повинен бути enum
+- `problem`: `application/problem+json` - якщо статус 'rejected'
+
+### 4.9 application/vnd.rollun-fsm-collection+json
+
+- **Parent:** application/vnd.rollun-collection+json
+
+Колекція об'єктів `fsm`.
+
+В полі `data` усі об'єкти **ПОВИННІ** бути типу `fsm` як описано в медіа типі `application/vnd.rollun-fsm+json`.
+
+### 4.10 Підсумок
+
+![Media-types](img/specification/media-types.jpg)
