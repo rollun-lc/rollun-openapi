@@ -1238,4 +1238,6 @@ Warning:
 
 ### 4.10 Підсумок
 
+Діаграма наслідування медіа типів:
+
 ![Media-types](img/specification/media-types.jpg)
