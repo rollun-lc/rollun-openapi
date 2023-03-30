@@ -1298,6 +1298,8 @@ info:
   version: "2.1.2"
 servers:
   - url: https://example.org/petShop/v2
+paths:
+  # ...
 ```
 
 *Правило*
@@ -1376,3 +1378,71 @@ servers:
 Це виправлення помилок, що не порушують [зворотну сумісність](#63-коли-змінювати-мінорну-версію). А також:
 - Додання прикладів в маніфест
 - Виправлення помилок в документації.
+
+## 7 Рейт ліміти
+
+*Правило*
+
+> Сервер, у якого є рейт ліміти, ПОВИНЕН повертати з **кожною** відповіддю наступні три заголовки:
+> 
+| Header Name           | 	Description                                                |
+|-----------------------|----------------------------------------------------------------|
+| x-ratelimit-limit     | 	Дозволена кількість запитів в годину                       |
+| x-ratelimit-remaining | Кількість запитів що залишилась в поточному лімітному вікні |
+| x-ratelimit-reset     | Таймстамп в UNIX коли лімітне вікно обновиться              |
+
+Приклад:
+
+```bash
+$ curl -I https://api.serivce.com/users/octocat
+> HTTP/2 200
+> Date: Mon, 01 Jul 2013 17:27:06 GMT
+> x-ratelimit-limit: 60
+> x-ratelimit-remaining: 56
+> x-ratelimit-reset: 1372700873
+```
+
+*Правило*
+> Якщо використовувася [conditional request](https://docs.github.com/en/rest/overview/resources-in-the-rest-api#conditional-requests)
+> і повернувся код 304 Not Modified, то цей запит не враховується в рейт лімітах.
+
+*Правило*
+
+> Якщо рейт ліміти закінчились у лімітному вікні, то сервер ПОВИНЕН повернути 429 код відповіді.
+
+```bash
+$ curl -I https://api.serivce.com/users/octocat
+> HTTP/2 429
+> Date: Mon, 01 Jul 2013 17:27:06 GMT
+> x-ratelimit-limit: 60
+> x-ratelimit-remaining: 0
+> x-ratelimit-reset: 1372700873
+```
+
+### 7.1 Вказання рейт лімітів по-замовчуванню в маніфесті
+
+*Правило*
+
+> Рейт ліміти вказуються через [кастомні атрибути](https://swagger.io/docs/specification/openapi-extensions/). Ми можемо
+> вказати рейт-ліміти для окремої операції (ендпоінту):
+>
+> ```yaml
+> paths:
+>   /users/{id}:
+>     x-ratelimit-limit: 100 # Кількість запитів доступних для лімітного вікна
+>     x-ratelimit-window: 60 sec # Час життя лімітного вікна
+>     responses:
+>       # ...
+> ```
+> 
+> Або для усіх едпоінтів одночасно в секції info:
+> 
+> ```yaml
+> info:
+>   title: ...
+>   version: ...
+>   x-ratelimit-limit: 100
+>   x-ratelimit-window: 60 sec
+> ```
+>
+> Рейт ліміти, що вказані для окремої операції мають вищий приорітет та перевизначають ліміти, що вказані у секції info.
