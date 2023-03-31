@@ -956,8 +956,12 @@ SuccessResponse:
 Поле `data` може містити порожній результат, тобто дорівнювати null, що означає, що операція загалом повертає результат, 
 але у данному конкретному випадку його немає (з легальних причин).
 
-Об'єкт **МОЖЕ** містити поле `messages`. Рівень повідомлення **ПОВИНЕН** бути один з: `info`, `notice`, `warning`,
-`debug`.
+Об'єкт **МОЖЕ** містити поле `warnings` з масивом об'єктів попередження.
+
+Формат об'єкта попередження:
+- `type` - urn з типом помилки
+- `title` - engineers-readable повідомлення з коротким описом попередження.
+- `details` - human-readable повідомлення з коротким описом попередження.
 
 Openapi schema:
 
@@ -1101,7 +1105,86 @@ Warning:
 
 Об'єкт **НЕ ПОВИНЕН** містити поле `data`.
 
-Об'єкт **ПОВИНЕН** містити поле `problem` з описом помилки у форматі [RFC-7807](https://www.rfc-editor.org/rfc/rfc7807)
+Об'єкт **ПОВИНЕН** містити поле `problem` з об'єктом опису помилки.
+
+Ми беремо об'єки помилки у форматі зі стандарту [RFC-7807](https://www.rfc-editor.org/rfc/rfc7807) додаячи деякі свої
+вимоги.
+
+Об'єкт опису помилки **ПОВИНЕН** містити наступні поля:
+- `title` (string) - engineers-readable повідомлення з коротким описом типу помилки. Має бути однаковим для однакових
+типів помилок.
+- `detail` (string) - human-readable повідомлення з детальним описом помилки.
+- `status` (number) - http статус код, що описує помилку (може не завжди відповідати статус коду, що повернувся у 
+відповіді, наприклад, якщо помилка описує результат попередньої операції).
+- `type` (string) - uri, що описує помилку.
+- `instance` (string) - uri конкретно цього випадку проблеми (в нашому випадку це lifecycle_token)
+
+Об'єкт опису помилки **МОЖЕ** містити наступні поля:
+- `context` - опціональний, довільний json object з деталями помилки
+
+На прикладі це виглядає наступним чином:
+
+Запит
+
+```http request
+POST /articles
+Content-Type: application/vnd.rollun-request+json
+
+{
+  "payload": {
+    "title": "Hello, world!"
+  }
+}
+```
+
+Відповідь
+
+```http
+HTTP/1.1 400 Bad Request
+Content-Type: application/vnd.rollun-error+json
+```
+
+```json
+{
+  "problem": {
+    "type": "https://rollun.org/docs/openapi/problems/inputValidationProblem",
+    "instance": "https://elastic.com/logs?lifecycle-token=AHJKSD234JIOWFE433HFW",
+    "status": 400,
+    "title": "Validation error",
+    "detail": "There is no author in request body",
+    "context": {
+      "issues": [
+        {
+          "type": "https://rollun.org/docs/openapi/problems/inputValidationProblem:schemaViolation",
+          "in": "body",
+          "name": "author",
+          "detail": "Field author is mandatory"
+        }
+      ]
+    }
+  }
+}
+```
+
+**Формат поля `type`:**
+
+`https://rollun.org/docs/openapi/problems[/{api}]/{type}`
+
+де:
+
+`<api>` [необов'язковий]: назва api (title маніфесту), для специфічних помилок конкретного API
+
+`<type>`: тип помилки в kebab-case
+
+*Типи помилок, за можливості, потрібно робити незалежними від конкретного API*
+
+**Формат поля `instance`:**
+
+`https://elastic.com/logs?lifecycle-token=<lifecycle-token>`
+
+Поле `issues` специфічне для типу помилки `https://rollun.org/docs/openapi/problems/validationError`
+
+Об'єкт на верхньому рівні **МОЖЕ** містити поле `warnings` з об'єктом попередження.
 
 Openapi schema:
 
@@ -1155,6 +1238,10 @@ Problem:
       format: uri
       description: Uri to where logs is placed. Should contain lifecycle token
       exampole: https://elastic.com/logs?lifecycle-token=AHJKSD234JIOWFE433HFW
+    context:
+      type: object
+      additionalProperties: true
+      description: Object with error details
 
 Warning:
   description: A warning object
@@ -1455,3 +1542,343 @@ $ curl -I https://api.serivce.com/users/octocat
 *Правило*
 > API ПОВИННО відправляти заголовок `Lifecycle-Token` з кожним запитом, в якому повинно міститись унікально згенерований
 > рядок.
+
+## 9 Обробка помилок
+
+### 9.1 Значення статус коду
+
+Статус код визначає лише успішність виконання поточної http операції (хоча й результат операції може описувати
+попередні операції). Добре ци видно на прикладі з асинхроними задачами.
+
+Припустимо, що ми хочемо створити нову статтю. У нашого Api стаття характеризується полями: title, description та
+author. Серед яких title та author - обов'язкові. Зазвичай створення нової статті - це синхроний процес, але в
+деяких випадках система буває перенавантаженою, та відкладає створення нових ресурсів у чергу.
+
+Розглянемо варіант створення статті, при якому відбувається помилка: в запиті відсутнє обов'язкове поле author, для
+двох випадків:
+
+**1. Синхронне створення**
+
+Запит
+
+```http request
+POST /articles
+Content-Type: application/json
+
+{
+  "title": "Hello, world!"
+}
+```
+
+Оскільки POST операцію (тобто створення) не вдалось виконати, то у відповідь повернеться код помилки 400 Bad Request
+(чому він можна глянути [тут](https://stackoverflow.com/questions/3290182/which-status-code-should-i-use-for-failed-validations-or-invalid-duplicates))
+та деякий об'єкт що описує помилку (поки не будемо вдаватись в формат об'єкту).
+
+**2. Асинхронне створення**
+
+Візьмемо запит з попереднього пункту, та допустимо, що операція створення відклалась в чергу через перенавантаження
+системи. В такому випадку у відповіді повернеться 202 Accepted код, який сигналізує що запит прийнято, але ще не
+опрацьовано, а також посилання на ресурс задачі, через який можна відслітковувати стан виконання операції.
+
+```http
+HTTP/1.1 202 Accepted 
+Location: /articles/tasks/1
+```
+
+Після чого ми відправляємо запит на отримання стану виконання операції:
+
+```http request
+GET /articles/tasks/1
+```
+
+Якщо задачу, ще не завершено, та get запит відпрацював успішно, то у відповідь ми разом із станом задачі отримаємо код
+200 OK. Вже на цьому етапі варто зазначити, що хоч і операція виконується асинхроно код на GET запит повертається 200, а
+не 202. Тому що цей код визначає саме успішність **операції по отриманню** ресурсу `/articles/tasks/1`, який вже
+описує стан минулого запиту (POST /articles).
+
+Так само, після того, як до створення статті дійте черга та валідатор помітить, що поле `autor` відсутнє, то ми у
+відповідь на `GET /articles/tasks/1` отримаємо 200 код, а не 400, а в тілі відповіді буде об'єкт з описом помилки
+(звісно при умові, що сам GET запит відпрацював успішно, тобто не виникло ніяких проблем з мережею і т.п.).
+
+### 9.2 Формат опису помилки
+
+*Правило*
+
+> Для опису помилки **ПОВИНЕН** використовуватись медіа тип 
+> [application/vnd.rollun-error+json](#45-applicationvndrollun-errorjson)
+
+### 9.3 Попередження
+
+Випадки в яких може повертатись попередження:
+- *Виникли помилки, що не завадили виконанню операції* (наприклад при створенні замовлення клієнту не змогло
+  відправитись оповіщення по email).
+- *Клієнт не дотримується рекомендацій по використанню API* (наприклад не передає в запиті поле, що не обов'язкове, але
+  рекомендоване)
+
+### 9.4 Стандартні типи помилок
+
+#### 9.4.1 InputValidationProblem
+
+- **Status code**: 400 Bad Request
+- **Title**: Validation problem
+- **Description**: Вхідне повідомлення не пройшло валідацію. Деталі описані у полі `context.issues`.
+
+Запит
+
+```http request
+GET /suppliers/not-exist/orders
+```
+
+Відповідь
+
+```http
+HTTP/1.1 400 Bad Request
+Content-Type: application/rollun.problem+json
+```
+
+```json
+{
+  "problem": {
+    "type": "https://rollun.org/docs/openapi/problems/input-validation-problem",
+    "instance": "https://elastic.com/logs?lifecycle-token=AHJKSD234JIOWFE433HFW",
+    "status": 400,
+    "title": "Validation error",
+    "detail": "There is no supplier with name 'not exitst'",
+    "issues": [
+      {
+        "type": "https://rollun.org/docs/openapi/problems/input-validation-problem/schemaViolation",
+        "in": "path",
+        "name": "supplier",
+        "detail": "Supplier 'not-exist' is not in enum"
+      }
+    ]
+  }
+}
+```
+
+#### 9.4.2 Missing Permission
+
+- **Status code**: 403 Forbidden
+- **Title**: Missing Permission
+- **Description**: Клієнт не має дозволу на запуск цієї операції.
+
+Запит
+
+```http request
+PUT /parts-unlimited/orders
+Authorization: Bearer ds4d2f13sdds2q13qxcgbdf245
+```
+
+Відповідь
+
+```
+HTTP/1.1 403 Forbidden
+Content-Type: application/problem+json
+```
+
+```json
+{
+   "type": "https://rollun.org/docs/openapi/problems/missing-permission",
+   "instance": "https://elastic.com/logs?lifecycle-token=AHJKSD234JIOWFE433HFW",
+   "status": 403,
+   "title": "Missing Permission",
+   "detail": "Not permitted to update the order of this supplier"
+}
+```
+
+#### 9.4.3 Resource Not Found
+
+- **Status code**: 404 Not Found
+- **Title**: Resource Not Found
+- **Description**: Сервер не знайшов ресурс, або не бажає розкривати клієнту його існування. Ця помилка не вказує на
+  те чи ресурс тимчасово не доступний, чи його не існує взагалі (код 410 в приорітеті, якщо сервер точно знає, що
+  відсутність ресурсу постійна). В полі `details` міститься детальніша інформація чому ресурс не знайдено.
+
+Запит
+
+```http request
+GET /parts-unlimited/orders/123
+```
+
+Відповідь
+
+```http
+HTTP/1.1 404 Not Found
+Content-Type: application/problem+json
+```
+
+```json
+{
+   "type": "https://rollun.org/docs/openapi/problems/resource-not-found", 
+   "instance": "https://elastic.com/logs?lifecycle-token=AHJKSD234JIOWFE433HFW",
+   "status": 404,
+   "title": "Resource Not Found",
+   "detail": "The order with number '123' never existed or has been deleted."
+}
+```
+
+#### 9.4.4 Too Many Requests
+
+- **Status code**: 429 Too Many Requests
+- **Title**: The request limit has been reached
+- **Description**: Клієнт вичерпав ліміт запитів в поточному лімітному вікні.
+
+Запит
+
+```http request
+GET /parts-unlimited/orders/123
+```
+
+Відповідь
+
+```http
+HTTP/1.1 429 Too Many Requests
+Content-Type: application/problem+json
+x-ratelimit-limit: 60
+x-ratelimit-remaining: 0
+x-ratelimit-reset: 1372700873
+```
+
+```json
+{
+   "type": "https://rollun.org/docs/openapi/problems/too-many-requests",
+   "instance": "https://elastic.com/logs?lifecycle-token=AHJKSD234JIOWFE433HFW",
+   "status": 429,
+   "title": "The request limit has been reached",
+   "detail": "No more requests accepted before 2013-07-01T17:47:53.000Z"
+}
+```
+
+#### 9.4.5 Internal Server Error
+
+- **Status code**: 500 Internal Server Error
+- **Title**: Internal Server Error
+- **Description**: Сервер зіштовхнувся с помилкою, яку не знає як обробляти.
+
+Запит
+
+```http request
+GET /parts-unlimited/orders/123
+```
+
+Відповідь
+
+```http
+HTTP/1.1 500 Internal Server Error
+Content-Type: application/problem+json
+```
+
+```json
+{
+   "type": "https://rollun.org/docs/openapi/problems/internal-server-error",
+   "instance": "https://elastic.com/logs?lifecycle-token=AHJKSD234JIOWFE433HFW",
+   "status": 500,
+   "title": "Internal Server Error",
+   "detail": "Null pointer exception while executing 'Order::create'."
+}
+```
+
+#### 9.4.6 Bad Gateway
+
+- **Status code**: 502 Bad Gateway
+- **Title**: Bad Gateway
+- **Description**: Сервер, діючи як шлюз (gateway) або проксі некоректну відповідь (або яку не знає як обробляти) від
+  висхідного сервера. На мій полгяд є сенс використовувати цей код у всіх ситаціях (якщо немає очевидно кращого коду),
+  коли сервер не може виконати запит, через те що отримав некоректну відповідь від іншого сервера. Але це не стосується
+  ситуацій, коли сервер отримав цілком легальну помилку від іншого сервера, яку знає як обробляти (Наприклад висхідний
+  сервер, що відправляє електроні листи повернув помилку, що заданого email не існує).
+
+Запит
+
+```http request
+GET /autodist/orders/123
+```
+
+Відповідь
+
+```http
+HTTP/1.1 502 Bad Gateway
+Content-Type: application/problem+json
+Retry-After: 120
+```
+
+```json
+{
+   "type": "https://rollun.org/docs/openapi/problems/bad-gateway",
+   "instance": "https://elastic.com/logs?lifecycle-token=AHJKSD234JIOWFE433HFW",
+   "status": 502,
+   "title": "Bad Gateway",
+   "detail": "Cannot fulfill request because autodist api returned 500 Internal Server Error"
+}
+```
+
+#### 9.4.6 Service Unavailable
+
+- **Status code**: 503 Service Unavailable
+- **Title**: Internal Server Error
+- **Description**: Сервер тимчасово не доступний, або не може виконати операцію через недоступність серверів від
+  яких він залежить. Якщо відоммо час, коли сервер відновить роботу, то він повинен бути зазначенний у хедері
+  Retry-After
+
+Запит
+
+```http request
+GET /autodist/orders/123
+```
+
+Відповідь
+
+```http
+HTTP/1.1 503 Service Unavailable
+Content-Type: application/problem+json
+Retry-After: 120
+```
+
+```json
+{
+   "type": "https://rollun.org/docs/openapi/problems/service-unavailable",
+   "instance": "https://elastic.com/logs?lifecycle-token=AHJKSD234JIOWFE433HFW",
+   "status": 503,
+   "title": "Service Unavailable",
+   "detail": "Autodist api is temporarily unavailable. Please try again after 120 seconds."
+}
+```
+#### 9.4.7 Gateway Timeout
+
+- **Status code**: 504 Gateway Timeout
+- **Title**: Gateway Timeout
+- **Description**: Сервер, діючи як шлюз (gateway) або проксі не дочекався відповіді від висхідного серверу
+  Запит
+
+```http request
+GET /autodist/orders/123
+```
+
+Відповідь
+
+```http
+HTTP/1.1 504 Gateway Timeout
+Content-Type: application/problem+json
+Retry-After: 120
+```
+
+```json
+{
+  "type": "https://rollun.org/docs/openapi/problems/gateway-timeout",
+  "instance": "https://elastic.com/logs?lifecycle-token=AHJKSD234JIOWFE433HFW",
+  "status": 504,
+  "title": "Gateway Timeout",
+  "detail": "Cannot fulfill request because autodist api request is timeout"
+}
+```
+
+### 9.5 Помилки, що не мають http відповіді
+
+Деякі помилки виникають через те що сервер або не зміг відправити запит, або не отримав ніякої відповіді. Для таких
+випадків немає http кодів (адже вони застосовуються у відповіді якої в даних ситуація просто немає), так само як
+і немає сенсу описувати тіло відповіді, якої немає. Ці випадки клієнт сам повинен коректно визначати та обробляти.
+
+Перелік таких помилок:
+- Request Timeout
+- DNS errors
+- Connection errors
