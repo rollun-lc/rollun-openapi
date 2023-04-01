@@ -1678,11 +1678,13 @@ Content-Type: application/problem+json
 
 ```json
 {
-   "type": "https://rollun.org/docs/openapi/problems/missing-permission",
-   "instance": "https://elastic.com/logs?lifecycle-token=AHJKSD234JIOWFE433HFW",
-   "status": 403,
-   "title": "Missing Permission",
-   "detail": "Not permitted to update the order of this supplier"
+  "problem": {
+     "type": "https://rollun.org/docs/openapi/problems/missing-permission",
+     "instance": "https://elastic.com/logs?lifecycle-token=AHJKSD234JIOWFE433HFW",
+     "status": 403,
+     "title": "Missing Permission",
+     "detail": "Not permitted to update the order of this supplier"
+  }
 }
 ```
 
@@ -1709,11 +1711,13 @@ Content-Type: application/problem+json
 
 ```json
 {
-   "type": "https://rollun.org/docs/openapi/problems/resource-not-found", 
-   "instance": "https://elastic.com/logs?lifecycle-token=AHJKSD234JIOWFE433HFW",
-   "status": 404,
-   "title": "Resource Not Found",
-   "detail": "The order with number '123' never existed or has been deleted."
+  "problem": {
+     "type": "https://rollun.org/docs/openapi/problems/resource-not-found", 
+     "instance": "https://elastic.com/logs?lifecycle-token=AHJKSD234JIOWFE433HFW",
+     "status": 404,
+     "title": "Resource Not Found",
+     "detail": "The order with number '123' never existed or has been deleted."
+  }
 }
 ```
 
@@ -1741,11 +1745,13 @@ x-ratelimit-reset: 1372700873
 
 ```json
 {
-   "type": "https://rollun.org/docs/openapi/problems/too-many-requests",
-   "instance": "https://elastic.com/logs?lifecycle-token=AHJKSD234JIOWFE433HFW",
-   "status": 429,
-   "title": "The request limit has been reached",
-   "detail": "No more requests accepted before 2013-07-01T17:47:53.000Z"
+  "problem": {
+     "type": "https://rollun.org/docs/openapi/problems/too-many-requests",
+     "instance": "https://elastic.com/logs?lifecycle-token=AHJKSD234JIOWFE433HFW",
+     "status": 429,
+     "title": "The request limit has been reached",
+     "detail": "No more requests accepted before 2013-07-01T17:47:53.000Z"
+  }
 }
 ```
 
@@ -1770,11 +1776,13 @@ Content-Type: application/problem+json
 
 ```json
 {
-   "type": "https://rollun.org/docs/openapi/problems/internal-server-error",
-   "instance": "https://elastic.com/logs?lifecycle-token=AHJKSD234JIOWFE433HFW",
-   "status": 500,
-   "title": "Internal Server Error",
-   "detail": "Null pointer exception while executing 'Order::create'."
+  "problem": {
+     "type": "https://rollun.org/docs/openapi/problems/internal-server-error",
+     "instance": "https://elastic.com/logs?lifecycle-token=AHJKSD234JIOWFE433HFW",
+     "status": 500,
+     "title": "Internal Server Error",
+     "detail": "Null pointer exception while executing 'Order::create'."
+  }
 }
 ```
 
@@ -1804,11 +1812,13 @@ Retry-After: 120
 
 ```json
 {
-   "type": "https://rollun.org/docs/openapi/problems/bad-gateway",
-   "instance": "https://elastic.com/logs?lifecycle-token=AHJKSD234JIOWFE433HFW",
-   "status": 502,
-   "title": "Bad Gateway",
-   "detail": "Cannot fulfill request because autodist api returned 500 Internal Server Error"
+  "problem": {
+     "type": "https://rollun.org/docs/openapi/problems/bad-gateway",
+     "instance": "https://elastic.com/logs?lifecycle-token=AHJKSD234JIOWFE433HFW",
+     "status": 502,
+     "title": "Bad Gateway",
+     "detail": "Cannot fulfill request because autodist api returned 500 Internal Server Error"
+  }
 }
 ```
 
@@ -1836,11 +1846,13 @@ Retry-After: 120
 
 ```json
 {
-   "type": "https://rollun.org/docs/openapi/problems/service-unavailable",
-   "instance": "https://elastic.com/logs?lifecycle-token=AHJKSD234JIOWFE433HFW",
-   "status": 503,
-   "title": "Service Unavailable",
-   "detail": "Autodist api is temporarily unavailable. Please try again after 120 seconds."
+  "problem": {
+     "type": "https://rollun.org/docs/openapi/problems/service-unavailable",
+     "instance": "https://elastic.com/logs?lifecycle-token=AHJKSD234JIOWFE433HFW",
+     "status": 503,
+     "title": "Service Unavailable",
+     "detail": "Autodist api is temporarily unavailable. Please try again after 120 seconds."
+  }
 }
 ```
 #### 9.4.7 Gateway Timeout
@@ -1864,12 +1876,14 @@ Retry-After: 120
 
 ```json
 {
-  "type": "https://rollun.org/docs/openapi/problems/gateway-timeout",
-  "instance": "https://elastic.com/logs?lifecycle-token=AHJKSD234JIOWFE433HFW",
-  "status": 504,
-  "title": "Gateway Timeout",
-  "detail": "Cannot fulfill request because autodist api request is timeout"
-}
+  "problem": {
+    "type": "https://rollun.org/docs/openapi/problems/gateway-timeout",
+    "instance": "https://elastic.com/logs?lifecycle-token=AHJKSD234JIOWFE433HFW",
+    "status": 504,
+    "title": "Gateway Timeout",
+    "detail": "Cannot fulfill request because autodist api request is timeout"
+  }
+}  
 ```
 
 ### 9.5 Помилки, що не мають http відповіді
