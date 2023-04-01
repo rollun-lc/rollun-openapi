@@ -1896,3 +1896,165 @@ Retry-After: 120
 - Request Timeout
 - DNS errors
 - Connection errors
+
+## 10 Long tasks
+
+*Правило*
+
+> При виконанні будь-якого http запит у відповідь може повернутись 202 код. Це означає, що сервер прийняв запит в
+> обробку, але поки ще не виконав (відклав його у чергу). В результаті запит може як виконатись, так і ні. Представлення
+> при цьому коді містить опис поточного стану виконання запиту, а також вказівник на ресурс (далі задача), що надає
+> користувачеві оцінку того, коли запит буде виконаний.
+>
+> У відповіді з 202 статусом медіа тип **ПОВИНЕН** бути [application/vnd.rollun-long-task+json](#46-applicationvndrollun-long-taskjson).
+> Також може бути присутній заголовок Retry-After з естімейтом виконання задачі.
+> 
+> При отриманні (GET) ресурсу задачі відповіді можуть бути наступні:
+> - Задача в обробці (status = pending): статус 200 OK і представлення ресурсу зі станом задачі (медіа тип 
+> application/vnd.rollun-long-task+json)
+> - Успіх (status = fulfilled): статус 303 See Other з заголовком Location, який містить посилання (URL) на результат 
+> задачі.
+> - Помилка (status = rejected): статус 200 OK з представленням ресурсу зі станом задачі, який також містить причину 
+> помилки
+
+**Початок асинхроного запиту**
+
+Request
+```http request
+POST /articles
+Accept: application/vnd.rollun+json, application/vnd.rollun-error+json, application/vnd.rollun-long-task+json
+Content-Type: application/vnd.rollun-request+json
+
+{
+  "payload": {
+    "idempotencyKey": "abc",
+    "title": "My article!"
+  }
+}
+```
+
+Response
+```http
+HTTP/1.1 202 Accepted
+Location: http://www.example.org/articles/actions/creating/123
+Retry-After: 30
+Content-type: application/vnd.rollun-long-task+json
+
+{
+  "task": {
+    "id": "123",
+    "status": "pending",
+    "idempotencyKey": "abc",
+    "stage": "step-0"
+  }
+}
+```
+
+**Отримання стану задачі**
+
+Request
+```http request
+GET /articles/actions/creating/123
+Accept: application/vnd.rollun-error+json, application/vnd.rollun-long-task+json
+```
+
+Response
+```http
+HTTP/1.1 200 Ok
+Content-type: application/vnd.rollun-long-task+json
+Retry-After: 10
+
+{
+  "task": {
+    "id": "123",
+    "status": "pending",
+    "idempotencyKey": "abc",
+    "stage": "step-1",
+  }
+}
+```
+
+**Якщо виконання успішно закінчилось**
+
+У відповідь ми отримуємо 303 статус, з посиланням на результат операції в полі "resultId" (якщо результат існує).
+
+Request
+```http request
+GET /articles/actions/creating/123
+Accept: application/vnd.rollun-error+json, application/vnd.rollun-long-task+json
+```
+
+Response
+```http
+HTTP/1.1 303 See Other
+Location: http://www.example.org/articles/1
+Content-type: application/vnd.rollun-long-task+json
+
+{
+  "task": {
+    "id": "123",
+    "status": "fulfilled",
+    "idempotencyKey": "abc",
+    "stage": "done",
+    "completed":"2018-09-13T02:10:00Z",
+  }
+}
+```
+
+Request
+
+```http request
+GET http://www.example.org/articles/1
+Accept: application/vnd.rollun+json, application/vnd.rollun-error+json
+```
+
+Response
+
+```http
+HTTP/1.1 200 OK
+Content-type: application/vnd.rollun+json
+
+{
+  "data": {
+    "id": 1,
+    "idempotencyKey": "abc",
+    "title": "My article!"
+  }
+}
+```
+
+**Якщо виконання закінчилось помилкою**, то повертається код **200**, а тіло відповіді буде описувати помилку.
+
+*Детальніше про те чому код саме 200 в розділі про [обробку помилок](#91-значення-статус-коду)*
+
+Request
+```http request
+GET /articles/actions/creating/123
+Accept: application/vnd.rollun+json, application/vnd.rollun-error+json, application/vnd.rollun-long-task+json
+```
+
+Response
+
+```http
+HTTP/1.1 200 Ok
+Content-Type: application/vnd.rollun-long-task+json
+```
+
+```json
+{
+  "task": {
+    "id": "123",
+    "status": "rejected",
+    "idempotencyKey": "abc",
+    "stage": "step-01",
+    "completed":"2018-09-13T02:10:00Z",
+    "problem": {
+      "type": "https://rollun.org/docs/openapi/problems/internal-server-error",
+      "instance": "https://elastic.com/logs?lifecycle-token=AHJKSD234JIOWFE433HFW",
+      "status": 500,
+      "title": "Internal Server Error",
+      "detail": "Null pointer exception while executing 'Article::create'."
+    }
+  }
+}
+```
