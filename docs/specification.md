@@ -2118,7 +2118,7 @@ Content-Type: application/vnd.rollun-long-task+json
 
 У наступній схемі показано дерево рішень для налаштування кешування для певного ресурсу:
 
-![http cache decision tree](img/specification/cache-decidion-tree.jpg)
+![http cache decision tree](img/specification/cache-decision-tree.jpg)
 
 ### 11.4 Умовні запити
 
