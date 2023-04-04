@@ -377,6 +377,37 @@ GET або HEAD має призвести до статусу 404 («Не зна
 ```
 
 *Правило*
+
+> URI **ПОВИНЕН** бути формату URL.
+> 
+> Uniform Resource Identifier (URI) — це рядок символів, який використовується для ідентифікації імені або 
+> ресурсу в Інтернеті.
+>
+> URI ідентифікує ресурс або за місцем розташування, або за назвою, або обома. URI має дві спеціалізації, відомі як 
+> URL та URN.
+>
+> Uniform Resource Locator (URL) — це підмножина URI, яка визначає, де доступний визначений ресурс, і механізм його 
+> отримання. URL-адреса визначає, як можна отримати ресурс. Це не обов’язково має бути URL-адреса HTTP (http://), 
+> URL-адреса також може починатися з ftp:// або smb://, вказуючи протокол, який використовується для отримання ресурсу.
+> 
+> Uniform Resource Name (URN) — це URI, який використовує схему URN і не передбачає доступності ідентифікованого 
+> ресурсу. І URN (імена), і URL (локатори) є URI, і окремий URI може бути і URL, і URN одночасно.
+> 
+> ![URI URL URN set](img/specification/uri-url-urn.webp)
+> 
+> ```
+> URL: ftp://ftp.is.co.za/rfc/rfc1808.txt
+> URL: http://www.ietf.org/rfc/rfc2396.txt
+> URL: ldap://[2001:db8::7]/c=GB?objectClass?one
+> URL: mailto:John.Doe@example.com
+> URL: news:comp.infosystems.www.servers.unix
+> URL: telnet://192.0.2.16:80/
+> URN (not URL): urn:oasis:names:specification:docbook:dtd:xml:4.1.2
+> URN (not URL): tel:+1-816-555-1212 (disputed, see comments)
+> ```
+> Джерело: https://stackoverflow.com/questions/4913343/what-is-the-difference-between-uri-url-and-urn
+
+*Правило*
 > Формат URL path: `/openapi/{manifest-title}/v{major-version}/{resources}`
 > 
 > **openapi**
