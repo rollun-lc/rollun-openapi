@@ -691,7 +691,7 @@ FSM:
       - error
 ```
 
-Поле `problem` у форматі [application/vnd.rollun-error+json](#45-applicationvndrollun-errorjson) є обов'язковим при 
+Поле `problem` у форматі [application/vnd.rollun-error+json](#43-applicationvndrollun-errorjson) є обов'язковим при 
 статусі `rejected`
 
 ![Order creating stages](img/specification/creating-order-stages.jpg)
@@ -988,6 +988,21 @@ Action (екшн) ресурс - це процедурний концепт. Act
 POST /employers/93017373/actions/send-notification
 ```
 
+Response:
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/vnd.rollun-response+json
+```
+
+```json
+{
+  "data": {
+    "success": true
+  }
+}
+```
+
 Конвертація грошей з однієї валюти в іншу (використовується GET, тому що операція не має побічних ефектів)
 
 ```http request
@@ -1068,162 +1083,7 @@ Request:
                 об'єкту, або примитивом (рядок, число і т.п.).
 ```
 
-### 4.3 application/vnd.rollun-document+json
-
-**Parent:** application/vnd.rollun-metadata+json
-
-Медіа тип призначений для успішних відповідей з документом в тілі відповіді.
-
-На верхньому рівні є завжди json об'єктом.
-
-Представлення документа **ПОВИННО** міститись у полі `data`. 
-
-Поле `data` **МОЖЕ** бути відсутнім, якщо успішне виконання операції має пусте представлення. Відсутність результату 
-(поле `data` відсутнє) може повертатись операцією, яка ніколи не повертає ніякого результату. У таких операцій все ще є 
-сенс повертати тіло відповіді, оскільки, окрім безпосередньо результату (поля'data') в ньому може міститись інформація 
-про попередження, метаданні і т.п.
-
-Поле `data` може містити порожній результат, тобто дорівнювати null, що означає, що операція загалом повертає результат, 
-але у данному конкретному випадку його немає (з легальних причин).
-
-Об'єкт **МОЖЕ** містити поле `warnings` з масивом об'єктів попередження.
-
-Формат об'єкта попередження:
-- `type` - urn з типом помилки
-- `title` - engineers-readable повідомлення з коротким описом попередження.
-- `details` - human-readable повідомлення з коротким описом попередження.
-
-Openapi schema:
-
-```yaml
-DocumentResponse:
-    type: object
-    properties:
-        data:
-          type: object
-          nullable: true
-          description: >
-            Представлення документа. Представлення ресурсу документа описується набором полей 
-            об'єкту, або примитивом (рядок, число і т.п.).
-        warnings:
-          type: array
-          items:
-            $ref: "#/components/schemas/Warning"
-
-Warning:
-  description: A warning object
-  type: object
-  required:
-    - type
-    - title
-    - status
-    - detail
-    - instance
-  properties:
-    type:
-      type: string
-      format: uri
-      description: An absolute URI that identifies the problem type
-      example: https://rollun.org/docs/openapi/warnings/deprecation
-    title:
-      type: string
-      description: |
-        A short, summary of the problem type. Written in English and readable for engineers (usually not suited 
-        for non technical stakeholders and not localized). The same for the same warning types.
-      example: Deprecation
-    detail:
-      type: string
-      description: A human-readable explanation specific to this occurrence of the problem
-      example: Field 'author' is deprecated
-```
-
-### 4.4 application/vnd.rollun-collection+json
-
-- **Parent:** application/json
-
-Медіа тип призначений для повернення колекцій документів.
-
-На верхньому рівні є завжди json об'єктом.
-
-Поле `data` **ПОВИННО** бути присутнім і містити массив - колекцію документів.
-
-Поле `metadata` **МОЖЕ** бути присутнім і містити додаткову інформацію про колекцію:
-- про пагінацію 
-  - offset - поточний відступ
-  - limit - кількість елементів на сторінці
-  - totalCount - загальна кількість елементів
-
-Openapi schema:
-
-```yaml
-CollectionResponse:
-    type: object
-    required:
-      - data
-    properties:
-        data:
-          type: array
-          description: An array of documents 
-          items:
-            type: object
-        metadata:
-            $ref: "#/components/schemas/Metadata"
-            description: Метаінформація про ресурс, або колекцію ресурсів.
-        warnings:
-          type: array
-          items:
-            $ref: "#/components/schemas/Warning"
-Metadata:
-  type: object
-  properties:
-    pagination:
-      allOf:
-        - $ref: "#/components/schemas/PaginationMetadata"
-
-OffsetPaginationMetadata:
-  required:
-    - totalCount
-    - limit
-    - offset
-  properties:
-    totalCount:
-      type: int
-      description: total items in collection
-    limit: 
-      type: int
-      description: count of elements in current page
-    offset:
-      type: int
-      description: offset of current page
-
-Warning:
-  description: A warning object
-  type: object
-  required:
-    - type
-    - title
-    - status
-    - detail
-    - instance
-  properties:
-    type:
-      type: string
-      format: uri
-      description: An absolute URI that identifies the problem type
-      example: https://rollun.org/docs/openapi/warnings/deprecation
-    title:
-      type: string
-      description: |
-        A short, summary of the problem type. Written in English and readable for engineers (usually not suited 
-        for non technical stakeholders and not localized). The same for the same warning types.
-      example: Deprecation
-    detail:
-      type: string
-      description: A human-readable explanation specific to this occurrence of the problem
-      example: Field 'author' is deprecated
-```
-
-### 4.5 application/vnd.rollun-error+json
+### 4.3 application/vnd.rollun-error+json
 
 - **Parent:** application/json
 
@@ -1400,7 +1260,172 @@ Warning:
       example: Field 'author' is deprecated
 ```
 
-### 4.6 application/vnd.rollun-long-task+json
+### 4.4 application/vnd.rollun-response+json
+
+- **Parent:** application/json
+
+Медіа тип призначений для успішних відповідей з результатом в тілі відповіді.
+
+На верхньому рівні є завжди json об'єктом.
+
+Результат **ПОВИНННЕН** міститись у полі `data`.
+
+### 4.5 application/vnd.rollun-response+json
+
+**Parent:** application/vnd.rollun-metadata+json
+
+Медіа тип призначений для успішних відповідей з документом в тілі відповіді.
+
+На верхньому рівні є завжди json об'єктом.
+
+Представлення документа **ПОВИННО** міститись у полі `data`.
+
+Поле `data` **МОЖЕ** бути відсутнім, якщо успішне виконання операції має пусте представлення. Відсутність результату
+(поле `data` відсутнє) може повертатись операцією, яка ніколи не повертає ніякого результату. У таких операцій все ще є
+сенс повертати тіло відповіді, оскільки, окрім безпосередньо результату (поля'data') в ньому може міститись інформація
+про попередження, метаданні і т.п.
+
+Поле `data` може містити порожній результат, тобто дорівнювати null, що означає, що операція загалом повертає результат,
+але у данному конкретному випадку його немає (з легальних причин).
+
+Об'єкт **МОЖЕ** містити поле `warnings` з масивом об'єктів попередження.
+
+Формат об'єкта попередження:
+- `type` - urn з типом помилки
+- `title` - engineers-readable повідомлення з коротким описом попередження.
+- `details` - human-readable повідомлення з коротким описом попередження.
+
+Openapi schema:
+
+```yaml
+DocumentResponse:
+    type: object
+    properties:
+        data:
+          type: object
+          nullable: true
+          description: >
+            Представлення документа. Представлення ресурсу документа описується набором полей 
+            об'єкту, або примитивом (рядок, число і т.п.).
+        warnings:
+          type: array
+          items:
+            $ref: "#/components/schemas/Warning"
+
+Warning:
+  description: A warning object
+  type: object
+  required:
+    - type
+    - title
+    - status
+    - detail
+    - instance
+  properties:
+    type:
+      type: string
+      format: uri
+      description: An absolute URI that identifies the problem type
+      example: https://rollun.org/docs/openapi/warnings/deprecation
+    title:
+      type: string
+      description: |
+        A short, summary of the problem type. Written in English and readable for engineers (usually not suited 
+        for non technical stakeholders and not localized). The same for the same warning types.
+      example: Deprecation
+    detail:
+      type: string
+      description: A human-readable explanation specific to this occurrence of the problem
+      example: Field 'author' is deprecated
+```
+
+### 4.6 application/vnd.rollun-collection+json
+
+- **Parent:** application/json
+
+Медіа тип призначений для повернення колекцій документів.
+
+На верхньому рівні є завжди json об'єктом.
+
+Поле `data` **ПОВИННО** бути присутнім і містити массив - колекцію документів.
+
+Поле `metadata` **МОЖЕ** бути присутнім і містити додаткову інформацію про колекцію:
+- про пагінацію
+  - offset - поточний відступ
+  - limit - кількість елементів на сторінці
+  - totalCount - загальна кількість елементів
+
+Openapi schema:
+
+```yaml
+CollectionResponse:
+    type: object
+    required:
+      - data
+    properties:
+        data:
+          type: array
+          description: An array of documents 
+          items:
+            type: object
+        metadata:
+            $ref: "#/components/schemas/Metadata"
+            description: Метаінформація про ресурс, або колекцію ресурсів.
+        warnings:
+          type: array
+          items:
+            $ref: "#/components/schemas/Warning"
+Metadata:
+  type: object
+  properties:
+    pagination:
+      allOf:
+        - $ref: "#/components/schemas/PaginationMetadata"
+
+OffsetPaginationMetadata:
+  required:
+    - totalCount
+    - limit
+    - offset
+  properties:
+    totalCount:
+      type: int
+      description: total items in collection
+    limit: 
+      type: int
+      description: count of elements in current page
+    offset:
+      type: int
+      description: offset of current page
+
+Warning:
+  description: A warning object
+  type: object
+  required:
+    - type
+    - title
+    - status
+    - detail
+    - instance
+  properties:
+    type:
+      type: string
+      format: uri
+      description: An absolute URI that identifies the problem type
+      example: https://rollun.org/docs/openapi/warnings/deprecation
+    title:
+      type: string
+      description: |
+        A short, summary of the problem type. Written in English and readable for engineers (usually not suited 
+        for non technical stakeholders and not localized). The same for the same warning types.
+      example: Deprecation
+    detail:
+      type: string
+      description: A human-readable explanation specific to this occurrence of the problem
+      example: Field 'author' is deprecated
+```
+
+### 4.7 application/vnd.rollun-long-task+json
 
 - **Parent:** application/vnd.rollun-document+json
 
@@ -1423,7 +1448,7 @@ Warning:
 При використанні цього типу, якщо задача в статусі `pending`, то **РЕКОМЕНДУЄТЬСЯ** повертати хедер `Retry-After`,
 що буде описувати естімейт, коли задача завершиться.
 
-### 4.7 application/vnd.rollun-long-task-collection+json
+### 4.8 application/vnd.rollun-long-task-collection+json
 
 - **Parent:** application/vnd.rollun-collection+json
 
@@ -1432,7 +1457,7 @@ Warning:
 В полі `data` усі об'єкти **ПОВИННІ** бути типу `long-task` як описано в медіа типі 
 `application/vnd.rollun-long-task+json`.
 
-### 4.8 application/vnd.rollun-fsm+json
+### 4.9 application/vnd.rollun-fsm+json
 
 - **Parent:** application/vnd.rollun-document+json
 
@@ -1445,7 +1470,7 @@ Warning:
 - `stage` : string - етап виконання задачі, повинен бути enum
 - `problem`: `application/problem+json` - якщо статус 'rejected'
 
-### 4.9 application/vnd.rollun-fsm-collection+json
+### 4.10 application/vnd.rollun-fsm-collection+json
 
 - **Parent:** application/vnd.rollun-collection+json
 
@@ -1453,7 +1478,7 @@ Warning:
 
 В полі `data` усі об'єкти **ПОВИННІ** бути типу `fsm` як описано в медіа типі `application/vnd.rollun-fsm+json`.
 
-### 4.10 Підсумок
+### 4.11 Підсумок
 
 Діаграма наслідування медіа типів:
 
@@ -1838,7 +1863,7 @@ GET /articles/tasks/1
 *Правило*
 
 > Для опису помилки **ПОВИНЕН** використовуватись медіа тип 
-> [application/vnd.rollun-error+json](#45-applicationvndrollun-errorjson)
+> [application/vnd.rollun-error+json](#43-applicationvndrollun-errorjson)
 
 ### 9.3 Попередження
 
@@ -2139,7 +2164,7 @@ Retry-After: 120
 > при цьому коді містить опис поточного стану виконання запиту, а також вказівник на ресурс (далі задача), що надає
 > користувачеві оцінку того, коли запит буде виконаний.
 >
-> У відповіді з 202 статусом медіа тип **ПОВИНЕН** бути [application/vnd.rollun-long-task+json](#46-applicationvndrollun-long-taskjson).
+> У відповіді з 202 статусом медіа тип **ПОВИНЕН** бути [application/vnd.rollun-long-task+json](#47-applicationvndrollun-long-taskjson).
 > Також може бути присутній заголовок Retry-After з естімейтом виконання задачі.
 > 
 > При отриманні (GET) ресурсу задачі відповіді можуть бути наступні:
