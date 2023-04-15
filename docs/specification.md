@@ -1484,6 +1484,125 @@ Warning:
 
 ![Media-types](img/specification/media-types.jpg)
 
+## 5 Openapi
+
+OpenAPI є домінуючим стандартом для документації API, який отримав широку підтримку в індустрії.
+
+*Правило*
+
+> **Для кожного API повинні бути надані специфікації з використанням [*OpenAPI 3.0*](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md)**
+
+В Openapi маніфесті присутнє поле externalDocs де можна вказати посилання на додаткову документацію. 
+
+*Правило*
+
+> Будь-яка додаткова документація повина бути пов'язана з OpenAPI API маніфестом за допомогою externalDocs властивості.
+
+Приклад
+
+```yaml
+openapi: "3.0.0"
+info:
+  title: petShop
+  description: API exposing my pet shop’s functionality
+  version: "2.1.2"
+servers:
+  - url: https://example.org/openapi/pet-shop/v2
+paths: {}
+externalDocs: # <-----------
+  description: API Documentation
+  url: https://docs.example.org/openapi/pet-shop/v2
+```
+
+*Правило*
+
+> **Файли OpenAPI повинні бути доступні у форматі YAML**, а також, за бажанням, у форматі JSON.
+> 
+> YAML - має усі можливості JSON, а також дозволяє коментарі.
+
+*Правило*
+
+> Коли API має багато операцій, використовуйте теги, щоб згрупувати їх разом. Це зробить візуальне представлення 
+> (SwaggerUI) більш читабельним.
+
+*Правило*
+
+> Додайте приклади відповідей до специфікації OpenAPI у властивості examples.
+
+Приклад:
+
+```yaml
+  /articles/{id}:
+    get:
+      operationId: getArticle
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/Article'
+              examples: # <---------------
+                success:
+                  {
+                    "data": {
+                      "id": "qwerty",
+                      "title": "My first article!"
+                    }
+                  }
+```
+
+*Правило*
+
+> Усі openapi маніфести повинні зберігатись в [`rollun-com /openapi-manifests`](https://github.com/rollun-com/openapi-manifests)
+> репозиторії.
+
+Openapi дозволяє посилатись з одного файлу маніфесту на компоненти, що визначені в інших файлах. Таким чином типи даних, 
+що використовуються в різних маніфестах, можна описати один раз в окремому файлу.
+
+*Правило*
+
+> Типи даних, що використовуються в декількох Api, повинні знаходитись в OpenApi файлах за шляхом:
+> ```
+> <domain>/v<major-version>/<domain-version>.yaml
+> or
+> <domain>/<subdomain>/v<major-version>/<domain-subdomain-version>.yaml
+> ```
+
+Приклад:
+
+`/item/identifier/v1/item-identifier-v1-1-2.yaml`
+```yaml
+info:
+  title: item-identifier
+  description: data types for item identifiers
+  version: "1.1.2"
+paths: {} # empty paths property required to be a valid OpenAPI file
+components:
+  schemas:
+      Rid:
+          description: "unique id of some items in our system"
+          type: string
+```
+
+На тип можна посилатися з іншого файлу OpenAPI наступним чином:
+
+```yaml
+"$ref": "{url-to-file}#/definitions/Rid"
+```
+
+*Правило*
+
+> Маніфести з загальними типами даних, що використовуються в багатьох маніфестах повинні зберігатись в
+> `rollun-com/openapi-manifests-common` репозиторії
+
+
 ## 6 Версіонування API
 
 ### 6.1 Підхід до версіонування
