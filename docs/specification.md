@@ -1270,9 +1270,9 @@ Warning:
 
 Результат **ПОВИНННЕН** міститись у полі `data`.
 
-### 4.5 application/vnd.rollun-response+json
+### 4.5 application/vnd.rollun-document+json
 
-**Parent:** application/vnd.rollun-metadata+json
+**Parent:** application/vnd.rollun-response+json
 
 Медіа тип призначений для успішних відповідей з документом в тілі відповіді.
 
@@ -1438,6 +1438,7 @@ Warning:
 - `idempotency-key` - ключ ідемпотентності
 - `status` - enum: pending, rejected, fulfilled
 - `problem`: `application/problem+json` - якщо статус 'rejected'
+- `data`: object - результат задачі, якщо статус 'fulfilled'
 
 Об'єкт `long-task` **МОЖЕ** містити поля:
 - `stage` : string - етап виконання задачі, повинен бути enum
@@ -2353,7 +2354,8 @@ Retry-After: 10
 
 **Якщо виконання успішно закінчилось**
 
-У відповідь ми отримуємо 303 статус, з посиланням на результат операції в полі "resultId" (якщо результат існує).
+У відповідь ми отримуємо 303 статус, з редіректом на результат задачі. Також результат міститься у полі "task.data", 
+але, зазвичай, тільки його ідентифікатор.
 
 Request
 ```http request
@@ -2374,6 +2376,9 @@ Content-type: application/vnd.rollun-long-task+json
     "idempotencyKey": "abc",
     "stage": "done",
     "completed":"2018-09-13T02:10:00Z",
+    "data": {
+      "id": "1"
+    }
   }
 }
 ```
