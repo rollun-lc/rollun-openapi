@@ -1022,6 +1022,9 @@ GET /actions/convert-money?from=EUR&amount=45&to=USD
 
 > Перш ніж використовувати action подумайте над тим чи можливо його представити у вигляді ресурсу документа чи колекції,
 > що описує намір дії.
+> 
+> Якщо вам потрібно реалізувати екшн, який є протяжний у часі та/або вам потрібно відстежувати етапи його виконання,
+> то натомість використовуйте [скінченний автомат](#335-скінченний-автомат).
 
 Наприклад екшн відправки повідомлення
 
@@ -1037,9 +1040,6 @@ POST /employers/93017373/notifications
 
 Використання іменника тут покращує розширюваність операцій. Наприклад можна додати GET запит, що поверне історію
 усіх відправлених повідомлень.
-
-Якщо вам потрібно реалізувати протяжний у часі екшн, який не зможе повертати результат синхронно, то рекомендується
-поглянути у бік скінченного автомата, або реалізовувати екшн як лонг таск.
 
 ## 4. Media types
 
@@ -2301,7 +2301,7 @@ Retry-After: 120
 > application/vnd.rollun-long-task+json)
 > - Успіх (status = fulfilled): статус 303 See Other з заголовком Location, який містить посилання (URL) на результат 
 > задачі.
-> - Помилка (status = rejected): статус 200 OK з представленням ресурсу зі станом задачі, який також містить причину 
+> - Помилка виконання задачі (status = rejected): статус 200 OK з представленням ресурсу зі станом задачі, який також містить причину 
 > помилки
 
 **Початок асинхроного запиту**
@@ -2320,10 +2320,22 @@ Content-Type: application/vnd.rollun-request+json
 }
 ```
 
+Правило
+
+> Url лонг таску повинен відповідати шаблону `/tasks/{task-name}[/{task-identifier}]`, де
+> 
+> `{task-name}` - назва задачі
+> 
+> `[/{task-identifier}]` - опціональний ідентифікатор задачі
+> 
+> Важливо, що колекція tasks знаходиться на найвищому рівні (тобто не вкладена в інші колекції). Тому що, якщо робити
+> її вкладенною, наприклад, `articles\tasks\creating`, то семантично цей url означає отримення колекції creating статті
+> з ідентифікатором `tasks`.
+
 Response
 ```http
 HTTP/1.1 202 Accepted
-Location: http://www.example.org/articles/actions/creating/123
+Location: http://www.example.org/tasks/creatingArticle/123
 Retry-After: 30
 Content-type: application/vnd.rollun-long-task+json
 
@@ -2341,7 +2353,7 @@ Content-type: application/vnd.rollun-long-task+json
 
 Request
 ```http request
-GET /articles/actions/creating/123
+GET /tasks/creatingArticle/123
 Accept: application/vnd.rollun-error+json, application/vnd.rollun-long-task+json
 ```
 
@@ -2368,7 +2380,7 @@ Retry-After: 10
 
 Request
 ```http request
-GET /articles/actions/creating/123
+GET /tasks/creatingArticle/123
 Accept: application/vnd.rollun-error+json, application/vnd.rollun-long-task+json
 ```
 
@@ -2420,7 +2432,7 @@ Content-type: application/vnd.rollun+json
 
 Request
 ```http request
-GET /articles/actions/creating/123
+GET /tasks/creatingArticle/123
 Accept: application/vnd.rollun+json, application/vnd.rollun-error+json, application/vnd.rollun-long-task+json
 ```
 
