@@ -1450,7 +1450,6 @@ Warning:
 - `data`: object - результат задачі, якщо статус 'fulfilled'
 
 Об'єкт `long-task` **МОЖЕ** містити поля:
-- `stage` : string - етап виконання задачі, повинен бути enum
 - `percentComplete`: int[0-100] - стан виконання задачі у відсотках
 - `createdAt`: date-time - час створення задачі
 - `startedAt`: date-time - час початку виконання задачі
@@ -2303,6 +2302,9 @@ Retry-After: 120
 > задачі.
 > - Помилка виконання задачі (status = rejected): статус 200 OK з представленням ресурсу зі станом задачі, який також містить причину 
 > помилки
+> 
+> Лонг таски повинні використовуватись в достатньо простих ситуаціях, коли не потрібно відстежувати багато станів 
+> задачі та контролювати переходи між ними. Інакше використовуйте [скінченний автомат](#335-скінченний-автомат)
 
 **Початок асинхроного запиту**
 
@@ -2344,7 +2346,6 @@ Content-type: application/vnd.rollun-long-task+json
     "id": "123",
     "status": "pending",
     "idempotencyKey": "abc",
-    "stage": "step-0"
   }
 }
 ```
@@ -2368,7 +2369,6 @@ Retry-After: 10
     "id": "123",
     "status": "pending",
     "idempotencyKey": "abc",
-    "stage": "step-1",
   }
 }
 ```
@@ -2395,7 +2395,6 @@ Content-type: application/vnd.rollun-long-task+json
     "id": "123",
     "status": "fulfilled",
     "idempotencyKey": "abc",
-    "stage": "done",
     "completed":"2018-09-13T02:10:00Z",
     "data": {
       "id": "1"
@@ -2449,7 +2448,6 @@ Content-Type: application/vnd.rollun-long-task+json
     "id": "123",
     "status": "rejected",
     "idempotencyKey": "abc",
-    "stage": "step-01",
     "completed":"2018-09-13T02:10:00Z",
     "problem": {
       "type": "https://rollun.org/docs/openapi/problems/internal-server-error",
