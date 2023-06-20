@@ -69,10 +69,32 @@ class Enum extends AbstractValidator
 
     public function isValid($value): bool
     {
+        if (is_array($value)) {
+            return $this->validateArray($value);
+        }
+
+        return $this->isInArray($value);
+    }
+
+    protected function isInArray($value): bool
+    {
         if (!$result = in_array($value, $this->allowed, true)) {
             $this->error(self::INVALID, $value);
         }
-
         return $result;
+    }
+
+    protected function validateArray($value): bool
+    {
+        if (empty($value)) {
+            return $this->isInArray(null);
+        }
+
+        foreach ($value as $item) {
+            if (!$this->isInArray($item)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
