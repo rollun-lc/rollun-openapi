@@ -49,6 +49,18 @@ class EnumTest extends TestCase
         ],$messages);
     }
 
+    public function testString()
+    {
+        $validator = new Enum(['allowed' => ["random"]]);
+        self::assertTrue($validator->isValid("random"));
+        self::assertEmpty($validator->getMessages());
+
+        self::assertFalse($validator->isValid('another'));
+        self::assertNotEmpty($messages = $validator->getMessages());
+        self::assertEquals([
+            Enum::INVALID => "The value 'another' not in enum list."
+        ],$messages);
+    }
     public function testArray()
     {
         $validator = new Enum(['allowed' => [
