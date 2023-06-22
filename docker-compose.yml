@@ -28,7 +28,7 @@ services:
     volumes:
       - ./:/var/www/app
 
-  rollun-openapi-logstash:
-    image: docker.elastic.co/logstash/logstash:7.7.0
-    volumes:
-      - ./docker/logstash/config/:/usr/share/logstash/config/
+#  rollun-openapi-logstash:
+#    image: docker.elastic.co/logstash/logstash:7.7.0
+#    volumes:
+#      - ./docker/logstash/config/:/usr/share/logstash/config/
