@@ -61,7 +61,32 @@ class EnumTest extends TestCase
             Enum::INVALID => "The value 'another' not in enum list."
         ],$messages);
     }
-    public function testArray()
+
+    public function testArrayInt()
+    {
+        $validator = new Enum(['allowed' => [
+            "random",
+            "anotherRandom",
+        ]]);
+
+        self::assertFalse($validator->isValid([1]));
+        self::assertNotEmpty($messages = $validator->getMessages());
+        self::assertEquals([
+            Enum::INVALID => "The value '1' not in enum list."
+        ],$messages);
+    }
+    public function testArrayEmpty()
+    {
+        $validator = new Enum(['allowed' => [
+            "random",
+            "anotherRandom",
+        ]]);
+
+        self::assertTrue($validator->isValid([]));
+        self::assertEmpty($validator->getMessages());
+    }
+
+    public function testValidArrayOneItem()
     {
         $validator = new Enum(['allowed' => [
             "random",
@@ -69,11 +94,43 @@ class EnumTest extends TestCase
         ]]);
         self::assertTrue($validator->isValid(["random"]));
         self::assertEmpty($validator->getMessages());
+    }
 
-        self::assertFalse($validator->isValid([]));
+    public function testValidArraySeveralItems()
+    {
+        $validator = new Enum(['allowed' => [
+            "random",
+            "anotherRandom",
+            "anotherRandomWord",
+        ]]);
+        self::assertTrue($validator->isValid(["random", "anotherRandom"]));
+        self::assertEmpty($validator->getMessages());
+    }
+
+    public function testInvalidArrayOneItem()
+    {
+        $validator = new Enum(['allowed' => [
+            "random",
+            "anotherRandom",
+        ]]);
+        self::assertFalse($validator->isValid(["anotherRandomWord"]));
         self::assertNotEmpty($messages = $validator->getMessages());
         self::assertEquals([
-            Enum::INVALID => "The value '' not in enum list."
+            Enum::INVALID => "The value 'anotherRandomWord' not in enum list."
         ],$messages);
     }
+
+    public function testInvalidArraySeveralItems()
+    {
+        $validator = new Enum(['allowed' => [
+            "random",
+            "anotherRandom",
+        ]]);
+        self::assertFalse($validator->isValid(["anotherRandomWord", "sameRandomWord"]));
+        self::assertNotEmpty($messages = $validator->getMessages());
+        self::assertEquals([
+            Enum::INVALID => "The value 'anotherRandomWord' not in enum list."
+        ],$messages);
+    }
+
 }

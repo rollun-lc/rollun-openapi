@@ -87,7 +87,7 @@ class Enum extends AbstractValidator
     protected function validateArray($value): bool
     {
         if (empty($value)) {
-            return $this->isInArray(null);
+            return true;
         }
 
         foreach ($value as $item) {
