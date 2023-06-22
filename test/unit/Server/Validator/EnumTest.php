@@ -22,7 +22,7 @@ class EnumTest extends TestCase
         // false converts to empty string since we use implode
         self::assertEquals([
             Enum::INVALID => "The value 'false' not in enum list."
-        ],$messages);
+        ], $messages);
     }
 
     public function testStringCastsToInt()
@@ -46,7 +46,7 @@ class EnumTest extends TestCase
         self::assertNotEmpty($messages = $validator->getMessages());
         self::assertEquals([
             Enum::INVALID => "The value 'another' not in enum list."
-        ],$messages);
+        ], $messages);
     }
 
     public function testString()
@@ -59,7 +59,7 @@ class EnumTest extends TestCase
         self::assertNotEmpty($messages = $validator->getMessages());
         self::assertEquals([
             Enum::INVALID => "The value 'another' not in enum list."
-        ],$messages);
+        ], $messages);
     }
 
     public function testArrayInt()
@@ -73,8 +73,9 @@ class EnumTest extends TestCase
         self::assertNotEmpty($messages = $validator->getMessages());
         self::assertEquals([
             Enum::INVALID => "The value '1' not in enum list."
-        ],$messages);
+        ], $messages);
     }
+
     public function testArrayEmpty()
     {
         $validator = new Enum(['allowed' => [
@@ -117,7 +118,7 @@ class EnumTest extends TestCase
         self::assertNotEmpty($messages = $validator->getMessages());
         self::assertEquals([
             Enum::INVALID => "The value 'anotherRandomWord' not in enum list."
-        ],$messages);
+        ], $messages);
     }
 
     public function testInvalidArraySeveralItems()
@@ -130,7 +131,7 @@ class EnumTest extends TestCase
         self::assertNotEmpty($messages = $validator->getMessages());
         self::assertEquals([
             Enum::INVALID => "The value 'anotherRandomWord' not in enum list."
-        ],$messages);
+        ], $messages);
     }
 
 }
