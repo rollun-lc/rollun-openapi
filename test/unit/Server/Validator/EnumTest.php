@@ -133,5 +133,4 @@ class EnumTest extends TestCase
             Enum::INVALID => "The value 'anotherRandomWord' not in enum list."
         ], $messages);
     }
-
 }
