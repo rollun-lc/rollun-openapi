@@ -4,7 +4,8 @@ FROM maxrollundev/php-fpm-dev-7.2
 RUN mkdir -p /usr/share/man/man1
 
 # Install yaml and java
-RUN apt-get update \
+# https://stackoverflow.com/questions/68802802/repository-http-security-debian-org-debian-security-buster-updates-inrelease
+RUN apt-get update --allow-releaseinfo-change \
     && apt-get install -y libyaml-dev \
     wget \
     default-jre
