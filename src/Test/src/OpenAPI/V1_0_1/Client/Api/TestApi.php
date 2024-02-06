@@ -30,6 +30,7 @@ namespace Test\OpenAPI\V1_0_1\Client\Api;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\MultipartStream;
 use GuzzleHttp\Psr7\Query;
@@ -41,6 +42,7 @@ use OpenAPI\Client\ApiException;
 use Test\OpenAPI\V1_0_1\Client\Configuration;
 use OpenAPI\Client\HeaderSelector;
 use OpenAPI\Client\ObjectSerializer;
+use OpenAPI\Server\Response\Message;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -185,6 +187,11 @@ class TestApi implements ApiInterface
                     'responseBody' => (string)$response->getBody(),
                     'responseStatusCode' => $response->getStatusCode()
                 ]);
+            } catch (ConnectException $e) {
+                if (str_contains($e->getMessage(), 'Operation timed out')) {
+                    return self::timeoutErrorResponse($e->getMessage());
+                }
+                throw $e;
             } catch (RequestException $e) {
                 if (!$e->hasResponse()) {
                     throw $e;
@@ -196,6 +203,22 @@ class TestApi implements ApiInterface
                     'responseBody' => (string)$response->getBody(),
                     'responseStatusCode' => $response->getStatusCode()
                 ]);
+
+                switch ($response->getStatusCode()) {
+                    case 504:
+                    case 524:
+                        return self::timeoutErrorResponse(
+                            $e->getMessage(),
+                            $response->getStatusCode(),
+                            $response->getHeaders()
+                        );
+                    case 503:
+                        return self::serviceUnavailableResponse(
+                            $e->getMessage(),
+                            $response->getStatusCode(),
+                            $response->getHeaders()
+                        );
+                }
             }
 
             $statusCode = $response->getStatusCode();
@@ -446,6 +469,11 @@ class TestApi implements ApiInterface
                     'responseBody' => (string)$response->getBody(),
                     'responseStatusCode' => $response->getStatusCode()
                 ]);
+            } catch (ConnectException $e) {
+                if (str_contains($e->getMessage(), 'Operation timed out')) {
+                    return self::timeoutErrorResponse($e->getMessage());
+                }
+                throw $e;
             } catch (RequestException $e) {
                 if (!$e->hasResponse()) {
                     throw $e;
@@ -457,6 +485,22 @@ class TestApi implements ApiInterface
                     'responseBody' => (string)$response->getBody(),
                     'responseStatusCode' => $response->getStatusCode()
                 ]);
+
+                switch ($response->getStatusCode()) {
+                    case 504:
+                    case 524:
+                        return self::timeoutErrorResponse(
+                            $e->getMessage(),
+                            $response->getStatusCode(),
+                            $response->getHeaders()
+                        );
+                    case 503:
+                        return self::serviceUnavailableResponse(
+                            $e->getMessage(),
+                            $response->getStatusCode(),
+                            $response->getHeaders()
+                        );
+                }
             }
 
             $statusCode = $response->getStatusCode();
@@ -707,6 +751,11 @@ class TestApi implements ApiInterface
                     'responseBody' => (string)$response->getBody(),
                     'responseStatusCode' => $response->getStatusCode()
                 ]);
+            } catch (ConnectException $e) {
+                if (str_contains($e->getMessage(), 'Operation timed out')) {
+                    return self::timeoutErrorResponse($e->getMessage());
+                }
+                throw $e;
             } catch (RequestException $e) {
                 if (!$e->hasResponse()) {
                     throw $e;
@@ -718,6 +767,22 @@ class TestApi implements ApiInterface
                     'responseBody' => (string)$response->getBody(),
                     'responseStatusCode' => $response->getStatusCode()
                 ]);
+
+                switch ($response->getStatusCode()) {
+                    case 504:
+                    case 524:
+                        return self::timeoutErrorResponse(
+                            $e->getMessage(),
+                            $response->getStatusCode(),
+                            $response->getHeaders()
+                        );
+                    case 503:
+                        return self::serviceUnavailableResponse(
+                            $e->getMessage(),
+                            $response->getStatusCode(),
+                            $response->getHeaders()
+                        );
+                }
             }
 
             $statusCode = $response->getStatusCode();
@@ -973,6 +1038,11 @@ class TestApi implements ApiInterface
                     'responseBody' => (string)$response->getBody(),
                     'responseStatusCode' => $response->getStatusCode()
                 ]);
+            } catch (ConnectException $e) {
+                if (str_contains($e->getMessage(), 'Operation timed out')) {
+                    return self::timeoutErrorResponse($e->getMessage());
+                }
+                throw $e;
             } catch (RequestException $e) {
                 if (!$e->hasResponse()) {
                     throw $e;
@@ -984,6 +1054,22 @@ class TestApi implements ApiInterface
                     'responseBody' => (string)$response->getBody(),
                     'responseStatusCode' => $response->getStatusCode()
                 ]);
+
+                switch ($response->getStatusCode()) {
+                    case 504:
+                    case 524:
+                        return self::timeoutErrorResponse(
+                            $e->getMessage(),
+                            $response->getStatusCode(),
+                            $response->getHeaders()
+                        );
+                    case 503:
+                        return self::serviceUnavailableResponse(
+                            $e->getMessage(),
+                            $response->getStatusCode(),
+                            $response->getHeaders()
+                        );
+                }
             }
 
             $statusCode = $response->getStatusCode();
@@ -1222,6 +1308,11 @@ class TestApi implements ApiInterface
                     'responseBody' => (string)$response->getBody(),
                     'responseStatusCode' => $response->getStatusCode()
                 ]);
+            } catch (ConnectException $e) {
+                if (str_contains($e->getMessage(), 'Operation timed out')) {
+                    return self::timeoutErrorResponse($e->getMessage());
+                }
+                throw $e;
             } catch (RequestException $e) {
                 if (!$e->hasResponse()) {
                     throw $e;
@@ -1233,6 +1324,22 @@ class TestApi implements ApiInterface
                     'responseBody' => (string)$response->getBody(),
                     'responseStatusCode' => $response->getStatusCode()
                 ]);
+
+                switch ($response->getStatusCode()) {
+                    case 504:
+                    case 524:
+                        return self::timeoutErrorResponse(
+                            $e->getMessage(),
+                            $response->getStatusCode(),
+                            $response->getHeaders()
+                        );
+                    case 503:
+                        return self::serviceUnavailableResponse(
+                            $e->getMessage(),
+                            $response->getStatusCode(),
+                            $response->getHeaders()
+                        );
+                }
             }
 
             $statusCode = $response->getStatusCode();
@@ -1493,6 +1600,11 @@ class TestApi implements ApiInterface
                     'responseBody' => (string)$response->getBody(),
                     'responseStatusCode' => $response->getStatusCode()
                 ]);
+            } catch (ConnectException $e) {
+                if (str_contains($e->getMessage(), 'Operation timed out')) {
+                    return self::timeoutErrorResponse($e->getMessage());
+                }
+                throw $e;
             } catch (RequestException $e) {
                 if (!$e->hasResponse()) {
                     throw $e;
@@ -1504,6 +1616,22 @@ class TestApi implements ApiInterface
                     'responseBody' => (string)$response->getBody(),
                     'responseStatusCode' => $response->getStatusCode()
                 ]);
+
+                switch ($response->getStatusCode()) {
+                    case 504:
+                    case 524:
+                        return self::timeoutErrorResponse(
+                            $e->getMessage(),
+                            $response->getStatusCode(),
+                            $response->getHeaders()
+                        );
+                    case 503:
+                        return self::serviceUnavailableResponse(
+                            $e->getMessage(),
+                            $response->getStatusCode(),
+                            $response->getHeaders()
+                        );
+                }
             }
 
             $statusCode = $response->getStatusCode();
@@ -1750,6 +1878,11 @@ class TestApi implements ApiInterface
                     'responseBody' => (string)$response->getBody(),
                     'responseStatusCode' => $response->getStatusCode()
                 ]);
+            } catch (ConnectException $e) {
+                if (str_contains($e->getMessage(), 'Operation timed out')) {
+                    return self::timeoutErrorResponse($e->getMessage());
+                }
+                throw $e;
             } catch (RequestException $e) {
                 if (!$e->hasResponse()) {
                     throw $e;
@@ -1761,6 +1894,22 @@ class TestApi implements ApiInterface
                     'responseBody' => (string)$response->getBody(),
                     'responseStatusCode' => $response->getStatusCode()
                 ]);
+
+                switch ($response->getStatusCode()) {
+                    case 504:
+                    case 524:
+                        return self::timeoutErrorResponse(
+                            $e->getMessage(),
+                            $response->getStatusCode(),
+                            $response->getHeaders()
+                        );
+                    case 503:
+                        return self::serviceUnavailableResponse(
+                            $e->getMessage(),
+                            $response->getStatusCode(),
+                            $response->getHeaders()
+                        );
+                }
             }
 
             $statusCode = $response->getStatusCode();
@@ -2005,5 +2154,41 @@ class TestApi implements ApiInterface
         if ($this->logger) {
             $this->logger->log($level, $message, $context);
         }
+    }
+
+    private static function timeoutErrorResponse(string $text, ?int $statusCode = null, ?array $headers = null): array
+    {
+        return [
+            [
+                'data' => null,
+                'messages' => [
+                    [
+                        'level' => Message::ERROR,
+                        'type' => Message::REQUEST_TIMEOUT,
+                        'text' => $text
+                    ]
+                ]
+            ],
+            $statusCode,
+            $headers
+        ];
+    }
+
+    private static function serviceUnavailableResponse(string $text, ?int $statusCode = null, ?array $headers = null): array
+    {
+        return [
+            [
+                'data' => null,
+                'messages' => [
+                    [
+                        'level' => Message::ERROR,
+                        'type' => Message::SERVICE_UNAVAILABLE,
+                        'text' => $text
+                    ]
+                ]
+            ],
+            $statusCode,
+            $headers
+        ];
     }
 }
