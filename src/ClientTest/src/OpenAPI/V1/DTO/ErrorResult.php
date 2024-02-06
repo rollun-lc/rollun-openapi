@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Test\OpenAPI\V1_0_1\DTO;
+namespace ClientTest\OpenAPI\V1\DTO;
 
 use Articus\DataTransfer\Annotation as DTA;
 use OpenAPI\DataTransfer\Annotation as ODTA;
@@ -9,30 +9,18 @@ use ReflectionProperty;
 use Traversable;
 
 /**
- * @property string $data
+ * Message field is not required
  * @property array $messages
  */
-class OkResponse implements \IteratorAggregate, \JsonSerializable
+class ErrorResult implements \IteratorAggregate, \JsonSerializable
 {
     /**
-     * @ODTA\Data(field="data", required=false)
-     * @DTA\Validator(name="Type", options={"type":"string"})
-     * @DTA\Validator(name="Enum", options={"allowed":{
-     *      "'OK'",
-     *      "INVALID_RESPONSE",
-     *      "REQUEST_TIMEOUT",
-     *      "SERVICE_UNAVAILABLE"
-     * }})
-     * @var string
-     */
-    private string $data;
-    /**
      * @ODTA\Data(field="messages", required=false)
-     * @DTA\Strategy(name="ObjectArray", options={"type":\Test\OpenAPI\V1_0_1\DTO\Message::class})
+     * @DTA\Strategy(name="ObjectArray", options={"type":\ClientTest\OpenAPI\V1\DTO\Message::class})
      * @DTA\Validator(name="Collection", options={"validators":{
-     *     {"name":"TypeCompliant", "options":{"type":\Test\OpenAPI\V1_0_1\DTO\Message::class}}
+     *     {"name":"TypeCompliant", "options":{"type":\ClientTest\OpenAPI\V1\DTO\Message::class}}
      * }})
-     * @var \Test\OpenAPI\V1_0_1\DTO\Message[]
+     * @var \ClientTest\OpenAPI\V1\DTO\Message[]
      */
     private array $messages;
 
@@ -79,23 +67,7 @@ class OkResponse implements \IteratorAggregate, \JsonSerializable
 
     private static function getAllPropertyNames(): array
     {
-        return ['data', 'messages'];
-    }
-
-    public function getData(): string
-    {
-        return $this->data;
-    }
-
-    public function setData(string $data): self
-    {
-        $this->data = $data;
-        return $this;
-    }
-
-    public function hasData(): bool
-    {
-        return $this->isInitialized('data');
+        return ['messages'];
     }
 
     public function getMessages(): array

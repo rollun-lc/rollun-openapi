@@ -123,26 +123,29 @@ return [
 ];
 ```
 
-## Обробка помилок
+## Обробка помилкових відповідей
 
-### Timeout error
+В більшості випадків ми очікуємо, що сервер поверне коректну відповідь з коректним описом помилки, як це описано в 
+маніфесті, але деякі види помилок клієнт генерує на своїй стороні.
 
-При цій помилці буде викинуто виключення `GuzzleHttp\Exception\ConnectException` с текстом виду "cURL error 28: 
-Operation timed out after 1001 milliseconds with 0 bytes received (see https://curl.haxx.se/libcurl/c/libcurl-errors.html)". 
-Це виключення ніде не перехоплюється і долетить до клієнтського коду. Відрізнити помилку таймауту від інших помилок 
-з'єднання можна, напевно, тільки по тексту помилки. Принаймні я не знайшов як в бібліотеці guzzle їх відрізняти.
+Є зарезервовані типи помилок, які клієнт може повернути, але вони не обов'язково повинні бути описані в маніфесті:
+- *INVALID_RESPONSE* - якщо ми не можемо розібрати тіло відповіді. Наприклад воно неправильного формату, або містить 
+синтаксичні помилки.
+- *REQUEST_TIMEOUT* - якщо ми отримали 504 чи 524 відповідь від сервера, або взагалі не отримали відповідь по закінченню 
+таймаута.
+- *SERVICE_UNAVAILABLE* - якщо ми отримали 503 відповідь від сервера.
 
+Клієнт повертає помилки як звичайну відповідь, у вигляді наступного шаблону (де type і text можуть змінюватись в 
+залежності від типу помилки):
 ```php
-<?php
-/** @var \HelloUser\OpenAPI\V1\Client\Rest\User $rest */
-$rest = $container->get(\HelloUser\OpenAPI\V1\Client\Rest\User::class);
-
-try {
-    $result = $rest->post([
-        'id' => '1',
-        'name' => 'misha'
-    ]);
-} catch (\GuzzleHttp\Exception\ConnectException $e) {
-    // handle here your exception
-}
+[
+    'data' => null,
+    'messages' => [
+        [
+            'level' => 'error',
+            'type' => 'INVALID_RESPONSE',
+            'text' => 'Response body decoding error: "Cannot decode json string: Syntax error."'
+        ]
+    ]
+]
 ```

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Test\OpenAPI\V1_0_1\DTO;
+namespace ClientTest\OpenAPI\V1\DTO;
 
 use Articus\DataTransfer\Annotation as DTA;
 use OpenAPI\DataTransfer\Annotation as ODTA;
@@ -9,32 +9,17 @@ use ReflectionProperty;
 use Traversable;
 
 /**
- * @property string $data
- * @property array $messages
+ * @property string $name
  */
-class OkResponse implements \IteratorAggregate, \JsonSerializable
+class NestedObject implements \IteratorAggregate, \JsonSerializable
 {
     /**
-     * @ODTA\Data(field="data", required=false)
+     * Some name
+     * @ODTA\Data(field="name", required=false)
      * @DTA\Validator(name="Type", options={"type":"string"})
-     * @DTA\Validator(name="Enum", options={"allowed":{
-     *      "'OK'",
-     *      "INVALID_RESPONSE",
-     *      "REQUEST_TIMEOUT",
-     *      "SERVICE_UNAVAILABLE"
-     * }})
      * @var string
      */
-    private string $data;
-    /**
-     * @ODTA\Data(field="messages", required=false)
-     * @DTA\Strategy(name="ObjectArray", options={"type":\Test\OpenAPI\V1_0_1\DTO\Message::class})
-     * @DTA\Validator(name="Collection", options={"validators":{
-     *     {"name":"TypeCompliant", "options":{"type":\Test\OpenAPI\V1_0_1\DTO\Message::class}}
-     * }})
-     * @var \Test\OpenAPI\V1_0_1\DTO\Message[]
-     */
-    private array $messages;
+    private string $name;
 
     public function __get($name)
     {
@@ -79,39 +64,23 @@ class OkResponse implements \IteratorAggregate, \JsonSerializable
 
     private static function getAllPropertyNames(): array
     {
-        return ['data', 'messages'];
+        return ['name'];
     }
 
-    public function getData(): string
+    public function getName(): string
     {
-        return $this->data;
+        return $this->name;
     }
 
-    public function setData(string $data): self
+    public function setName(string $name): self
     {
-        $this->data = $data;
+        $this->name = $name;
         return $this;
     }
 
-    public function hasData(): bool
+    public function hasName(): bool
     {
-        return $this->isInitialized('data');
-    }
-
-    public function getMessages(): array
-    {
-        return $this->messages;
-    }
-
-    public function setMessages(array $messages): self
-    {
-        $this->messages = $messages;
-        return $this;
-    }
-
-    public function hasMessages(): bool
-    {
-        return $this->isInitialized('messages');
+        return $this->isInitialized('name');
     }
 
     private function isInitialized(string $property): bool

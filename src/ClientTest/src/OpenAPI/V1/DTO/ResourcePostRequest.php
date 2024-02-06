@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Test\OpenAPI\V1_0_1\DTO;
+namespace ClientTest\OpenAPI\V1\DTO;
 
 use Articus\DataTransfer\Annotation as DTA;
 use OpenAPI\DataTransfer\Annotation as ODTA;
@@ -9,32 +9,25 @@ use ReflectionProperty;
 use Traversable;
 
 /**
- * @property string $data
- * @property array $messages
+ * @property string $requiredField
+ * @property ?string $optionalField
  */
-class OkResponse implements \IteratorAggregate, \JsonSerializable
+class ResourcePostRequest implements \IteratorAggregate, \JsonSerializable
 {
     /**
-     * @ODTA\Data(field="data", required=false)
+     * required
+     * @ODTA\Data(field="requiredField")
      * @DTA\Validator(name="Type", options={"type":"string"})
-     * @DTA\Validator(name="Enum", options={"allowed":{
-     *      "'OK'",
-     *      "INVALID_RESPONSE",
-     *      "REQUEST_TIMEOUT",
-     *      "SERVICE_UNAVAILABLE"
-     * }})
      * @var string
      */
-    private string $data;
+    private string $requiredField;
     /**
-     * @ODTA\Data(field="messages", required=false)
-     * @DTA\Strategy(name="ObjectArray", options={"type":\Test\OpenAPI\V1_0_1\DTO\Message::class})
-     * @DTA\Validator(name="Collection", options={"validators":{
-     *     {"name":"TypeCompliant", "options":{"type":\Test\OpenAPI\V1_0_1\DTO\Message::class}}
-     * }})
-     * @var \Test\OpenAPI\V1_0_1\DTO\Message[]
+     * optional
+     * @ODTA\Data(field="optionalField", nullable=true, required=false)
+     * @DTA\Validator(name="Type", options={"type":"string"})
+     * @var string
      */
-    private array $messages;
+    private ?string $optionalField;
 
     public function __get($name)
     {
@@ -79,39 +72,39 @@ class OkResponse implements \IteratorAggregate, \JsonSerializable
 
     private static function getAllPropertyNames(): array
     {
-        return ['data', 'messages'];
+        return ['requiredField', 'optionalField'];
     }
 
-    public function getData(): string
+    public function getRequiredField(): string
     {
-        return $this->data;
+        return $this->requiredField;
     }
 
-    public function setData(string $data): self
+    public function setRequiredField(string $requiredField): self
     {
-        $this->data = $data;
+        $this->requiredField = $requiredField;
         return $this;
     }
 
-    public function hasData(): bool
+    public function hasRequiredField(): bool
     {
-        return $this->isInitialized('data');
+        return $this->isInitialized('requiredField');
     }
 
-    public function getMessages(): array
+    public function getOptionalField(): ?string
     {
-        return $this->messages;
+        return $this->optionalField;
     }
 
-    public function setMessages(array $messages): self
+    public function setOptionalField(?string $optionalField): self
     {
-        $this->messages = $messages;
+        $this->optionalField = $optionalField;
         return $this;
     }
 
-    public function hasMessages(): bool
+    public function hasOptionalField(): bool
     {
-        return $this->isInitialized('messages');
+        return $this->isInitialized('optionalField');
     }
 
     private function isInitialized(string $property): bool
