@@ -53,9 +53,8 @@ class ClientTest extends ClientTestCase
 
     /**
      * @dataProvider timeOutDataProvider
-     * @param Response|Exception $response
      */
-    public function testTimeoutError($response): void
+    public function testTimeoutError(Response|Exception $response): void
     {
         $this->getGuzzleMockHandler()->append($response);
 
@@ -76,9 +75,8 @@ class ClientTest extends ClientTestCase
 
     /**
      * @dataProvider serviceUnavailableDataProvider
-     * @param Response|Exception $response
      */
-    public function testServiceUnavailable($response): void
+    public function testServiceUnavailable(Response|Exception $response): void
     {
         $this->getGuzzleMockHandler()->append($response);
 
