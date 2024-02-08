@@ -4,6 +4,7 @@ namespace rollun\test\OpenAPI\functional\Client;
 
 use Articus\DataTransfer\Service as DataTransferService;
 use ClientTest\OpenAPI\V1\DTO\ResourceListResult;
+use ClientTest\OpenAPI\V1\DTO\ResourceResult;
 use Exception;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Psr7\Request;
@@ -84,6 +85,20 @@ class ClientTest extends ClientTestCase
         self::expectException(ServiceUnavailable::class);
 
         $this->getClient()->get();
+    }
+
+    public function testResetFunction(): void
+    {
+        $this->markTestIncomplete('Indirect modification of overloaded property ClientTest\OpenAPI\V1\DTO\ResourceResult::$messages has no effect');
+        $message = new \ClientTest\OpenAPI\V1\DTO\Message();
+        $message->level = Message::ERROR;
+        $message->type = Message::UNDEFINED_TYPE;
+        $message->text = 'Some error details.';
+        $result = new ResourceResult();
+        $result->messages = [$message];
+
+        $firstMessage = reset($result->messages);
+        self::assertEquals($firstMessage, $message);
     }
 
     private static function assertErrorOfType(ResourceListResult $response, string $errorType): void
