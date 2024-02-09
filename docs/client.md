@@ -139,7 +139,6 @@ return [
 залежності від типу помилки):
 ```php
 [
-    'data' => null,
     'messages' => [
         [
             'level' => 'error',
