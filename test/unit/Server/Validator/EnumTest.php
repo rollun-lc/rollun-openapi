@@ -14,6 +14,13 @@ class EnumTest extends TestCase
         self::assertEmpty($validator->getMessages());
     }
 
+    public function testDuplications(): void
+    {
+        $validator = new Enum(['allowed' => ['foo', 'foo']]);
+        self::assertTrue($validator->isValid('foo'));
+        self::assertEmpty($validator->getMessages());
+    }
+
     public function testStringBoolNotValid(): void
     {
         $validator = new Enum(['allowed' => ['false']]);

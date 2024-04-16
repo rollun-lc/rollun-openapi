@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Test\OpenAPI\V1_0_1\DTO;
+namespace ClientTest\OpenAPI\V1\DTO;
 
 use Articus\DataTransfer\Annotation as DTA;
 use OpenAPI\DataTransfer\Annotation as ODTA;
@@ -9,32 +9,19 @@ use ReflectionProperty;
 use Traversable;
 
 /**
- * @property string $data
- * @property array $messages
+ * Query parameters for resourceGET
+ * @property string $filter
  */
-class OkResponse implements \IteratorAggregate, \JsonSerializable
+class ResourceGETQueryData implements \IteratorAggregate, \JsonSerializable
 {
     /**
-     * @ODTA\Data(field="data", required=false)
-     * @DTA\Validator(name="Type", options={"type":"string"})
-     * @DTA\Validator(name="Enum", options={"allowed":{
-     *      "'OK'",
-     *      "INVALID_RESPONSE",
-     *      "REQUEST_TIMEOUT",
-     *      "SERVICE_UNAVAILABLE"
-     * }})
+     * Returning orders with by a specific filter.
+     * @ODTA\Data(field="filter", required=false)
+     * @DTA\Strategy(name="QueryParameter", options={"type":"string"})
+     * @DTA\Validator(name="QueryParameterType", options={"type":"string"})
      * @var string
      */
-    private string $data;
-    /**
-     * @ODTA\Data(field="messages", required=false)
-     * @DTA\Strategy(name="ObjectArray", options={"type":\Test\OpenAPI\V1_0_1\DTO\Message::class})
-     * @DTA\Validator(name="Collection", options={"validators":{
-     *     {"name":"TypeCompliant", "options":{"type":\Test\OpenAPI\V1_0_1\DTO\Message::class}}
-     * }})
-     * @var \Test\OpenAPI\V1_0_1\DTO\Message[]
-     */
-    private array $messages;
+    private string $filter;
 
     public function __get($name)
     {
@@ -79,39 +66,23 @@ class OkResponse implements \IteratorAggregate, \JsonSerializable
 
     private static function getAllPropertyNames(): array
     {
-        return ['data', 'messages'];
+        return ['filter'];
     }
 
-    public function getData(): string
+    public function getFilter(): string
     {
-        return $this->data;
+        return $this->filter;
     }
 
-    public function setData(string $data): self
+    public function setFilter(string $filter): self
     {
-        $this->data = $data;
+        $this->filter = $filter;
         return $this;
     }
 
-    public function hasData(): bool
+    public function hasFilter(): bool
     {
-        return $this->isInitialized('data');
-    }
-
-    public function getMessages(): array
-    {
-        return $this->messages;
-    }
-
-    public function setMessages(array $messages): self
-    {
-        $this->messages = $messages;
-        return $this;
-    }
-
-    public function hasMessages(): bool
-    {
-        return $this->isInitialized('messages');
+        return $this->isInitialized('filter');
     }
 
     private function isInitialized(string $property): bool

@@ -45,15 +45,14 @@ class ApiAbstractFactory implements AbstractFactoryInterface
         $lifeCycleToken = (string) $container->get(LifeCycleToken::class);
 
         // TODO
-        $clientConfig = [];
-        $client = $options[self::KEY_CLIENT] ?? $config[self::KEY_CLIENT] ?? null;
+         $client = $options[self::KEY_CLIENT] ?? $config[self::KEY_CLIENT] ?? null;
         if (is_string($client)) {
             $client = $container->get($client);
             if (!$client instanceof ClientInterface) {
                 throw new \Exception('Client must implement ' . ClientInterface::class);
             }
-            $clientConfig = $client->getConfig();
         }
+        $clientConfig = $client === null ? [] : $client->getConfig();
         $clientConfig = array_merge_recursive([
             'headers' => [
                 'LifeCycleToken' => $lifeCycleToken

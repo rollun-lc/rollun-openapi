@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Test\OpenAPI\V1_0_1\DTO;
+namespace ClientTest\OpenAPI\V1\DTO;
 
 use Articus\DataTransfer\Annotation as DTA;
 use OpenAPI\DataTransfer\Annotation as ODTA;
@@ -9,30 +9,25 @@ use ReflectionProperty;
 use Traversable;
 
 /**
- * @property string $data
+ * @property \ClientTest\OpenAPI\V1\DTO\Resource $data
  * @property array $messages
  */
-class OkResponse implements \IteratorAggregate, \JsonSerializable
+class ResourceResult implements \IteratorAggregate, \JsonSerializable
 {
     /**
      * @ODTA\Data(field="data", required=false)
-     * @DTA\Validator(name="Type", options={"type":"string"})
-     * @DTA\Validator(name="Enum", options={"allowed":{
-     *      "'OK'",
-     *      "INVALID_RESPONSE",
-     *      "REQUEST_TIMEOUT",
-     *      "SERVICE_UNAVAILABLE"
-     * }})
-     * @var string
+     * @DTA\Strategy(name="Object", options={"type":\ClientTest\OpenAPI\V1\DTO\Resource::class})
+     * @DTA\Validator(name="TypeCompliant", options={"type":\ClientTest\OpenAPI\V1\DTO\Resource::class})
+     * @var \ClientTest\OpenAPI\V1\DTO\Resource
      */
-    private string $data;
+    private \ClientTest\OpenAPI\V1\DTO\Resource $data;
     /**
      * @ODTA\Data(field="messages", required=false)
-     * @DTA\Strategy(name="ObjectArray", options={"type":\Test\OpenAPI\V1_0_1\DTO\Message::class})
+     * @DTA\Strategy(name="ObjectArray", options={"type":\ClientTest\OpenAPI\V1\DTO\Message::class})
      * @DTA\Validator(name="Collection", options={"validators":{
-     *     {"name":"TypeCompliant", "options":{"type":\Test\OpenAPI\V1_0_1\DTO\Message::class}}
+     *     {"name":"TypeCompliant", "options":{"type":\ClientTest\OpenAPI\V1\DTO\Message::class}}
      * }})
-     * @var \Test\OpenAPI\V1_0_1\DTO\Message[]
+     * @var \ClientTest\OpenAPI\V1\DTO\Message[]
      */
     private array $messages;
 
@@ -82,12 +77,12 @@ class OkResponse implements \IteratorAggregate, \JsonSerializable
         return ['data', 'messages'];
     }
 
-    public function getData(): string
+    public function getData(): \ClientTest\OpenAPI\V1\DTO\Resource
     {
         return $this->data;
     }
 
-    public function setData(string $data): self
+    public function setData(\ClientTest\OpenAPI\V1\DTO\Resource $data): self
     {
         $this->data = $data;
         return $this;
