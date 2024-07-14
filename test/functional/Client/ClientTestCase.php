@@ -4,12 +4,13 @@ namespace rollun\test\OpenAPI\functional\Client;
 
 use FilesystemIterator;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
 class ClientTestCase extends TestCase
 {
-    protected static $container;
+    protected static ContainerInterface $container;
 
     public static function setUpBeforeClass(): void
     {

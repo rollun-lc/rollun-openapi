@@ -28,7 +28,7 @@ class Transfer extends Base
     const LEVEL_ERROR = LogLevel::ERROR;
 
     const TYPE_UNDEFINED_ERROR = Message::UNDEFINED_TYPE;
-    const TYPE_VALIDATION_ERROR = Message::INVALID_RESPONSE_TYPE;
+    const TYPE_VALIDATION_ERROR = Message::UNDEFINED_TYPE;
 
     /**
      * @var string|null

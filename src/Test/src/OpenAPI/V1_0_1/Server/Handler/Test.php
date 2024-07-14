@@ -42,6 +42,7 @@ class Test extends AbstractHandler
      * @PHA\Attribute(name=PHAttribute\Transfer::class, options={
      *     "type":\Test\OpenAPI\V1_0_1\DTO\TestGETQueryData::class,
      *     "objectAttr":"queryData",
+     *     "errorAttr":"errors",
      *     "source": PHAttribute\Transfer::SOURCE_GET
      * })
      * @PHA\Producer(name=Transfer::class, mediaType="application/json", options={"responseType":\Test\OpenAPI\V1_0_1\DTO\Collection::class})

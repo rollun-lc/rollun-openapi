@@ -9,7 +9,9 @@ use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use OpenAPI\Client\Factory\ApiAbstractFactory;
+use OpenAPI\Client\RequestTimedOut;
 use OpenAPI\Client\Rest\ClientInterface;
+use OpenAPI\Client\ServiceUnavailable;
 use OpenAPI\Server\Response\Message;
 use Psr\Log\LoggerInterface;
 use rollun\test\OpenAPI\functional\GuzzleMockTrait;
@@ -53,16 +55,14 @@ class ClientTest extends ClientTestCase
 
     /**
      * @dataProvider timeOutDataProvider
-     * @param Response|Exception $response
      */
-    public function testTimeoutError($response): void
+    public function testTimeoutError(Response|Exception $response): void
     {
         $this->getGuzzleMockHandler()->append($response);
 
-        /** @var ResourceListResult $response */
-        $response = $this->getClient()->get();
+        self::expectException(RequestTimedOut::class);
 
-        self::assertErrorOfType($response, Message::REQUEST_TIMEOUT);
+        $this->getClient()->get();
     }
 
     public function serviceUnavailableDataProvider(): array
@@ -76,16 +76,14 @@ class ClientTest extends ClientTestCase
 
     /**
      * @dataProvider serviceUnavailableDataProvider
-     * @param Response|Exception $response
      */
-    public function testServiceUnavailable($response): void
+    public function testServiceUnavailable(Response|Exception $response): void
     {
         $this->getGuzzleMockHandler()->append($response);
 
-        /** @var ResourceListResult $response */
-        $response = $this->getClient()->get();
+        self::expectException(ServiceUnavailable::class);
 
-        self::assertErrorOfType($response, Message::SERVICE_UNAVAILABLE);
+        $this->getClient()->get();
     }
 
     private static function assertErrorOfType(ResourceListResult $response, string $errorType): void

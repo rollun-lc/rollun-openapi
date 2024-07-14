@@ -42,6 +42,7 @@ class TestPathParamOperation extends AbstractHandler
      * @PHA\Attribute(name=PHAttribute\Transfer::class, options={
      *     "type":\Test\OpenAPI\V1_0_1\DTO\CustomOperationGetQueryData::class,
      *     "objectAttr":"queryData",
+     *     "errorAttr":"errors",
      *     "source": PHAttribute\Transfer::SOURCE_GET
      * })
      * @PHA\Producer(name=Transfer::class, mediaType="text/plain", options={"responseType":\Test\OpenAPI\V1_0_1\DTO\TestCustomResponse::class})

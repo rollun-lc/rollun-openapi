@@ -41,8 +41,10 @@ use OpenAPI\Client\Api\ApiInterface;
 use OpenAPI\Client\ApiException;
 use Test\OpenAPI\V1_0_1\Client\Configuration;
 use OpenAPI\Client\HeaderSelector;
+use OpenAPI\Client\InvalidResponse;
 use OpenAPI\Client\ObjectSerializer;
-use OpenAPI\Server\Response\Message;
+use OpenAPI\Client\RequestTimedOut;
+use OpenAPI\Client\ServiceUnavailable;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -189,7 +191,7 @@ class BlaApi implements ApiInterface
                 ]);
             } catch (ConnectException $e) {
                 if (str_contains($e->getMessage(), 'Operation timed out')) {
-                    return self::timeoutErrorResponse($e->getMessage());
+                    throw new RequestTimedOut(message: $e->getMessage());
                 }
                 throw $e;
             } catch (RequestException $e) {
@@ -207,16 +209,18 @@ class BlaApi implements ApiInterface
                 switch ($response->getStatusCode()) {
                     case 504:
                     case 524:
-                        return self::timeoutErrorResponse(
-                            $e->getMessage(),
-                            $response->getStatusCode(),
-                            $response->getHeaders()
+                        throw new RequestTimedOut(
+                            message: $e->getMessage(),
+                            code: 0,
+                            responseHeaders: $response->getHeaders(),
+                            responseBody: (string)$response->getBody(),
                         );
                     case 503:
-                        return self::serviceUnavailableResponse(
-                            $e->getMessage(),
-                            $response->getStatusCode(),
-                            $response->getHeaders()
+                        throw new ServiceUnavailable(
+                            message: $e->getMessage(),
+                            code: 0,
+                            responseHeaders: $response->getHeaders(),
+                            responseBody: (string)$response->getBody(),
                         );
                 }
             }
@@ -469,7 +473,7 @@ class BlaApi implements ApiInterface
                 ]);
             } catch (ConnectException $e) {
                 if (str_contains($e->getMessage(), 'Operation timed out')) {
-                    return self::timeoutErrorResponse($e->getMessage());
+                    throw new RequestTimedOut(message: $e->getMessage());
                 }
                 throw $e;
             } catch (RequestException $e) {
@@ -487,16 +491,18 @@ class BlaApi implements ApiInterface
                 switch ($response->getStatusCode()) {
                     case 504:
                     case 524:
-                        return self::timeoutErrorResponse(
-                            $e->getMessage(),
-                            $response->getStatusCode(),
-                            $response->getHeaders()
+                        throw new RequestTimedOut(
+                            message: $e->getMessage(),
+                            code: 0,
+                            responseHeaders: $response->getHeaders(),
+                            responseBody: (string)$response->getBody(),
                         );
                     case 503:
-                        return self::serviceUnavailableResponse(
-                            $e->getMessage(),
-                            $response->getStatusCode(),
-                            $response->getHeaders()
+                        throw new ServiceUnavailable(
+                            message: $e->getMessage(),
+                            code: 0,
+                            responseHeaders: $response->getHeaders(),
+                            responseBody: (string)$response->getBody(),
                         );
                 }
             }
@@ -683,89 +689,26 @@ class BlaApi implements ApiInterface
     /**
      * Decodes response body
      *
-     * @param string $responseBody
-     * @return array
+     * @throws InvalidResponse when cannot decode body
      */
     protected function deserialize(string $responseBody): array
     {
         try {
             return ObjectSerializer::deserialize($responseBody);
         } catch (InvalidArgumentException $exception) {
-            return [
-                'messages' => [
-                    [
-                        'level' => 'error',
-                        'type' => 'INVALID_RESPONSE',
-                        'text' => 'Response body decoding error: "' . $exception->getMessage() . '"'
-                    ]
-                ]
-            ];
+            throw new InvalidResponse(
+                message: $exception->getMessage(),
+                code: 0,
+                responseHeaders: null,
+                responseBody: $responseBody,
+            );
         }
     }
-
-    /*protected function deserialize(string $responseBody, ?string $mimeType = null)
-    {
-        $mimeType = $mimeType ?? 'application/json';
-        switch ($mimeType) {
-            case 'application/json':
-            case 'application/vnd.api+json':
-            try {
-                return ObjectSerializer::deserialize($responseBody);
-            } catch (InvalidArgumentException $exception) {
-                return [
-                    'data' => null,
-                    'messages' => [
-                        [
-                            'level' => 'error',
-                            'type' => 'INVALID_RESPONSE',
-                            'text' => 'Response body decoding error: "' . $exception->getMessage() . '"'
-                        ]
-                    ]
-                ];
-            }
-        }
-
-        return $responseBody;
-    }*/
 
     protected function log(string $level, string $message, array $context): void
     {
         if ($this->logger) {
             $this->logger->log($level, $message, $context);
         }
-    }
-
-    private static function timeoutErrorResponse(string $text, ?int $statusCode = null, ?array $headers = null): array
-    {
-        return [
-            [
-                'messages' => [
-                    [
-                        'level' => Message::ERROR,
-                        'type' => Message::REQUEST_TIMEOUT,
-                        'text' => $text
-                    ]
-                ]
-            ],
-            $statusCode,
-            $headers
-        ];
-    }
-
-    private static function serviceUnavailableResponse(string $text, ?int $statusCode = null, ?array $headers = null): array
-    {
-        return [
-            [
-                'messages' => [
-                    [
-                        'level' => Message::ERROR,
-                        'type' => Message::SERVICE_UNAVAILABLE,
-                        'text' => $text
-                    ]
-                ]
-            ],
-            $statusCode,
-            $headers
-        ];
     }
 }

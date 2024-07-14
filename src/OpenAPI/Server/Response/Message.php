@@ -18,9 +18,6 @@ class Message
     
     // Types
     public const UNDEFINED_TYPE = 'UNDEFINED';
-    public const INVALID_RESPONSE_TYPE = 'INVALID_RESPONSE';
-    public const REQUEST_TIMEOUT = 'REQUEST_TIMEOUT';
-    public const SERVICE_UNAVAILABLE = 'SERVICE_UNAVAILABLE';
 
     public const DEFAULT_TYPE = self::UNDEFINED_TYPE;
 

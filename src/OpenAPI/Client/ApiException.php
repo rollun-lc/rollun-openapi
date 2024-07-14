@@ -16,7 +16,7 @@ class ApiException extends Exception
 {
 
     /**
-     * The HTTP body of the server response either as Json or string.
+     * The HTTP body of the server response either as Json or string or null.
      *
      * @var mixed
      */

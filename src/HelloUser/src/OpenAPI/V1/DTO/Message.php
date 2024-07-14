@@ -33,7 +33,10 @@ class Message implements \IteratorAggregate, \JsonSerializable
      * @ODTA\Data(field="type", required=false)
      * @DTA\Validator(name="Type", options={"type":"string"})
      * @DTA\Validator(name="Enum", options={"allowed":{
-     *      "'UNDEFINED'"
+     *      "'UNDEFINED'",
+     *      "INVALID_RESPONSE",
+     *      "REQUEST_TIMEOUT",
+     *      "SERVICE_UNAVAILABLE"
      * }})
      * @var string
      */

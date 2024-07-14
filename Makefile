@@ -6,6 +6,10 @@ test: composer-test
 development-enable: composer-development-enable
 development-disable: composer-development-disable
 
+regenerate-examples:
+	docker-compose run --rm php-openapi-generator php bin/openapi-generator generate:client -m ./openapi.yaml
+	docker-compose run --rm php-openapi-generator php bin/openapi-generator generate:client -m ./openapi-task.yaml
+
 docker-up:
 	docker-compose up -d
 

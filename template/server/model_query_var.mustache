@@ -53,11 +53,8 @@
      * @DTA\Validator(name="Enum", options={"allowed":{
      {{#allowableValues}}
         {{#enumVars}}
-     *      "{{&value}}",
+     *      "{{&value}}"{{^-last}},{{/-last}}
         {{/enumVars}}
      {{/allowableValues}}
-     *      "INVALID_RESPONSE",
-     *      "REQUEST_TIMEOUT",
-     *      "SERVICE_UNAVAILABLE"
      * }})
 {{/isEnum}}

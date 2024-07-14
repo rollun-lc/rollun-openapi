@@ -30,6 +30,7 @@ namespace HelloUser\OpenAPI\V1\Client\Api;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\MultipartStream;
 use GuzzleHttp\Psr7\Query;
@@ -40,7 +41,10 @@ use OpenAPI\Client\Api\ApiInterface;
 use OpenAPI\Client\ApiException;
 use HelloUser\OpenAPI\V1\Client\Configuration;
 use OpenAPI\Client\HeaderSelector;
+use OpenAPI\Client\InvalidResponse;
 use OpenAPI\Client\ObjectSerializer;
+use OpenAPI\Client\RequestTimedOut;
+use OpenAPI\Client\ServiceUnavailable;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -183,6 +187,11 @@ class UserApi implements ApiInterface
                     'responseBody' => (string)$response->getBody(),
                     'responseStatusCode' => $response->getStatusCode()
                 ]);
+            } catch (ConnectException $e) {
+                if (str_contains($e->getMessage(), 'Operation timed out')) {
+                    throw new RequestTimedOut(message: $e->getMessage());
+                }
+                throw $e;
             } catch (RequestException $e) {
                 if (!$e->hasResponse()) {
                     throw $e;
@@ -194,6 +203,24 @@ class UserApi implements ApiInterface
                     'responseBody' => (string)$response->getBody(),
                     'responseStatusCode' => $response->getStatusCode()
                 ]);
+
+                switch ($response->getStatusCode()) {
+                    case 504:
+                    case 524:
+                        throw new RequestTimedOut(
+                            message: $e->getMessage(),
+                            code: 0,
+                            responseHeaders: $response->getHeaders(),
+                            responseBody: (string)$response->getBody(),
+                        );
+                    case 503:
+                        throw new ServiceUnavailable(
+                            message: $e->getMessage(),
+                            code: 0,
+                            responseHeaders: $response->getHeaders(),
+                            responseBody: (string)$response->getBody(),
+                        );
+                }
             }
 
             $statusCode = $response->getStatusCode();
@@ -448,6 +475,11 @@ class UserApi implements ApiInterface
                     'responseBody' => (string)$response->getBody(),
                     'responseStatusCode' => $response->getStatusCode()
                 ]);
+            } catch (ConnectException $e) {
+                if (str_contains($e->getMessage(), 'Operation timed out')) {
+                    throw new RequestTimedOut(message: $e->getMessage());
+                }
+                throw $e;
             } catch (RequestException $e) {
                 if (!$e->hasResponse()) {
                     throw $e;
@@ -459,6 +491,24 @@ class UserApi implements ApiInterface
                     'responseBody' => (string)$response->getBody(),
                     'responseStatusCode' => $response->getStatusCode()
                 ]);
+
+                switch ($response->getStatusCode()) {
+                    case 504:
+                    case 524:
+                        throw new RequestTimedOut(
+                            message: $e->getMessage(),
+                            code: 0,
+                            responseHeaders: $response->getHeaders(),
+                            responseBody: (string)$response->getBody(),
+                        );
+                    case 503:
+                        throw new ServiceUnavailable(
+                            message: $e->getMessage(),
+                            code: 0,
+                            responseHeaders: $response->getHeaders(),
+                            responseBody: (string)$response->getBody(),
+                        );
+                }
             }
 
             $statusCode = $response->getStatusCode();
@@ -697,24 +747,19 @@ class UserApi implements ApiInterface
     /**
      * Decodes response body
      *
-     * @param string $responseBody
-     * @return array
+     * @throws InvalidResponse when cannot decode body
      */
     protected function deserialize(string $responseBody): array
     {
         try {
             return ObjectSerializer::deserialize($responseBody);
         } catch (InvalidArgumentException $exception) {
-            return [
-                'data' => null,
-                'messages' => [
-                    [
-                        'level' => 'error',
-                        'type' => 'INVALID_RESPONSE',
-                        'text' => 'Response body decoding error: "' . $exception->getMessage() . '"'
-                    ]
-                ]
-            ];
+            throw new InvalidResponse(
+                message: $exception->getMessage(),
+                code: 0,
+                responseHeaders: null,
+                responseBody: $responseBody,
+            );
         }
     }
 
