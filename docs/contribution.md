@@ -53,6 +53,14 @@ declare(strict_types=1);
 openapi-generator можна запустити його з опціями `--global-property debugModels,debugOperations`, тоді в stdout
 виведеться два json зі значеннями для моделей (DTO) та операцій (Api класи).
 
+```bash
+openapi-generator generate \
+    -g php \
+    -o tmp-openapi \
+    -i openapi.yaml \
+    --global-property debugModels,debugOperations
+```
+
 Детальніше можна почитати
 в [debugging.md](https://github.com/OpenAPITools/openapi-generator/blob/master/docs/debugging.md)
 та [customization.md](https://github.com/OpenAPITools/openapi-generator/blob/master/docs/customization.md)
