@@ -88,10 +88,7 @@
     "server": "php -S 0.0.0.0:8000 -t public public/index.php"
   },
   "repositories": [
-    {
-      "type": "github",
-      "url": "git@github.com:orlyk-rollun/guzzle3.git"
-    }
+
   ],
   "minimum-stability": "stable"
 }
