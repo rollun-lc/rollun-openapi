@@ -34,10 +34,10 @@
     "mezzio/mezzio-helpers": "^5.8",
     "nette/php-generator": "^3.4",
     "nikic/fast-route": "^1.3",
-    "rollun-com/rollun-callback": "^7.0.0",
+    "rollun-com/rollun-callback": "dev-test-new-guzzle as 7.1.1",
     "rollun-com/rollun-dic": "^4.0.0",
     "symfony/dotenv": "^6.0.3",
-    "guzzle/guzzle": "dev-php-8.0 as v3.9.0"
+    "guzzlehttp/guzzle": "^7.4"
   },
   "require-dev": {
     "ext-yaml": "*",
