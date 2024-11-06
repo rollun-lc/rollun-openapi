@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace OpenAPI\DataTransfer\Strategy\Factory;
 
 use Articus\DataTransfer\Strategy\Factory\FieldData as BaseFieldDataGactory;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use OpenAPI\DataTransfer\Strategy\FieldData;
 
 class FieldDataFactory extends BaseFieldDataGactory

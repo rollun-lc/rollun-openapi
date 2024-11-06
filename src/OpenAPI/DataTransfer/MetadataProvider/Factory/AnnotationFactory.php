@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace OpenAPI\DataTransfer\MetadataProvider\Factory;
 
 use Articus\DataTransfer\MetadataProvider\Factory\Annotation as BaseAnnotationFactory;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use OpenAPI\DataTransfer\MetadataProvider\Annotation;
 
 class AnnotationFactory extends BaseAnnotationFactory

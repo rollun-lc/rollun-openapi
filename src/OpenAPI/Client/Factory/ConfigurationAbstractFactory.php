@@ -4,7 +4,7 @@
 namespace OpenAPI\Client\Factory;
 
 
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use OpenAPI\Client\Configuration\ConfigurationAbstract;
 use OpenAPI\Client\Configuration\ConfigurationInterface;
 use Laminas\ServiceManager\Factory\AbstractFactoryInterface;

@@ -6,7 +6,7 @@ namespace OpenAPI\Client\Factory;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use OpenAPI\Client\Api\ApiInterface;
 use Psr\Log\LoggerInterface;
 use rollun\logger\LifeCycleToken;

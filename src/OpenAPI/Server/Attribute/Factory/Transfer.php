@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace OpenAPI\Server\Attribute\Factory;
 
 use Articus\DataTransfer\Service as DTService;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Articus\PathHandler as PH;
 

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace OpenAPI\DataTransfer\Validator\Factory;
 
 use Articus\DataTransfer\Validator\Factory\FieldData as BaseFieldDataFactory;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use OpenAPI\DataTransfer\Validator\FieldData;
 
 class FieldDataFactory extends BaseFieldDataFactory

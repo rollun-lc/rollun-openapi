@@ -4,12 +4,10 @@ declare(strict_types=1);
 namespace OpenAPI\Server\MetadataProvider;
 
 use Articus\PathHandler\PluginManager as ArticusPluginManager;
-use Interop\Container\ContainerInterface;
-use Laminas\Cache\Psr\CacheItemPool\CacheItemPoolDecorator;
+use Psr\Container\ContainerInterface;
 use Laminas\Cache\Psr\SimpleCache\SimpleCacheDecorator;
 use Laminas\Cache\Service\StorageAdapterFactoryInterface;
 use Laminas\Cache\Storage\Adapter\BlackHole;
-use Zend\Cache\StorageFactory;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 /**

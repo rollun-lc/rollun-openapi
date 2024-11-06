@@ -5,7 +5,7 @@ namespace OpenAPI\Server\Producer\Factory;
 
 use Articus\DataTransfer\Service as DTService;
 use Articus\PathHandler\Producer\Factory\Transfer as Base;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use OpenAPI\Server\Producer\Transfer as TransferInstance;
 use OpenAPI\Server\Response\MessageReaderInterface;
 use Psr\Http\Message\StreamInterface;
