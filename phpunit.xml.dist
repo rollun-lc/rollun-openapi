@@ -11,4 +11,8 @@
             <directory>test/functional</directory>
         </testsuite>
     </testsuites>
+
+    <php>
+        <env name="APP_ENV" value="test" force="true"/>
+    </php>
 </phpunit>
