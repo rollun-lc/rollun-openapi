@@ -21,6 +21,7 @@
     "articus/path-handler": "0.6.1",
     "laminas/laminas-cache": "^3.1.2",
     "doctrine/annotations": "^1.8",
+    "guzzlehttp/guzzle": "^6.2",
     "laminas/laminas-cache-storage-adapter-blackhole": "^2.0.0",
     "laminas/laminas-cache-storage-adapter-filesystem": "^2.0.1",
     "laminas/laminas-code": "*",
@@ -34,16 +35,16 @@
     "mezzio/mezzio-helpers": "^5.8",
     "nette/php-generator": "^3.4",
     "nikic/fast-route": "^1.3",
-    "rollun-com/rollun-callback": "^7.0.0",
     "rollun-com/rollun-dic": "^4.0.0",
-    "symfony/dotenv": "^6.0.3",
-    "guzzle/guzzle": "dev-php-8.0 as v3.9.0"
+    "rollun-com/rollun-logger": "^7.0",
+    "symfony/dotenv": "^6.0.3"
   },
   "require-dev": {
     "ext-yaml": "*",
     "filp/whoops": "^2.15",
     "phpunit/phpunit": "^9.5.10",
-    "rollun-com/rollun-datastore": "^9.0"
+    "psr/log": "^1.1.4",
+    "symfony/console": "^6.0"
   },
   "autoload": {
     "psr-4": {
@@ -87,11 +88,5 @@
     "code-beautiful": "phpcbf .",
     "server": "php -S 0.0.0.0:8000 -t public public/index.php"
   },
-  "repositories": [
-    {
-      "type": "github",
-      "url": "git@github.com:orlyk-rollun/guzzle3.git"
-    }
-  ],
   "minimum-stability": "stable"
 }

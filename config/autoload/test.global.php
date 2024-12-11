@@ -4,15 +4,11 @@ use OpenAPI\Client\Factory\ApiAbstractFactory;
 use OpenAPI\Client\Factory\RestAbstractFactory;
 use rollun\test\OpenAPI\functional\Openapi\BlaControllerObject;
 use rollun\test\OpenAPI\functional\Openapi\TestControllerObject;
-use rollun\utils\Factory\AbstractServiceAbstractFactory;
 use Test\OpenAPI\V1_0_1\Client\Api\TestApi;
 use Test\OpenAPI\V1_0_1\Client\Rest\Test;
 
 return [
     'dependencies' => [
-        'abstract_factories' => [
-            AbstractServiceAbstractFactory::class
-        ],
         'invokables' => [
             TestControllerObject::class,
             BlaControllerObject::class,

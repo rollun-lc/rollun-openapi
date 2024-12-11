@@ -25,19 +25,14 @@ if(file_exists('.env')) {
 $appEnv = getenv('APP_ENV');
 
 $aggregator = new ConfigAggregator([
-    \rollun\repository\ConfigProvider::class,
-    \rollun\uploader\ConfigProvider::class,
     \Laminas\Filter\ConfigProvider::class,
-    \rollun\utils\Metrics\ConfigProvider::class,
-    \rollun\utils\FailedProcesses\ConfigProvider::class,
+    \Laminas\Mail\ConfigProvider::class,
+    \Laminas\Validator\ConfigProvider::class,
     \Laminas\Cache\Storage\Adapter\Filesystem\ConfigProvider::class,
     \Laminas\Diactoros\ConfigProvider::class,
     \Laminas\Cache\Storage\Adapter\BlackHole\ConfigProvider::class,
     \Laminas\Serializer\ConfigProvider::class,
     \Laminas\Cache\ConfigProvider::class,
-    \Laminas\Mail\ConfigProvider::class,
-    \Laminas\Db\ConfigProvider::class,
-    \Laminas\Validator\ConfigProvider::class,
     \Mezzio\Router\FastRouteRouter\ConfigProvider::class,
     \Laminas\HttpHandlerRunner\ConfigProvider::class,
     \Mezzio\Helper\ConfigProvider::class,
@@ -45,13 +40,10 @@ $aggregator = new ConfigAggregator([
     \Mezzio\Router\ConfigProvider::class,
     // Include cache configuration
     new ArrayProvider($cacheConfig),
+
     // Rollun config
-    //\rollun\uploader\ConfigProvider::class,
-    rollun\datastore\ConfigProvider::class,
-    //\rollun\permission\ConfigProvider::class,
     \rollun\logger\ConfigProvider::class,
-    \rollun\tracer\ConfigProvider::class,
-    \rollun\callback\ConfigProvider::class,
+
     // OpenAPI config
     \OpenAPI\ConfigProvider::class,
     // Default App module config

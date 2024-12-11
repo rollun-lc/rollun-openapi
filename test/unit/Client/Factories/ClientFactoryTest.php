@@ -9,7 +9,6 @@ use OpenAPI\Client\Configuration\AuthenticatorInterface;
 use OpenAPI\Client\Factory\ApiAbstractFactory;
 use OpenAPI\Client\Factory\ConfigurationAbstractFactory;
 use OpenAPI\Client\Factory\RestAbstractFactory;
-use rollun\utils\Factory\AbstractServiceAbstractFactory;
 use Test\OpenAPI\V1_0_1\Client\Api\TestApi;
 use Test\OpenAPI\V1_0_1\Client\Rest\Test;
 

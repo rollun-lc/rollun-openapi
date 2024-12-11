@@ -7,8 +7,6 @@
 declare(strict_types = 1);
 
 use Psr\Container\ContainerInterface;
-use rollun\callback\Middleware\WebhookMiddleware;
-use rollun\datastore\Middleware\DataStoreApi;
 //use rollun\permission\ConfigProvider;
 //use rollun\permission\OAuth\LoginMiddleware;
 //use rollun\permission\OAuth\LogoutMiddleware;
@@ -77,18 +75,4 @@ return function (Application $app, MiddlewareFactory $factory, ContainerInterfac
         LogoutMiddleware::class,
         'logout'
     );*/
-
-    $app->route(
-        '/api/datastore[/{resourceName}[/{id}]]',
-        DataStoreApi::class,
-        ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-        DataStoreApi::class
-    );
-
-    $app->route(
-        '/api/webhook[/{resourceName}]',
-        WebhookMiddleware::class,
-        Route::HTTP_METHOD_ANY,
-        'webhook'
-    );
 };

@@ -4,9 +4,7 @@ namespace rollun\test\OpenAPI\functional;
 
 use Laminas\ServiceManager\ServiceManager;
 use PHPUnit\Framework\TestCase as PHPUnitTestCase;
-use rollun\datastore\DataStore\Interfaces\DataStoreInterface;
 use rollun\dic\InsideConstruct;
-use Xiag\Rql\Parser\Query;
 
 /**
  * У Функциональных тестов APP_ENV = 'test' согласно phpunit.xml
