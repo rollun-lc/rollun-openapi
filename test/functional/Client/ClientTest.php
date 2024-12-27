@@ -89,16 +89,20 @@ class ClientTest extends ClientTestCase
 
     public function testResetFunction(): void
     {
-        $this->markTestIncomplete('Indirect modification of overloaded property ClientTest\OpenAPI\V1\DTO\ResourceResult::$messages has no effect');
-        $message = new \ClientTest\OpenAPI\V1\DTO\Message();
-        $message->level = Message::ERROR;
-        $message->type = Message::UNDEFINED_TYPE;
-        $message->text = 'Some error details.';
         $result = new ResourceResult();
-        $result->messages = [$message];
+        $result->messages = [$message = self::createMessage()];
 
-        $firstMessage = reset($result->messages);
-        self::assertEquals($firstMessage, $message);
+        self::assertEquals($message, reset($result->messages));
+    }
+
+    public function testAppendToArray(): void
+    {
+        $result = new ResourceResult();
+        $result->messages = [];
+
+        $result->messages[] = $message = self::createMessage();
+
+        self::assertEquals([$message], $result->messages);
     }
 
     private static function assertErrorOfType(ResourceListResult $response, string $errorType): void
@@ -122,5 +126,16 @@ class ClientTest extends ClientTestCase
             self::$container->get(DataTransferService::class),
             self::$container->get(LoggerInterface::class)
         );
+    }
+
+    private static function createMessage(
+        string $level = Message::ERROR, ?string $text = null, string $type = Message::UNDEFINED_TYPE
+    ): \ClientTest\OpenAPI\V1\DTO\Message
+    {
+        $message = new \ClientTest\OpenAPI\V1\DTO\Message();
+        $message->level = $level;
+        $message->type = Message::UNDEFINED_TYPE;
+        $message->text = $text ?? uniqid();
+        return $message;
     }
 }

@@ -33,9 +33,13 @@ class ResourceListResult implements \IteratorAggregate, \JsonSerializable
      */
     private array $messages;
 
-    public function __get($name)
+    public function &__get($name)
     {
-        return $this->isInitialized($name) ? $this->{$name} : null;
+        if ($this->isInitialized($name)) {
+            return $this->{$name};
+        }
+        $null = null;
+        return $null;
     }
 
     public function __set(string $name, $value): void
