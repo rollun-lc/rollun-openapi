@@ -1,47 +1,62 @@
 init: docker-down-clear docker-pull docker-build docker-up composer-install
-up: docker-up
-down: docker-down
-restart: docker-down docker-up
-test: composer-test
-development-enable: composer-development-enable
-development-disable: composer-development-disable
+init-8.0: docker-down-clear-8.0 docker-pull-8.0 docker-build-8.0 docker-up-8.0 composer-install-8.0
 
-regenerate-examples:
-	docker compose run --rm php-openapi-generator php bin/openapi-generator generate:client -m ./openapi.yaml
-	docker compose run --rm php-openapi-generator php bin/openapi-generator generate:client -m ./openapi-task.yaml
+up: docker-up
+up-8.0: docker-up-8.0
+
+down: docker-down
+down-8.0: docker-down-8.0
+
+restart: docker-down docker-up
+restart-8.0: docker-down-8.0 docker-up-8.0
+
+test: composer-test
+test-8.0: composer-test-8.0
 
 docker-up:
 	docker compose up -d
 
+docker-up-8.0:
+	docker compose -f docker-compose-8.0.yml up -d
+
 docker-down:
 	docker compose down --remove-orphans
+
+docker-down-8.0:
+	docker compose -f docker-compose-8.0.yml down --remove-orphans
 
 docker-down-clear:
 	docker compose down -v --remove-orphans
 
+docker-down-clear-8.0:
+	docker compose -f docker-compose-8.0.yml down -v --remove-orphans
+
 docker-pull:
 	docker compose pull
+
+docker-pull-8.0:
+	docker compose -f docker-compose-8.0.yml pull
 
 docker-build:
 	docker compose build
 
+docker-build-8.0:
+	docker compose -f docker-compose-8.0.yml build
+
 composer-install:
-	docker compose exec rollun-openapi-php-fpm composer install
+	docker compose exec php-fpm composer install
 
-composer-development-enable:
-	docker compose exec rollun-openapi-php-fpm composer development-enable
-
-composer-development-disable:
-	docker compose exec rollun-openapi-php-fpm composer development-disable
+composer-install-8.0:
+	docker compose -f docker-compose-8.0.yml exec php-fpm composer install
 
 composer-test:
-	docker compose exec rollun-openapi-php-fpm composer test
+	docker compose exec php-fpm composer test
 
-logstash-logs:
-	docker compose logs -f -t rollun-openapi-logstash
+composer-test-8.0:
+	docker compose -f docker-compose-8.0.yml exec php-fpm composer test
 
 openapi-generate-server:
-	docker compose run --rm php-openapi-generator php bin/openapi-generator generate:server --arrayConverting=dataTransfer
+	docker compose run --rm php-fpm php bin/openapi-generator generate:server
 
 openapi-generate-client:
-	docker compose run --rm php-openapi-generator php bin/openapi-generator generate:client
+	docker compose run --rm php-fpm php bin/openapi-generator generate:client

@@ -25,6 +25,7 @@ if(file_exists('.env')) {
 $appEnv = getenv('APP_ENV');
 
 $aggregator = new ConfigAggregator([
+    \Laminas\Cache\Storage\Adapter\Redis\ConfigProvider::class,
     \Laminas\Filter\ConfigProvider::class,
     \Laminas\Mail\ConfigProvider::class,
     \Laminas\Validator\ConfigProvider::class,
