@@ -20,9 +20,9 @@ class Message
      *      "'warning'",
      *      "'notice'",
      *      "'info'",
-     *      "INVALID_RESPONSE",
-     *      "REQUEST_TIMEOUT",
-     *      "SERVICE_UNAVAILABLE"
+     *      "'INVALID_RESPONSE'",
+     *      "'REQUEST_TIMEOUT'",
+     *      "'SERVICE_UNAVAILABLE'"
      * }})
      * @var string
      */
@@ -35,9 +35,9 @@ class Message
      *      "'UNDEFINED'",
      *      "'LOGGER_MESSAGE'",
      *      "'INVALID_RESPONSE'",
-     *      "INVALID_RESPONSE",
-     *      "REQUEST_TIMEOUT",
-     *      "SERVICE_UNAVAILABLE"
+     *      "'INVALID_RESPONSE'",
+     *      "'REQUEST_TIMEOUT'",
+     *      "'SERVICE_UNAVAILABLE'"
      * }})
      * @var string
      */
