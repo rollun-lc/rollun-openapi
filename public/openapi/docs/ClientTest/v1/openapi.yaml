@@ -114,7 +114,6 @@ components:
           enum:
             - UNDEFINED
             - LOGGER_MESSAGE
-            - INVALID_RESPONSE # To test that you can duplicate reserved types to manifest, do not add this type to real manifests
           description: >
             You can expose this enum for all your errors
             UNDEFINED - Any undefined message type

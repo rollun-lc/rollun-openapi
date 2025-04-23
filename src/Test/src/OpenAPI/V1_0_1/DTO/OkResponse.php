@@ -19,9 +19,6 @@ class OkResponse implements \IteratorAggregate, \JsonSerializable
      * @DTA\Validator(name="Type", options={"type":"string"})
      * @DTA\Validator(name="Enum", options={"allowed":{
      *      "'OK'",
-     *      "INVALID_RESPONSE",
-     *      "REQUEST_TIMEOUT",
-     *      "SERVICE_UNAVAILABLE"
      * }})
      * @var string
      */
