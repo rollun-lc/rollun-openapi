@@ -16,7 +16,4 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Init project
-        run: make init-8.0
-
-      - name: Run tests
-        run: make test-8.0
+        run: make init-8.0 test-8.0

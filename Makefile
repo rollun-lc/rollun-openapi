@@ -1,3 +1,9 @@
+# load .env
+ifneq (,$(wildcard .env))
+    include .env
+    export
+endif
+
 init: docker-down-clear docker-pull docker-build docker-up composer-install
 init-8.0: docker-down-clear-8.0 docker-pull-8.0 docker-build-8.0 docker-up-8.0 composer-install-8.0
 
@@ -9,6 +15,8 @@ down-8.0: docker-down-8.0
 
 restart: docker-down docker-up
 restart-8.0: docker-down-8.0 docker-up-8.0
+
+check: test
 
 test: composer-test
 test-8.0: composer-test-8.0
@@ -37,8 +45,21 @@ docker-pull:
 docker-pull-8.0:
 	docker compose -f docker-compose-8.0.yml pull
 
+# Set UID and GID dynamically but allow overrides
+DOCKER_USER_UID ?= $(shell id -u)
+DOCKER_USER_GID ?= $(shell id -g)
+
+export DOCKER_USER_UID
+export DOCKER_USER_GID
+
 docker-build:
-	docker compose build
+	docker compose build --build-arg WWW_DATA_UID=$(DOCKER_USER_UID) --build-arg WWW_DATA_GID=$(DOCKER_USER_GID)
+
+php:
+	docker compose exec -it php-fpm /bin/bash
+
+php-root:
+	docker compose exec -u root -it php-fpm /bin/bash
 
 docker-build-8.0:
 	docker compose -f docker-compose-8.0.yml build
@@ -54,7 +75,7 @@ composer-test:
 
 composer-test-8.0:
 	docker compose -f docker-compose-8.0.yml exec php-fpm composer test
-
+	
 openapi-generate-server:
 	docker compose run --rm php-fpm php bin/openapi-generator generate:server
 

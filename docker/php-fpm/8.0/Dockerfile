@@ -17,18 +17,23 @@ COPY ./openapi-generator /usr/local/bin/openapi-generator
 RUN chmod +x /usr/local/bin/openapi-generator
 
 # Install xdebug
-RUN pecl install xdebug-3.0.2 && docker-php-ext-enable xdebug
+RUN pecl install xdebug-3.4.2 && docker-php-ext-enable xdebug
 
-# Install YAML extension
-RUN pecl install yaml-2.2.2 && echo "extension=yaml.so" > /usr/local/etc/php/conf.d/ext-yaml.ini
+# Script to wait a port
+COPY ./wait-for-it.sh /usr/local/bin/wait-for-it
+RUN chmod 555 /usr/local/bin/wait-for-it
 
+# php configs
 COPY ./php-fpm.conf  /usr/local/etc/php-fpm.conf
 COPY ./conf.d  /usr/local/etc/php/conf.d
 
-# Set entrypoint
-COPY ./entrypoint.sh /usr/local/bin/docker-php-entrypoint
-RUN chmod +x /usr/local/bin/docker-php-entrypoint
+# GID and UID mapping for www-data user
+ARG WWW_DATA_UID=33
+ARG WWW_DATA_GID=33
 
+RUN usermod -u $WWW_DATA_UID www-data && groupmod -g $WWW_DATA_GID www-data
+
+USER www-data
 WORKDIR /var/www/app
 
 CMD ["php-fpm", "-R"]
