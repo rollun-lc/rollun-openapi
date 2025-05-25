@@ -251,7 +251,7 @@ abstract class GenerateCommandAbstract extends Command
         $generator = $this->generatorBuilder
             ->setInputSpec($this->manifest)
             ->setTemplateDir($this->getTemplateDirPath('server'))
-            ->setGeneratorName('php-ze-ph')
+            ->setGeneratorName('php-mezzio-ph')
             ->setConfig($configFile)
             ->setOutput($tmpDir)
             ->setAdditionalProperties([

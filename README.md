@@ -120,27 +120,16 @@ openapi документу (маніфесту). Цей код може міст
 
 **Важливо,** щоб не отримати помилку, цей скрипт повинен запускатись в оточені, де встановлено утиліту 
 [openapi-generator](https://openapi-generator.tech/). Це можна добитись двома шляхами:
-1. Встановити [openapi-generator](https://openapi-generator.tech/) собі у систему локально, за інструкцією на їх сайті.
+1. Встановити [openapi-generator v7](https://openapi-generator.tech/) собі у систему локально, за інструкцією на їх сайті.
 2. Використовувати docker, та запускати цей скрипт всередині докер контейнеру.
 
 ### Зуапуск генерації через докер
 
 ```bash
-docker run --rm \
-  -v $PWD:/var/www/app \
-  maxrollundev/php-openapi-generator:8.0 \
-  php vendor/bin/openapi-generator generate:server \
-  -m openapi.yaml
+docker compose run --rm php-fpm php bin/openapi-generator generate:client
 ```
 
-Де:
-- `-v $PWD:/var/www/app` - створює [волюм](https://docs.docker.com/storage/volumes/) з поточної директорії хост машини, до директорії 
-/var/www/app контейнеру (цей шлях зручно використовувати, адже для цього контейнеру він є робочою директорію по 
-замовчуванню)
-- `maxrollundev/php-openapi-generator:8.0` - назва контейнеру (8.0 - версія php)
-- `php vendor/bin/openapi-generator generate:server` - безпосередньо запуск скрипту генератора (для клієнта замінити 
-`generate:server` а `generate:client`)
-- `-m openapi.yaml` - шлях до маніфесту (може бути url)
+P.S В [образі php-fpm](./docker/php-fpm/8.1/Dockerfile) встановлено openapi-generator. ЦЕ ОБОВ'ЯЗКОВА УМОВА.
 
 Якщо ви використовуєте docker-compose в проекті, то в розділ services можна додати сервіс генератора
 
@@ -164,12 +153,9 @@ docker-compose run --rm php-openapi-generator \
 
 ### Запуск генерації без докеру
 
-1. Установите [openapi-generator](https://openapi-generator.tech/) ниже 5й (не включительно). Для проверки выполните команду:
+1. Установите [openapi-generator](https://openapi-generator.tech/) (протестировано на версии 7.9.0). Для проверки выполните команду:
 
    ```openapi-generator version```, в случае когда openapi-generator установлен вы увидите версию генератора.
-
-   **ВЕРСИЯ ГЕНЕРАТОРА ДОЛЖНА БЫТЬ НИЖЕ ПЯТОЙ.** Связанно это с тем что в 5й версии [убрали](https://github.com/OpenAPITools/openapi-generator/pull/8145/commits) 
-   генератор которым мы пользуемся, ему изменили имя и переделали для Laminas вместо Zend.
 
 2. Для генерации кода выполните команду:
 

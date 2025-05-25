@@ -9,26 +9,19 @@ use ReflectionProperty;
 use Traversable;
 
 /**
- * @property object $data
- * @property array $messages
+ * @property array $inner
  */
-class SuccessResult implements \IteratorAggregate, \JsonSerializable
+class Collection2 implements \IteratorAggregate, \JsonSerializable
 {
     /**
-     * @ODTA\Data(field="data", required=false)
-     * @DTA\Validator(name="Type", options={"type":"object"})
-     * @var object
-     */
-    private object $data;
-    /**
-     * @ODTA\Data(field="messages", required=false)
+     * @ODTA\Data(field="inner", required=false)
      * @DTA\Strategy(name="ObjectArray", options={"type":\ClientTest\OpenAPI\V1\DTO\Message::class})
      * @DTA\Validator(name="Collection", options={"validators":{
      *     {"name":"TypeCompliant", "options":{"type":\ClientTest\OpenAPI\V1\DTO\Message::class}}
      * }})
      * @var \ClientTest\OpenAPI\V1\DTO\Message[]
      */
-    private array $messages;
+    private array $inner;
 
     public function &__get($name)
     {
@@ -77,39 +70,23 @@ class SuccessResult implements \IteratorAggregate, \JsonSerializable
 
     private static function getAllPropertyNames(): array
     {
-        return ['data', 'messages'];
+        return ['inner'];
     }
 
-    public function getData(): object
+    public function getInner(): array
     {
-        return $this->data;
+        return $this->inner;
     }
 
-    public function setData(object $data): self
+    public function setInner(array $inner): self
     {
-        $this->data = $data;
+        $this->inner = $inner;
         return $this;
     }
 
-    public function hasData(): bool
+    public function hasInner(): bool
     {
-        return $this->isInitialized('data');
-    }
-
-    public function getMessages(): array
-    {
-        return $this->messages;
-    }
-
-    public function setMessages(array $messages): self
-    {
-        $this->messages = $messages;
-        return $this;
-    }
-
-    public function hasMessages(): bool
-    {
-        return $this->isInitialized('messages');
+        return $this->isInitialized('inner');
     }
 
     private function isInitialized(string $property): bool

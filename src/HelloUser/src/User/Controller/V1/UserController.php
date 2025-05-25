@@ -12,4 +12,14 @@ class UserController
             'data' => $bodyData
         ];
     }
+
+    public function getById(string $id): array
+    {
+        return [
+            'data' => [
+                'id' => $id,
+                'name' => uniqid()
+            ]
+        ];
+    }
 }

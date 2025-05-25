@@ -10,9 +10,12 @@ RUN apt-get update \
     wget \
     openjdk-17-jre
 
-# Install openapi-generator
+# Install openapi-generator jar
 RUN mkdir /usr/local/share/java
-RUN wget https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/4.3.1/openapi-generator-cli-4.3.1.jar -O /usr/local/share/java/openapi-generator-cli.jar
+RUN wget https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/7.9.0/openapi-generator-cli-7.9.0.jar \
+    -O /usr/local/share/java/openapi-generator-cli.jar
+
+# Create 'openapi-generator' alias
 COPY ./openapi-generator /usr/local/bin/openapi-generator
 RUN chmod +x /usr/local/bin/openapi-generator
 

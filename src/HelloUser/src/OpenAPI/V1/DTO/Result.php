@@ -16,8 +16,7 @@ class Result implements \IteratorAggregate, \JsonSerializable
 {
     /**
      * @ODTA\Data(field="data", required=false)
-     * @DTA\Strategy(name="Object", options={"type":object::class})
-     * @DTA\Validator(name="TypeCompliant", options={"type":object::class})
+     * @DTA\Validator(name="Type", options={"type":"object"})
      * @var object
      */
     private object $data;
