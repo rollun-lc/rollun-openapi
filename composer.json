@@ -41,6 +41,7 @@
   },
   "require-dev": {
     "ext-yaml": "*",
+    "laminas/laminas-development-mode": "^3.10",
     "filp/whoops": "^2.15",
     "phpunit/phpunit": "^9.5.10",
     "psr/log": "^1.1.4",
@@ -74,9 +75,9 @@
     "post-create-project-cmd": [
       "@development-enable"
     ],
-    "development-disable": "zf-development-mode disable",
-    "development-enable": "zf-development-mode enable",
-    "development-status": "zf-development-mode status",
+    "development-disable": "./vendor/bin/laminas-development-mode disable",
+    "development-enable": "./vendor/bin/laminas-development-mode enable",
+    "development-status": "./vendor/bin/laminas-development-mode status",
     "check": [
       "@cs-check",
       "@test"

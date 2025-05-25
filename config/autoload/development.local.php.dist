@@ -13,8 +13,6 @@ declare(strict_types=1);
 
 use Mezzio\Container;
 use Mezzio\Middleware\ErrorResponseGenerator;
-use Whoops\Handler\PrettyPageHandler;
-use Whoops\Run;
 
 return [
     'dependencies' => [

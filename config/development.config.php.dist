@@ -28,8 +28,18 @@
 declare(strict_types = 1);
 
 use Laminas\ConfigAggregator\ConfigAggregator;
+use Psr\Log\LoggerInterface;
+use rollun\logger\Writer\Noop;
 
 return [
-    'debug' => true,
     ConfigAggregator::ENABLE_CACHE => false,
+    'log' => [
+        LoggerInterface::class => [
+            'writers' => [
+                'udp_logstash' => [
+                    'name' => Noop::class,
+                ],
+            ],
+        ],
+    ],
 ];
