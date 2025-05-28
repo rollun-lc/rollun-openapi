@@ -2,9 +2,9 @@ name: Test PHP 8.1
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, 11.x ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, 11.x ]
 
 jobs:
   tests:
