@@ -37,15 +37,15 @@
     "nikic/fast-route": "^1.3",
     "rollun-com/rollun-dic": "^4.0.0",
     "rollun-com/rollun-logger": "^7.0",
-    "symfony/dotenv": "^6.0.3"
+    "symfony/dotenv": "^6.0.3",
+    "symfony/console": "^6.0"
   },
   "require-dev": {
     "ext-yaml": "*",
     "laminas/laminas-development-mode": "^3.10",
     "filp/whoops": "^2.15",
     "phpunit/phpunit": "^9.5.10",
-    "psr/log": "^1.1.4",
-    "symfony/console": "^6.0"
+    "psr/log": "^1.1.4"
   },
   "autoload": {
     "psr-4": {
