@@ -101,6 +101,8 @@ openapi документу (маніфесту). Цей код може міст
 
 Детальніше про правила створення маніфеста можна почитати в [manifests.md](docs/manifest.md)
 
+> У гілці [`specification`](https://github.com/rollun-lc/rollun-openapi/blob/specification/docs/specification.md) є розписані (але ще не завершені) специфікації OpenAPI для різних сервісів.
+
 ### Запуск генератора
 
 Встановіть бібліотеку у свій проект(мікросервіс):
