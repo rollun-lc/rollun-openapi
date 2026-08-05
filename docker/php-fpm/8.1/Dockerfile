@@ -17,7 +17,9 @@ RUN wget https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/7
 
 # Create 'openapi-generator' alias
 COPY ./openapi-generator /usr/local/bin/openapi-generator
-RUN chmod +x /usr/local/bin/openapi-generator
+# Absolute mode, not +x: the source may be 0660, and +x would yield 0771 - www-data
+# gets execute but no read, and the shell cannot read the script to run it.
+RUN chmod 755 /usr/local/bin/openapi-generator
 
 # Install YAML extension
 RUN pecl install yaml-2.2.2 && echo "extension=yaml.so" > /usr/local/etc/php/conf.d/ext-yaml.ini
@@ -32,6 +34,10 @@ RUN chmod 555 /usr/local/bin/wait-for-it
 # php configs
 COPY ./php-fpm.conf  /usr/local/etc/php-fpm.conf
 COPY ./conf.d  /usr/local/etc/php/conf.d
+
+# COPY preserves source modes, so a context checked out with a group-shared umask
+# (0660) leaves these unreadable for www-data and php-fpm dies with exit 78.
+RUN chmod 644 /usr/local/etc/php-fpm.conf && chmod -R a+r /usr/local/etc/php/conf.d
 
 # GID and UID mapping for www-data user
 ARG WWW_DATA_UID=33
