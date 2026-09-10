@@ -63,6 +63,13 @@ class DateTime extends Date
         // Invalid dates can show up as warnings (ie. "2007-02-99")
         // and still return a DateTime object.
         $errors = \DateTime::getLastErrors();
+
+        // Since PHP 8.2.0 this method returns false instead of an array with zero counters
+        // when the last parsing produced neither errors nor warnings.
+        if ($errors === false) {
+            return $date;
+        }
+
         if ($errors['warning_count'] > 0) {
             if ($addErrors) {
                 $this->error(self::FALSEFORMAT);
