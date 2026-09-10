@@ -35,6 +35,36 @@ class DateTimeTest extends TestCase
     }
 
     /**
+     * Since PHP 8.2.0 \DateTime::getLastErrors() returns false instead of an array with zero
+     * counters when the last parsing was clean, so reading it as an array raises
+     * "Trying to access array offset on false" for every valid value.
+     *
+     * @dataProvider dateTimeGreenDataProvider
+     */
+    public function testGreenDateTimeTypeFormatRaisesNoPhpWarning(string $dateTime): void
+    {
+        $raised = [];
+        set_error_handler(
+            static function (int $errno, string $errstr) use (&$raised): bool {
+                $raised[] = $errstr;
+
+                return true;
+            },
+            E_WARNING | E_NOTICE
+        );
+
+        try {
+            $validator = new DateTime(['format' => DateTime::RFC3339]);
+            $isValid = $validator->isValid($dateTime);
+        } finally {
+            restore_error_handler();
+        }
+
+        self::assertTrue($isValid);
+        self::assertSame([], $raised);
+    }
+
+    /**
      * @return array<string>
      */
     public function dateTimeRedDataProvider() : array
